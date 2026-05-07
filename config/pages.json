@@ -70,5 +70,11 @@
         "title": "Služby v zemědělství | Statek Straňovice",
         "description": "Nabízíme zemědělské práce a služby pro farmáře v okolí Malenic a Strakonic.",
         "keywords": "zemědělské služby, práce na poli, Statek Straňovice"
+    },
+    "404.php": {
+        "slug": "404",
+        "title": "404",
+        "description": "",
+        "keywords": ""
     }
 }
