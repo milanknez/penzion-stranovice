@@ -1,0 +1,74 @@
+{
+    "index.php": {
+        "slug": "",
+        "title": "Penzion Statek Straňovice | Tradiční styl u Malenic",
+        "description": "Penzion u Malenic. Autentická atmosféra, kde se čas zastavil. Objevte klid venkova v moderním hávu.",
+        "keywords": "penzion, ubytování, Malenice, Straňovice, Šumava, statek"
+    },
+    "pokoj.php": {
+        "slug": "kocici-apartman",
+        "title": "Kočičí apartmán | Penzion Statek Straňovice",
+        "description": "Prostorný rodinný apartmán se dvěma ložnicemi v Malenicích na Šumavě.",
+        "keywords": "apartmán pro rodinu, ubytování Malenice, Statek Straňovice"
+    },
+    "konsky.php": {
+        "slug": "konsky-apartman",
+        "title": "Koňský apartmán | Penzion Statek Straňovice",
+        "description": "Útulný pokoj v tradičním venkovském stylu pro 2 osoby.",
+        "keywords": "romantické ubytování, apartmán pro dva, Šumava"
+    },
+    "kvetinovy.php": {
+        "slug": "kvetinovy-apartman",
+        "title": "Květinový apartmán | Penzion Statek Straňovice",
+        "description": "Prostorné a klidné ubytování s terasou a výhledem do přírody.",
+        "keywords": "ubytování s terasou, penzion Malenice"
+    },
+    "akce.php": {
+        "slug": "svatby-a-akce",
+        "title": "Svatby a akce na statku | Penzion Statek Straňovice",
+        "description": "Uspořádejte svou vysněnou svatbu nebo oslavu v autentickém prostředí jihočeského statku.",
+        "keywords": "svatba na statku, oslavy, firemní akce, Malenice"
+    },
+    "chov.php": {
+        "slug": "chov-zvirat",
+        "title": "Náš chov zvířat | Statek Straňovice",
+        "description": "Poznejte naše zvířata. Chováme ovce, kozy a další hospodářská zvířata v souladu s přírodou.",
+        "keywords": "farma, chov zvířat, život na statku, Malenice"
+    },
+    "galerie.php": {
+        "slug": "fotogalerie",
+        "title": "Fotogalerie | Penzion Statek Straňovice",
+        "description": "Prohlédněte si fotografie našeho penzionu, zvířat a krásné okolní přírody Malenic.",
+        "keywords": "fotogalerie penzionu, fotografie Šumava, Statek Straňovice"
+    },
+    "prodej.php": {
+        "slug": "prodej-ze-dvora",
+        "title": "Prodej ze dvora | Statek Straňovice",
+        "description": "Nabízíme čerstvé produkty přímo z naší farmy. Domácí vajíčka, maso a další sezónní dobroty.",
+        "keywords": "domácí produkty, prodej ze dvora, bio potraviny, Malenice"
+    },
+    "ustajeni.php": {
+        "slug": "ustajeni-koni",
+        "title": "Ustájení koní | Statek Straňovice",
+        "description": "Nabízíme profesionální ustájení pro vaše koně v klidném prostředí s rozlehlými pastvinami.",
+        "keywords": "ustájení koní, koňské pastviny, Malenice, Šumava"
+    },
+    "vylety.php": {
+        "slug": "tipy-na-vylety",
+        "title": "Tipy na výlety v okolí Malenic | Statek Straňovice",
+        "description": "Objevte krásy Šumavy a Pošumaví. Tipy na turistické i cyklistické trasy v okolí našeho statku.",
+        "keywords": "výlety Šumava, turistika Malenice, cyklotrasy"
+    },
+    "vyuka.php": {
+        "slug": "vyukove-programy",
+        "title": "Výukové programy pro školy | Statek Straňovice",
+        "description": "Zážitková pedagogika na statku. Programy pro mateřské i základní školy zaměřené na přírodu a zvířata.",
+        "keywords": "školní výlety, výukové programy, environmentální výchova"
+    },
+    "zemedelstvi.php": {
+        "slug": "zemedelstvi",
+        "title": "Služby v zemědělství | Statek Straňovice",
+        "description": "Nabízíme zemědělské práce a služby pro farmáře v okolí Malenic a Strakonic.",
+        "keywords": "zemědělské služby, práce na poli, Statek Straňovice"
+    }
+}
