@@ -343,14 +343,23 @@ document.getElementById('save-btn').addEventListener('click', () => {
     })
     .then(res => res.json())
     .then(data => {
+        const msg = document.getElementById('status-msg');
         if (data.status === 'success') {
-            const msg = document.getElementById('status-msg');
             msg.innerText = window.UI_LANG === 'en' ? 'Saved!' : 'Uloženo!';
+            msg.classList.remove('text-amber-500');
+            msg.classList.add('text-sky-400');
             msg.style.opacity = '1';
             setTimeout(() => msg.style.opacity = '0', 3000);
+        } else if (data.status === 'warning') {
+            alert('VAROVÁNÍ: ' + data.message);
+            msg.innerText = window.UI_LANG === 'en' ? 'Not pushed!' : 'Neodesláno!';
+            msg.classList.remove('text-sky-400');
+            msg.classList.add('text-amber-500');
+            msg.style.opacity = '1';
         } else {
-            alert('Error: ' + data.message);
+            alert('Chyba: ' + data.message);
         }
     })
+
     .catch(err => alert('Error saving.'));
 });

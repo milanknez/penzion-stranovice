@@ -48,20 +48,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Menu & Dropdowns
     const mobileToggle = document.getElementById('mobile-toggle');
     const navLinks = document.querySelector('.nav-links');
+    
     if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', () => {
+        // Toggle menu on click
+        mobileToggle.onclick = (e) => {
+            e.stopPropagation();
             navLinks.classList.toggle('active');
+            // Toggle icon if needed (optional)
+        };
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinks.classList.contains('active') && !navLinks.contains(e.target) && e.target !== mobileToggle) {
+                navLinks.classList.remove('active');
+            }
         });
     }
 
     // Mobile Dropdown toggles
     document.querySelectorAll('.has-dropdown').forEach(dropdown => {
-        dropdown.addEventListener('click', (e) => {
-            if (window.innerWidth <= 992) {
+        dropdown.onclick = (e) => {
+            if (window.innerWidth <= 1150) { // Changed from 992 to match burger menu breakpoint
                 e.preventDefault();
+                e.stopPropagation();
                 dropdown.parentElement.classList.toggle('active');
             }
-        });
+        };
     });
 
     // Timeline Modal

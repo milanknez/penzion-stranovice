@@ -58,12 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $gitMsg = "Auto-update: $currentPage";
         $gitResult = CMS::gitCommit($gitMsg);
         
+        $status = (strpos($gitResult, 'ERROR:') === 0) ? 'warning' : 'success';
+        $msg = ($status === 'warning') ? "Stránka byla uložena lokálně, ale COMMIT NEPROBĚHL: " . str_replace('ERROR: ', '', $gitResult) : "Stránka $currentPage byla uložena a commitnuta.";
+
         header('Content-Type: application/json');
         echo json_encode([
-            'status' => 'success', 
-            'message' => "Stránka $currentPage byla uložena a commitnuta.",
+            'status' => $status, 
+            'message' => $msg,
             'git_output' => $gitResult
         ]);
+
     } else {
         header('HTTP/1.1 500 Internal Server Error');
         echo json_encode(['status' => 'error', 'message' => 'Chyba při zápisu do souboru.']);

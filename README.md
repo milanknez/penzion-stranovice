@@ -40,5 +40,13 @@ V administraci klikněte na tlačítko **"NASTAVENÍ STRÁNKY"**. Zde můžete u
 
 Všechna tato data se ukládají do `config/pages.json`.
 
+## Automatický Deploy (GitHub Actions)
+Projekt obsahuje konfiguraci pro automatický deploy přes SSH. Aby fungoval, nastavte v nastavení repozitáře (Settings -> Secrets and variables -> Actions) tyto tajné klíče:
+- `SERVER_HOST`: IP adresa nebo doména vašeho serveru.
+- `SERVER_USER`: Uživatelské jméno (např. `www-data` nebo `root`).
+- `SERVER_SSH_KEY`: Váš soukromý SSH klíč (private key), který má přístup k serveru.
+
+Workflow najdete v `.github/workflows/deploy.yml`.
+
 ---
 Vytvořeno s ❤️ pro rychlou tvorbu webů.

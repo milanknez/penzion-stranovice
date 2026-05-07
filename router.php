@@ -7,10 +7,16 @@ $slug = trim($path, '/');
 
 // Support PHP built-in server: serve existing files directly
 if (php_sapi_name() === 'cli-server') {
-    if (file_exists(__DIR__ . $path) && is_file(__DIR__ . $path)) {
-        return false;
+    $fullPath = __DIR__ . $path;
+    if (file_exists($fullPath)) {
+        if (is_file($fullPath)) return false;
+        if (is_dir($fullPath) && file_exists($fullPath . '/index.php')) {
+            require $fullPath . '/index.php';
+            return true;
+        }
     }
 }
+
 
 $pages = CMS::getPagesConfig();
 $found = false;
