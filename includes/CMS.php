@@ -92,7 +92,7 @@ class CMS {
         // Files to push
         $filesToPush = [];
 
-        // 1. Increment and prepare version.php
+        // 1. Increment version.php
         $versionFile = $rootDir . '/admin/version.php';
         if (file_exists($versionFile)) {
             $content = file_get_contents($versionFile);
@@ -105,12 +105,12 @@ class CMS {
                     $newContent = preg_replace("/define\('APP_VERSION', '(.*?)'\)/", "define('APP_VERSION', '$newVersion')", $content);
                     file_put_contents($versionFile, $newContent);
                     $filesToPush['admin/version.php'] = $newContent;
+                    $message .= " (v$newVersion)";
                 }
             }
         }
 
-        // 2. Identify current page and config that might have changed
-        // We look at the session to see what was just saved
+        // 2. Identify current page
         if (isset($_SESSION['current_page'])) {
             $page = $_SESSION['current_page'];
             $pagePath = $rootDir . '/' . $page;
@@ -124,54 +124,70 @@ class CMS {
             $filesToPush['config/pages.json'] = file_get_contents($pagesJson);
         }
 
-        $results = [];
-        foreach ($filesToPush as $path => $content) {
-            $results[] = self::pushToGitHubAPI($repoPath, $path, $content, $message, $branch, $token);
-        }
+        if (empty($filesToPush)) return "Žádné změny k nahrání.";
 
-        return implode("\n", $results);
+        return self::pushMultipleToGitHubAPI($repoPath, $filesToPush, $message, $branch, $token);
     }
 
-    private static function pushToGitHubAPI($repo, $path, $content, $message, $branch, $token) {
-        $url = "https://api.github.com/repos/$repo/contents/$path?ref=$branch";
-        $ch = curl_init($url);
-        
+    private static function pushMultipleToGitHubAPI($repo, $files, $message, $branch, $token) {
         $headers = [
             'Authorization: token ' . $token,
             'User-Agent: FidaCMS-Editor',
-            'Accept: application/vnd.github.v3+json'
+            'Accept: application/vnd.github.v3+json',
+            'Content-Type: application/json'
         ];
 
-        // 1. Get the current file SHA from GitHub (required for update)
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        $data = json_decode($response, true);
-        $sha = isset($data['sha']) ? $data['sha'] : null;
+        // 1. Get latest commit SHA
+        $res = self::githubRequest("GET", "https://api.github.com/repos/$repo/git/refs/heads/$branch", null, $headers);
+        $lastCommitSha = $res['object']['sha'] ?? null;
+        if (!$lastCommitSha) return "ERROR: Nepodařilo se získat SHA poslední revize.";
 
-        // 2. Prepare the PUT request
-        $putData = [
+        // 2. Create Tree
+        $treeData = ['base_tree' => $lastCommitSha, 'tree' => []];
+        foreach ($files as $path => $content) {
+            $treeData['tree'][] = [
+                'path' => $path,
+                'mode' => '100644',
+                'type' => 'blob',
+                'content' => $content
+            ];
+        }
+        $res = self::githubRequest("POST", "https://api.github.com/repos/$repo/git/trees", $treeData, $headers);
+        $newTreeSha = $res['sha'] ?? null;
+        if (!$newTreeSha) return "ERROR: Nepodařilo se vytvořit strom (tree).";
+
+        // 3. Create Commit
+        $commitData = [
             'message' => $message,
-            'content' => base64_encode($content),
-            'branch' => $branch
+            'tree' => $newTreeSha,
+            'parents' => [$lastCommitSha]
         ];
-        if ($sha) $putData['sha'] = $sha;
+        $res = self::githubRequest("POST", "https://api.github.com/repos/$repo/git/commits", $commitData, $headers);
+        $newCommitSha = $res['sha'] ?? null;
+        if (!$newCommitSha) return "ERROR: Nepodařilo se vytvořit commit.";
 
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/$repo/contents/$path");
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($putData));
+        // 4. Update Reference
+        $refData = ['sha' => $newCommitSha];
+        $res = self::githubRequest("PATCH", "https://api.github.com/repos/$repo/git/refs/heads/$branch", $refData, $headers);
         
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode >= 200 && $httpCode < 300) {
-            return "OK: $path aktualizován na GitHubu.";
+        if (isset($res['object']['sha'])) {
+            return "OK: Změny byly nahrány v jednom commitu na GitHub.";
         } else {
-            $err = json_decode($response, true);
-            return "ERROR: Nepodařilo se nahrát $path: " . ($err['message'] ?? 'Neznámá chyba');
+            return "ERROR: Nepodařilo se aktualizovat větev (branch).";
         }
     }
+
+    private static function githubRequest($method, $url, $data, $headers) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($data) curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($response, true);
+    }
+
 
 
 

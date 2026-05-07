@@ -349,7 +349,15 @@ function savePageSettings() {
 }
 
 // Handle Save Button
-document.getElementById('save-btn').addEventListener('click', () => {
+document.getElementById('save-btn').addEventListener('click', function() {
+    const btn = this;
+    const originalText = btn.innerText;
+    
+    // Loading state
+    btn.innerText = window.UI_LANG === 'en' ? 'SAVING...' : 'UKLÁDÁM...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
     const html = editor.getHtml();
     const css = editor.getCss();
     const finalHtml = `<?php 
@@ -384,15 +392,29 @@ $meta = CMS::getPageMeta();
     })
     .then(res => res.json())
     .then(data => {
+        const msg = document.getElementById('status-msg');
         if (data.status === 'success') {
-            const msg = document.getElementById('status-msg');
             msg.innerText = window.UI_LANG === 'en' ? 'Saved & Committed!' : 'Uloženo a commitnuto!';
+            msg.classList.remove('text-amber-500');
+            msg.classList.add('text-sky-400');
             msg.style.opacity = '1';
             setTimeout(() => msg.style.opacity = '0', 3000);
             console.log('Git Output:', data.git_output);
+        } else if (data.status === 'warning') {
+            alert('VAROVÁNÍ: ' + data.message);
+            msg.innerText = window.UI_LANG === 'en' ? 'Not pushed!' : 'Neodesláno!';
+            msg.classList.remove('text-sky-400');
+            msg.classList.add('text-amber-500');
+            msg.style.opacity = '1';
         } else {
             alert('Error: ' + data.message);
         }
     })
-    .catch(err => alert('Error saving.'));
+    .catch(err => alert('Error saving.'))
+    .finally(() => {
+        btn.innerText = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    });
 });
+

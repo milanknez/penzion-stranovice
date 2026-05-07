@@ -189,6 +189,9 @@ $_SESSION['current_page'] = $currentPage;
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <button onclick="createNewPage()" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="Vytvořit novou stránku">
+                    <i class="fa fa-plus"></i>
+                </button>
             </div>
         </div>
         
@@ -309,6 +312,26 @@ $_SESSION['current_page'] = $currentPage;
                         btn.disabled = false;
                     }
                 });
+        }
+
+        function createNewPage() {
+            const filename = prompt("Zadejte název nové stránky (např. sluzby):");
+            if (!filename) return;
+            
+            fetch('create_page.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: filename })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    if (data.redirect) window.location.href = data.redirect;
+                } else {
+                    alert('Chyba: ' + data.message);
+                }
+            });
         }
 
         setTimeout(checkUpdates, 2000); // Check after 2s
