@@ -34,39 +34,43 @@ class CMS {
         $siteName = $siteConfig['site_name'] ?? 'Statek Straňovice';
 
         if ($pageName === null) {
-            $scriptName = basename($_SERVER['SCRIPT_NAME']);
-            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-            $path = parse_url($requestUri, PHP_URL_PATH);
-            $slug = trim($path, '/');
-
-            // 1. Try matching script name directly (e.g. zemedelstvi.php)
-            if (isset($pages[$scriptName])) {
-                $pageName = $scriptName;
+            // Priority 1: Constant set by router
+            if (defined('CURRENT_PAGE')) {
+                $pageName = CURRENT_PAGE;
             } 
-            // 2. If it's a router or unknown script, try matching slug
-            else if ($scriptName === 'router.php' || !isset($pages[$scriptName])) {
-                if (empty($slug) || $slug === 'index' || $slug === 'index.php') {
-                    $pageName = 'index.php';
-                } else {
-                    foreach ($pages as $file => $config) {
-                        if (isset($config['slug']) && $config['slug'] === $slug) {
-                            $pageName = $file;
-                            break;
-                        }
-                    }
+            // Priority 2: Direct script name
+            else {
+                $scriptName = basename($_SERVER['SCRIPT_NAME']);
+                
+                if (isset($pages[$scriptName])) {
+                    $pageName = $scriptName;
+                } 
+                // Priority 3: Detect by URL slug
+                else {
+                    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+                    $path = parse_url($requestUri, PHP_URL_PATH);
+                    $slug = trim($path, '/');
                     
-                    // Fallback: slug.php
-                    if ($pageName === null) {
-                        $potentialFile = $slug . '.php';
-                        if (file_exists($potentialFile)) {
-                            $pageName = $potentialFile;
-                        } else {
-                            $pageName = 'index.php'; // Final fallback
+                    if (empty($slug) || $slug === 'index' || $slug === 'index.php') {
+                        $pageName = 'index.php';
+                    } else {
+                        foreach ($pages as $file => $config) {
+                            if (isset($config['slug']) && $config['slug'] === $slug) {
+                                $pageName = $file;
+                                break;
+                            }
+                        }
+                        
+                        if ($pageName === null) {
+                            $potentialFile = $slug . '.php';
+                            if (file_exists($potentialFile)) {
+                                $pageName = $potentialFile;
+                            } else {
+                                $pageName = 'index.php';
+                            }
                         }
                     }
                 }
-            } else {
-                $pageName = $scriptName;
             }
         }
         

@@ -20,6 +20,7 @@ $found = false;
 
 foreach ($pages as $file => $config) {
     if (isset($config['slug']) && $config['slug'] === $slug && $slug !== '') {
+        define('CURRENT_PAGE', $file);
         require $file;
         $found = true;
         break;
@@ -28,8 +29,10 @@ foreach ($pages as $file => $config) {
 
 if (!$found) {
     if (empty($slug)) {
+        define('CURRENT_PAGE', 'index.php');
         require 'index.php';
     } else if (file_exists($slug . '.php')) {
+        define('CURRENT_PAGE', $slug . '.php');
         require $slug . '.php';
     } else {
         $siteConfig = CMS::getSiteConfig();
