@@ -111,15 +111,17 @@ class CMS {
         
         $repoPath = $repoParts[1];
         $branch = 'main';
-        $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php?t=" . time();
+        $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php?nocache=" . uniqid();
         
         // Use cURL instead of file_get_contents for better compatibility
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $githubVersionUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-UpdateChecker');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-UpdateChecker-' . uniqid());
         $remoteVersionFile = curl_exec($ch);
         curl_close($ch);
         
