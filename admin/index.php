@@ -204,6 +204,11 @@ $_SESSION['current_page'] = $currentPage;
                 <button onclick="createNewPage()" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="Vytvořit novou stránku">
                     <i class="fa fa-plus"></i>
                 </button>
+                <?php if ($currentPage !== 'index.php'): ?>
+                <button onclick="deleteCurrentPage()" class="bg-red-900/40 hover:bg-red-600 text-red-200 hover:text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="Smazat tuto stránku">
+                    <i class="fa fa-trash"></i>
+                </button>
+                <?php endif; ?>
             </div>
         </div>
         
@@ -410,6 +415,22 @@ $_SESSION['current_page'] = $currentPage;
         }
 
         setTimeout(checkUpdates, 2000); // Check after 2s
+        function deleteCurrentPage() {
+            if (!confirm('Opravdu chcete nenávratně smazat aktuální stránku? Tato akce nelze vrátit.')) return;
+            
+            fetch('delete.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ page: '<?= $currentPage ?>' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                if (data.status === 'success') {
+                    window.location.href = 'index.php';
+                }
+            });
+        }
     </script>
     <script src="js/editor.js"></script>
 </body>
