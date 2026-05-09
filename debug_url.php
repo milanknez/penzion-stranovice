@@ -1,12 +1,9 @@
 <?php
 header('Content-Type: application/json');
-require_once 'includes/CMS.php';
-require_once 'admin/version.php';
 echo json_encode([
-    'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'],
-    'REQUEST_URI' => $_SERVER['REQUEST_URI'],
-    'getBasePath' => CMS::getBasePath(),
-    'url_index' => CMS::url('index.php'),
-    'url_ustajeni' => CMS::url('ustajeni.php'),
-    'APP_VERSION' => APP_VERSION
+    'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? 'N/A',
+    'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? 'N/A',
+    'PHP_SELF' => $_SERVER['PHP_SELF'] ?? 'N/A',
+    'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? 'N/A',
+    'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? 'N/A',
 ], JSON_PRETTY_PRINT);
