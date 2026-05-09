@@ -34,7 +34,7 @@
     <?php include 'modals.php'; ?>
 </div>
 
-<script src="assets/js/app.js"></script>
+<script src="assets/js/app.js?v=<?= filemtime(__DIR__ . '/../assets/js/app.js') ?>"></script>
 <script>
     // Re-init icons for Lucide if needed
     if (typeof lucide !== 'undefined') lucide.createIcons();
