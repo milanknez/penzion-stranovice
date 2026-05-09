@@ -20,11 +20,12 @@
         <div class="footer-contact">
             <h4>Kontakt</h4>
             <p>Straňovice 1, 387 01 Malenice</p>
-            <p>info@statek-penzon.cz</p>
+            <p>Tel: +420 737 887 985</p>
+            <p>info@statekstranovice.cz</p>
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; <?php echo date('Y'); ?> Statek Penzón. Všechna práva vyhrazena.</p>
+        <p>&copy; <?php echo date('Y'); ?> Statek Straňovice. Všechna práva vyhrazena.</p>
     </div>
 </footer>
 

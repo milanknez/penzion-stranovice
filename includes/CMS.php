@@ -29,11 +29,34 @@ class CMS {
     }
 
     public static function getPageMeta($pageName = null) {
+        $pages = self::getPagesConfig();
+        
         if ($pageName === null) {
             $pageName = basename($_SERVER['PHP_SELF']);
+            
+            // If running via router.php, we need to find the file by slug
+            if ($pageName === 'router.php') {
+                $request = $_SERVER['REQUEST_URI'];
+                $path = parse_url($request, PHP_URL_PATH);
+                $slug = trim($path, '/');
+                
+                if (empty($slug)) {
+                    $pageName = 'index.php';
+                } else {
+                    foreach ($pages as $file => $config) {
+                        if (isset($config['slug']) && $config['slug'] === $slug) {
+                            $pageName = $file;
+                            break;
+                        }
+                    }
+                    // Fallback to slug.php if it exists
+                    if ($pageName === 'router.php' && file_exists($slug . '.php')) {
+                        $pageName = $slug . '.php';
+                    }
+                }
+            }
         }
         
-        $pages = self::getPagesConfig();
         return $pages[$pageName] ?? [
             'slug' => str_replace('.php', '', $pageName),
             'title' => self::getSiteConfig()['site_name'] ?? 'Web',
@@ -43,6 +66,8 @@ class CMS {
     }
 
     public static function url($file) {
+        if ($file === 'index.php') return '/';
+        
         $pages = self::getPagesConfig();
         if (isset($pages[$file]) && !empty($pages[$file]['slug'])) {
             return '/' . $pages[$file]['slug'];

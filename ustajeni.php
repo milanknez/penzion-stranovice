@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Ustájení koní | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Nabízíme profesionální ustájení koní v rodinném prostředí našeho statku v Malenicích. Prostorné boxy, pastviny a individuální péče.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -112,3 +112,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

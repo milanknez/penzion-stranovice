@@ -65,33 +65,63 @@
 
             <div class="rooms-grid">
                 <div class="room-card reveal-up">
-                    <div class="room-img" style="background-image: url('assets/img/kocici_1.jpg');">
-                        <div class="room-price">od 950 Kč / noc</div>
-                    </div>
+                    <a href="<?= CMS::url('pokoj.php') ?>" class="room-link">
+                        <div class="room-img" style="background-image: url('assets/img/kocici_1.jpg');">
+                            <div class="room-price">od 950 Kč / noc</div>
+                        </div>
+                    </a>
                     <div class="room-info">
-                        <h3>Kočičí apartmán</h3>
+                        <a href="<?= CMS::url('pokoj.php') ?>"><h3>Kočičí apartmán</h3></a>
                         <p>Prostorný apartmán se dvěma ložnicemi pro 5 osob a vlastní kuchyní.</p>
                         <a href="<?= CMS::url('pokoj.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.1s;">
-                    <div class="room-img" style="background-image: url('assets/img/konsky_1.jpg');">
-                        <div class="room-price">od 750 Kč / noc</div>
-                    </div>
+                    <a href="<?= CMS::url('konsky.php') ?>" class="room-link">
+                        <div class="room-img" style="background-image: url('assets/img/konsky_1.jpg');">
+                            <div class="room-price">od 750 Kč / noc</div>
+                        </div>
+                    </a>
                     <div class="room-info">
-                        <h3>Koňský apartmán</h3>
+                        <a href="<?= CMS::url('konsky.php') ?>"><h3>Koňský apartmán</h3></a>
                         <p>Útulný a tichý pokoj v tradičním stylu pro 2 osoby.</p>
                         <a href="<?= CMS::url('konsky.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.2s;">
-                    <div class="room-img" style="background-image: url('assets/img/kvetinovy_1.jpg');">
-                        <div class="room-price">od 850 Kč / noc</div>
-                    </div>
+                    <a href="<?= CMS::url('kvetinovy.php') ?>" class="room-link">
+                        <div class="room-img" style="background-image: url('assets/img/kvetinovy_1.jpg');">
+                            <div class="room-price">od 850 Kč / noc</div>
+                        </div>
+                    </a>
                     <div class="room-info">
-                        <h3>Květinový apartmán</h3>
+                        <a href="<?= CMS::url('kvetinovy.php') ?>"><h3>Květinový apartmán</h3></a>
                         <p>Prostorný a čistý pokoj s vlastní ledničkou a terasou.</p>
                         <a href="<?= CMS::url('kvetinovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="room-card reveal-up" style="animation-delay: 0.3s;">
+                    <a href="<?= CMS::url('babiccin.php') ?>" class="room-link">
+                        <div class="room-img" style="background-image: url('assets/img/babiccin_1.jpg');">
+                            <div class="room-price">od 850 Kč / noc</div>
+                        </div>
+                    </a>
+                    <div class="room-info">
+                        <a href="<?= CMS::url('babiccin.php') ?>"><h3>Babiččin apartmán</h3></a>
+                        <p>Útulný apartmán pro 4 osoby s tradiční venkovskou atmosférou.</p>
+                        <a href="<?= CMS::url('babiccin.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="room-card reveal-up" style="animation-delay: 0.4s;">
+                    <a href="<?= CMS::url('medovy.php') ?>" class="room-link">
+                        <div class="room-img" style="background-image: url('assets/img/medovy_1.jpg');">
+                            <div class="room-price">od 1 250 Kč / noc</div>
+                        </div>
+                    </a>
+                    <div class="room-info">
+                        <a href="<?= CMS::url('medovy.php') ?>"><h3>Medový apartmán</h3></a>
+                        <p>Velký rodinný apartmán se třemi ložnicemi pro až 9 hostů.</p>
+                        <a href="<?= CMS::url('medovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -137,8 +167,8 @@
                     <span class="section-tag">Kontakt</span>
                     <h2 class="section-title">Kudy k nám?</h2>
                     <p>Straňovice 1, 387 01 Malenice</p>
-                    <p>Tel: +420 123 456 789</p>
-                    <p>Email: info@statek-penzon.cz</p>
+                    <p>Tel: +420 737 887 985</p>
+                    <p>Email: info@statekstranovice.cz</p>
                 </div>
                 <div class="contact-form-wrapper reveal-up">
                     <form class="contact-form">
@@ -157,3 +187,6 @@
     <?php include 'includes/footer.php'; ?>
 </body>
 </html>
+
+
+

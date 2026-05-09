@@ -61,6 +61,84 @@
                         <li><i data-lucide="sun"></i> Soukromá terasa</li>
                         <li><i data-lucide="wifi"></i> WiFi zdarma</li>
                     </ul>
+
+                    <div style="margin-top: 3rem;">
+                        <div style="font-family: 'Libre Baskerville'; font-size: 1.8rem; color: var(--primary); margin-bottom: 1rem;">
+                            od 850 Kč / noc
+                        </div>
+                        <a href="index.php#contact" class="btn btn-primary">Rezervovat Květinový apartmán</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More Details -->
+            <div class="room-feature-list reveal-up">
+                <div class="room-feature-item">
+                    <div class="room-feature-icon"><i data-lucide="utensils"></i></div>
+                    <h4>Vlastní kuchyně</h4>
+                    <p>Plně vybavené zázemí pro vaše rodinné vaření.</p>
+                </div>
+                <div class="room-feature-item">
+                    <div class="room-feature-icon"><i data-lucide="sun"></i></div>
+                    <h4>Soukromá terasa</h4>
+                    <p>Užijte si klidné chvíle na vlastní terase s výhledem.</p>
+                </div>
+                <div class="room-feature-item">
+                    <div class="room-feature-icon"><i data-lucide="wifi"></i></div>
+                    <h4>Wi-Fi zdarma</h4>
+                    <p>Zůstaňte ve spojení se světem i během odpočinku.</p>
+                </div>
+                <div class="room-feature-item">
+                    <div class="room-feature-icon"><i data-lucide="map-pin"></i></div>
+                    <h4>Krásy Šumavy</h4>
+                    <p>Penzion se nachází v ideální lokalitě pro výlety.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservation Section -->
+    <section class="contact section-padding bg-white" id="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info reveal">
+                    <span class="section-tag">Rezervace</span>
+                    <h2 class="section-title">Poptat termín</h2>
+                    <p>Zaujal vás náš Květinový apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p>
+                    <div class="info-item" style="margin-top: 2rem;">
+                        <i data-lucide="mail"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@statekstranovice.cz</p>
+                        </div>
+                    </div>
+                    <div class="info-item" style="margin-top: 1rem;">
+                        <i data-lucide="phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p>+420 737 887 985</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form-wrapper reveal-up">
+                    <form class="contact-form">
+                        <input type="hidden" name="room" value="Květinový apartmán">
+                        <div class="form-row">
+                            <div class="form-group"><label>Příjezd</label><input type="date" required></div>
+                            <div class="form-group"><label>Odjezd</label><input type="date" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Počet hostů</label>
+                                <select>
+                                    <option>1 osoba</option>
+                                    <option>2 osoby</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák" required></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -69,3 +147,6 @@
     <?php include 'includes/footer.php'; ?>
 </body>
 </html>
+
+
+

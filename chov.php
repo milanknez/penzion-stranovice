@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Chov zvířat a naše farma | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Poznejte naše zvířecí obyvatele. Chováme koně, ovce, kozy a drůbež s láskou a respektem k tradicím.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -108,3 +108,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

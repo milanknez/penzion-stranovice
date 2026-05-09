@@ -10,10 +10,7 @@ if (php_sapi_name() === 'cli-server') {
     $fullPath = __DIR__ . $path;
     if (file_exists($fullPath)) {
         if (is_file($fullPath)) return false;
-        if (is_dir($fullPath) && file_exists($fullPath . '/index.php')) {
-            require $fullPath . '/index.php';
-            return true;
-        }
+        if (is_dir($fullPath) && file_exists($fullPath . '/index.php')) return false;
     }
 }
 
@@ -35,7 +32,18 @@ if (!$found) {
     } else if (file_exists($slug . '.php')) {
         require $slug . '.php';
     } else {
-        header("HTTP/1.0 404 Not Found");
-        echo "404 - Stránka nenalezena";
+        $siteConfig = CMS::getSiteConfig();
+        $errorPage = $siteConfig['error_page_404'] ?? null;
+        
+        if ($errorPage && file_exists($errorPage)) {
+            header("HTTP/1.0 404 Not Found");
+            require $errorPage;
+        } else {
+            header("HTTP/1.0 404 Not Found");
+            echo "404 - Stránka nenalezena";
+        }
     }
 }
+
+
+

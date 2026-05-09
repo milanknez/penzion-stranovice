@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Prodej ze dvora | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Kupte si čerstvé farmářské produkty přímo z našeho statku. Bio hovězí maso, domácí vajíčka, brambory a další poctivé potraviny.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -140,3 +140,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

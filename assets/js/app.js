@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Toggle icon if needed (optional)
         };
 
-        // Close menu when clicking a link
-        navLinks.querySelectorAll('a').forEach(link => {
+        // Close menu when clicking a link (but NOT a dropdown toggle)
+        navLinks.querySelectorAll('a:not(.has-dropdown)').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
             });

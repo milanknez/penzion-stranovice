@@ -3,9 +3,6 @@
 <head>
     <?php include 'includes/head.php'; ?>
     <style>
-        /* Specific tweaks for Room Detail Page */
-        .room-feature-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; }
-        .room-feature-item { background: white; padding: 2rem; border-radius: 8px; box-shadow: 2px 2px 0px rgba(139, 94, 60, 0.1); text-align: center; transition: var(--transition); }
         .about-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; align-items: flex-start; }
         @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
         .room-gallery { width: 100%; min-width: 0; }
@@ -27,9 +24,8 @@
         <div class="hero-bg" style="background-image: url('assets/img/room.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h2 class="hero-subtitle fadeIn">Venkovský luxus</h2>
+            <h2 class="hero-subtitle fadeIn">Apartmán</h2>
             <h1 class="hero-title fadeInDelay">Kočičí apartmán</h1>
-            <p class="hero-description fadeInExtra">Pension Na Statku - Malenice</p>
         </div>
     </section>
 
@@ -62,8 +58,7 @@
                     <ul class="features-list" style="margin-top: 2rem;">
                         <li><i data-lucide="users"></i> Kapacita: až 5 osob (2x ložnice)</li>
                         <li><i data-lucide="maximize"></i> Celková plocha: 70 m²</li>
-                        <li><i data-lucide="chef-hat"></i> Kuchyň se sporákem, troubou a lednicí</li>
-                        <li><i data-lucide="parking-circle"></i> Parkování u objektu zdarma</li>
+                        <li><i data-lucide="circle-parking"></i> Parkování zdarma</li>
                         <li><i data-lucide="baby"></i> Dětská postýlka na vyžádání</li>
                     </ul>
 
@@ -114,7 +109,14 @@
                         <i data-lucide="mail"></i>
                         <div>
                             <h4>Email</h4>
-                            <p>info@statek-penzon.cz</p>
+                            <p>info@statekstranovice.cz</p>
+                        </div>
+                    </div>
+                    <div class="info-item" style="margin-top: 1rem;">
+                        <i data-lucide="phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <p>+420 737 887 985</p>
                         </div>
                     </div>
                 </div>
@@ -147,3 +149,6 @@
     <?php include 'includes/footer.php'; ?>
 </body>
 </html>
+
+
+

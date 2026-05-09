@@ -7,65 +7,59 @@
         @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
         .room-gallery { width: 100%; min-width: 0; }
         .room-description { width: 100%; min-width: 0; }
-        .room-gallery-main { border-radius: 4px; overflow: hidden; border: 8px solid white; box-shadow: 10px 10px 0px var(--border); margin-bottom: 2rem; cursor: zoom-in; aspect-ratio: 4 / 3; position: relative; max-height: 450px; z-index: 100; width: 100%; }
+        .room-gallery-main { border-radius: 4px; overflow: hidden; border: 8px solid white; box-shadow: 10px 10px 0px var(--border); margin-bottom: 2rem; cursor: zoom-in; aspect-ratio: 4 / 3; max-height: 450px; position: relative; z-index: 100; width: 100%; }
         .room-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
         .thumb-slider-container { position: relative; display: flex; align-items: center; margin-top: 1rem; gap: 10px; width: 100%; overflow: hidden; }
         .thumb-scroll { display: flex; gap: 10px; overflow-x: hidden; scroll-behavior: smooth; flex-grow: 1; padding: 5px 0; }
-        .thumb-scroll img { flex: 0 0 100px; width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 2px solid white; cursor: pointer; opacity: 0.7; transition: 0.2s; flex-shrink: 0; }
+        .thumb-scroll img { flex: 0 0 100px; width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 2px solid white; cursor: pointer; opacity: 0.7; flex-shrink: 0; }
         .thumb-scroll img.active { opacity: 1; border-color: var(--primary) !important; }
-        .slider-nav { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--primary); flex-shrink: 0; }
+        .slider-nav { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--primary); }
     </style>
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg" style="background-image: url('assets/img/room.png');"></div>
+    <section class="hero" style="height: 50vh; min-height: 300px;">
+        <div class="hero-bg" style="background-image: url('assets/img/babiccin_1.jpg'); transform: scale(1);"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h2 class="hero-subtitle fadeIn">Apartmán</h2>
-            <h1 class="hero-title fadeInDelay">Koňský apartmán</h1>
+            <h2 class="hero-subtitle fadeIn">Ubytování</h2>
+            <h1 class="hero-title fadeInDelay">Babiččin apartmán</h1>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <section class="section-padding bg-light">
+    <section class="room-detail section-padding">
         <div class="container">
             <div class="about-grid">
-                <div class="reveal">
+                <div class="room-gallery">
                     <div class="room-gallery-main" id="main-gallery-trigger">
-                        <img src="assets/img/konsky_1.jpg" alt="Koňský apartmán - Interiér" id="main-gallery-img">
+                        <img src="assets/img/babiccin_1.jpg" alt="Babiččin apartmán" id="main-gallery-img">
                     </div>
                     <div class="thumb-slider-container">
-                        <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
+                        <div class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></div>
                         <div class="thumb-scroll" id="thumb-scroll">
-                            <img src="assets/img/konsky_1.jpg" class="active">
-                            <img src="assets/img/konsky_2.jpg">
-                            <img src="assets/img/konsky_3.jpg">
-                            <img src="assets/img/konsky_4.jpg">
-                            <img src="assets/img/konsky_5.jpg">
+                            <img src="assets/img/babiccin_1.jpg" class="active">
+                            <img src="assets/img/babiccin_2.jpg">
+                            <img src="assets/img/babiccin_3.jpg">
                         </div>
-                        <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
+                        <div class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></div>
                     </div>
                 </div>
-                <div class="reveal">
-                    <span class="section-tag">Útulný apartmán</span>
-                    <h2 class="section-title">Klid a výhled do zahrady</h2>
-                    <p>Pension Na Statku - Koňský apartmán se nachází v Malenicích a nabízí bezplatné Wi-Fi a krásný výhled do zahrady. Tento útulný apartmán disponuje 2 ložnicemi, plně vybavenou kuchyní a TV s plochou obrazovkou. Je ideální volbou pro páry, které hledají klidné zázemí uprostřed šumavské přírody.</p>
-                    
-                    <ul class="features-list" style="margin-top: 2rem;">
-                        <li><i data-lucide="maximize"></i> Rozloha: 70 m²</li>
-                        <li><i data-lucide="users"></i> Kapacita: 2 osoby</li>
-                        <li><i data-lucide="bed"></i> 2x ložnice</li>
-                        <li><i data-lucide="circle-parking"></i> Parkování zdarma</li>
+                <div class="room-description reveal">
+                    <span class="section-tag">Tradiční styl</span>
+                    <h2 class="section-title">Útulné ubytování s atmosférou</h2>
+                    <p>Babiččin apartmán je ideální volbou pro ty, kteří hledají klid a tradiční venkovskou atmosféru s moderním komfortem.</p>
+                    <ul class="features-list">
+                        <li><i data-lucide="users"></i> Kapacita: 4 osoby</li>
+                        <li><i data-lucide="bed"></i> 1x velká manželská postel, 2x jednolůžko</li>
+                        <li><i data-lucide="wifi"></i> WiFi zdarma</li>
                     </ul>
 
                     <div style="margin-top: 3rem;">
                         <div style="font-family: 'Libre Baskerville'; font-size: 1.8rem; color: var(--primary); margin-bottom: 1rem;">
-                            od 750 Kč / noc
+                            od 850 Kč / noc
                         </div>
-                        <a href="#contact" class="btn btn-primary">Rezervovat Koňský apartmán</a>
+                        <a href="index.php#contact" class="btn btn-primary">Rezervovat Babiččin apartmán</a>
                     </div>
                 </div>
             </div>
@@ -78,9 +72,9 @@
                     <p>Plně vybavené zázemí pro vaše rodinné vaření.</p>
                 </div>
                 <div class="room-feature-item">
-                    <div class="room-feature-icon"><i data-lucide="sun"></i></div>
-                    <h4>Terasa a zahrada</h4>
-                    <p>Užijte si klidné snídaně venku na čerstvém vzduchu.</p>
+                    <div class="room-feature-icon"><i data-lucide="palmtree"></i></div>
+                    <h4>Venkovní klid</h4>
+                    <p>Užijte si ticho a pohodu jihočeského venkova.</p>
                 </div>
                 <div class="room-feature-item">
                     <div class="room-feature-icon"><i data-lucide="wifi"></i></div>
@@ -103,7 +97,7 @@
                 <div class="contact-info reveal">
                     <span class="section-tag">Rezervace</span>
                     <h2 class="section-title">Poptat termín</h2>
-                    <p>Zaujal vás náš Koňský apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p>
+                    <p>Zaujal vás náš Babiččin apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p>
                     <div class="info-item" style="margin-top: 2rem;">
                         <i data-lucide="mail"></i>
                         <div>
@@ -121,7 +115,7 @@
                 </div>
                 <div class="contact-form-wrapper reveal-up">
                     <form class="contact-form">
-                        <input type="hidden" name="room" value="Koňský apartmán">
+                        <input type="hidden" name="room" value="Babiččin apartmán">
                         <div class="form-row">
                             <div class="form-group"><label>Příjezd</label><input type="date" required></div>
                             <div class="form-group"><label>Odjezd</label><input type="date" required></div>
@@ -132,6 +126,8 @@
                                 <select>
                                     <option>1 osoba</option>
                                     <option>2 osoby</option>
+                                    <option>3 osoby</option>
+                                    <option>4 osoby</option>
                                 </select>
                             </div>
                             <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák" required></div>

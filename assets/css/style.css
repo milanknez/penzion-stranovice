@@ -116,6 +116,12 @@ p {
     padding: 0 2rem;
 }
 
+@media (max-width: 480px) {
+    .container {
+        padding: 0 20px; /* Exactly matching the border width */
+    }
+}
+
 section {
     position: relative;
     overflow: hidden;
@@ -181,7 +187,7 @@ section::after {
     align-items: center;
     width: 100%;
     flex-wrap: nowrap;
-    /* Prevent wrapping that breaks layout */
+    gap: 5px;
 }
 
 .logo-link {
@@ -190,6 +196,8 @@ section::after {
     align-items: center;
     color: inherit;
     gap: 1.2rem;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .logo-badge {
@@ -227,12 +235,12 @@ section::after {
     flex-direction: column;
     line-height: 1;
     justify-content: center;
+    min-width: 0;
 }
 
 .logo-text {
     font-family: 'Libre Baskerville', serif;
     font-size: 2rem;
-    /* Larger font */
     font-weight: 700;
     color: white;
     letter-spacing: 1px;
@@ -282,6 +290,7 @@ section::after {
     display: flex;
     list-style: none;
     gap: 1.5rem;
+    align-items: center;
 }
 
 .nav-links li a {
@@ -292,7 +301,10 @@ section::after {
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: var(--transition);
+    display: flex;
+    align-items: center;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
 }
 
 .navbar.scrolled .nav-links li a {
@@ -552,6 +564,10 @@ section::after {
 }
 
 .btn-link {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
     color: var(--primary);
     padding: 0;
     text-transform: none;
@@ -579,8 +595,9 @@ section::after {
     cursor: pointer;
     transition: var(--transition);
     padding: 10px;
-    margin-right: -10px;
-    z-index: 1001;
+    margin-right: 0; /* Removed negative margin */
+    z-index: 10005; 
+    flex-shrink: 0;
 }
 
 .mobile-menu-toggle i {
@@ -641,16 +658,19 @@ section::after {
 
 .hero-subtitle {
     font-family: 'Pinyon Script', cursive;
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    font-size: 3.5rem;
     color: var(--accent);
+    margin-bottom: 1rem;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
 }
 
 .hero-title {
     font-size: 5rem;
+    font-weight: 700;
     line-height: 1.1;
     margin-bottom: 2rem;
-    text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+    color: white;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .hero-description {
@@ -767,13 +787,21 @@ section::after {
 .features-list {
     list-style: none;
     margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .features-list {
+        grid-template-columns: 1fr;
+    }
 }
 
 .features-list li {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
     font-weight: 600;
     color: var(--secondary);
 }
@@ -1059,7 +1087,8 @@ section::after {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 1rem;
     border: 1px solid #EDEDED;
@@ -1071,8 +1100,17 @@ section::after {
     transition: var(--transition);
 }
 
+.form-group select {
+    appearance: none; /* Removes default browser arrow to allow custom one or just cleaner look */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238B5E3C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+}
+
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: var(--primary);
     background: white;
     box-shadow: 0 0 10px rgba(139, 94, 60, 0.05);
@@ -1125,12 +1163,18 @@ section::after {
     text-align: center;
 }
 
-.nav-links.active li a {
-    font-size: 1.2rem;
-    color: var(--text-dark) !important;
-    display: block;
-    padding: 1rem;
-}
+    .nav-links.active li a {
+        font-size: 1.2rem;
+        color: var(--text-dark) !important;
+        display: block;
+        padding: 1rem;
+    }
+
+    .nav-links.active li a.has-dropdown {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
 /* Animations and Responsive fixes */
 @media (max-width: 1150px) {
@@ -1234,9 +1278,7 @@ section::after {
 }
 
 .has-dropdown {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    gap: 8px;
     cursor: pointer;
 }
 
@@ -1303,9 +1345,9 @@ section::after {
 @media (max-width: 992px) {
     .dropdown {
         position: static;
-        transform: none;
-        opacity: 1;
-        visibility: visible;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
         display: none;
         box-shadow: none;
         background: rgba(0, 0, 0, 0.03);
@@ -1313,10 +1355,20 @@ section::after {
         margin-top: 10px;
         border-top: none;
         border-left: 2px solid var(--primary);
+        padding: 0.5rem 0;
+    }
+
+    .dropdown li a {
+        text-align: center;
+        padding: 0.8rem !important;
     }
 
     .nav-links li.active .dropdown {
         display: block;
+    }
+
+    .nav-links li.active .has-dropdown::after {
+        transform: rotate(180deg);
     }
 }
 
@@ -1389,11 +1441,11 @@ section::after {
     }
 
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 2.8rem; /* Smaller on tablets too */
     }
 
     .hero-subtitle {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .container {
@@ -1417,13 +1469,18 @@ section::after {
     }
 
     .logo-link {
-        gap: 1rem;
+        gap: 0.5rem; /* Smaller gap */
     }
 }
 
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 1.8rem; /* Even smaller to prevent overflow */
+        word-wrap: break-word;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
     }
 
     .section-tag {
@@ -1440,9 +1497,19 @@ section::after {
     .animal-showcase,
     .rooms-grid,
     .activities-grid,
-    .amenities-grid {
+    .amenities-grid,
+    .footer-grid {
         grid-template-columns: 1fr !important;
         gap: 2rem;
+    }
+
+    .footer-grid {
+        text-align: center;
+        gap: 3rem;
+    }
+
+    .social-links {
+        justify-content: center;
     }
 
     .modal-content {
@@ -1483,13 +1550,13 @@ section::after {
     }
 
     .logo-badge {
-        width: 50px;
-        height: 50px;
-        margin-top: 10px;
+        width: 35px; /* Tiny badge for tiny screens */
+        height: 35px;
+        margin-top: 5px;
     }
 
     .logo-text {
-        font-size: 1.1rem;
+        font-size: 0.85rem; /* Even smaller for tiny screens */
     }
 
     .logo-subtext {
@@ -1498,6 +1565,40 @@ section::after {
     }
 
     .logo-link {
-        gap: 0.6rem;
+        gap: 0.4rem;
     }
 }
+.room-link {
+    display: block;
+    width: 100%;
+}
+
+.room-info a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.room-info a:hover h3 {
+    color: var(--primary);
+}
+
+.room-card {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.room-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Room Detail Features Grid */
+.room-feature-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; }
+.room-feature-item { background: white; padding: 2rem; border-radius: 8px; box-shadow: 2px 2px 0px rgba(139, 94, 60, 0.1); text-align: center; transition: var(--transition); }
+.room-feature-icon { font-size: 2rem; color: var(--primary); margin-bottom: 1rem; }
+.room-feature-item h4 { margin-bottom: 0.5rem; color: var(--primary); }
+.room-feature-item p { font-size: 0.9rem; color: var(--text-muted); }
+
+
+.room-feature-item:hover { transform: translateY(-5px); box-shadow: 10px 10px 0px var(--border); }
+

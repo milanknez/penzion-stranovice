@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Tipy na výlety v okolí | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Objevte krásy okolí Malenic a Šumavy. Tipy na pěší výlety, cyklotrasy a historické památky v dosahu našeho statku.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -163,3 +163,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

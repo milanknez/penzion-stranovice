@@ -1,13 +1,14 @@
 {
     "site_name": "Penzion Statek Straňovice",
-    "base_url": "https://statek-penzon.cz",
+    "base_url": "https:\/\/statekstranovice.cz",
     "contact": {
         "address": "Straňovice 1, 387 01 Malenice",
-        "phone": "+420 123 456 789",
-        "email": "info@statek-penzon.cz"
+        "phone": "+420 737 887 985",
+        "email": "info@statekstranovice.cz"
     },
     "social": {
         "facebook": "#",
         "instagram": "#"
-    }
+    },
+    "error_page_404": "404.php"
 }

@@ -1,4 +1,12 @@
-<?php require_once 'CMS.php'; 
+<?php 
+require_once __DIR__ . '/CMS.php'; 
+require_once __DIR__ . '/SyncBooking.php';
+
+// Auto-sync if data is old
+if (SyncBooking::shouldSync()) {
+    SyncBooking::sync();
+}
+
 $meta = CMS::getPageMeta();
 ?>
 <meta charset="UTF-8">
@@ -6,6 +14,7 @@ $meta = CMS::getPageMeta();
 <title><?php echo $meta['title']; ?></title>
 <meta name="description" content="<?php echo $meta['description']; ?>">
 <meta name="keywords" content="<?php echo $meta['keywords']; ?>">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

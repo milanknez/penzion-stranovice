@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Služby v zemědělství | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Nabízíme profesionální zemědělské služby moderní technikou. Orba, sečení, lisování sena a doprava v okolí Malenic.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -128,3 +128,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

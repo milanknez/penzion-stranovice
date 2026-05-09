@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Výukové programy a ekovýchova | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Edukační programy pro školy i rodiny. Poznejte život na statku, péči o zvířata a tradiční řemesla v srdci přírody.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -144,3 +144,6 @@
     <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
+

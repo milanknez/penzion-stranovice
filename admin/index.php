@@ -1,15 +1,15 @@
 <?php
 require_once 'config.php';
 
-// Security check
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: login.php');
+// 1. Enforce trailing slash to prevent relative link breakage
+if (is_dir($_SERVER['DOCUMENT_ROOT'] . $_SERVER['REQUEST_URI']) && substr($_SERVER['REQUEST_URI'], -1) !== '/') {
+    header('Location: ' . $_SERVER['REQUEST_URI'] . '/');
     exit;
 }
 
-// Enforce trailing slash to prevent relative link breakage
-if (is_dir($_SERVER['DOCUMENT_ROOT'] . $_SERVER['REQUEST_URI']) && substr($_SERVER['REQUEST_URI'], -1) !== '/') {
-    header('Location: ' . $_SERVER['REQUEST_URI'] . '/');
+// 2. Security check
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
     exit;
 }
 
@@ -139,6 +139,18 @@ $_SESSION['current_page'] = $currentPage;
         .lang-toggle { font-size: 10px; font-weight: bold; padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-toggle.active { background: var(--primary); color: white; border-color: var(--primary); }
 
+        /* GrapesJS UI Overrides for smaller text in right panel */
+        .gjs-sm-label, .gjs-sm-field, .gjs-sm-property, .gjs-clm-label, .gjs-field, .gjs-clm-field, .gjs-layer-name, .gjs-sm-title {
+            font-size: 11px !important;
+        }
+        .gjs-clm-tags-label { font-size: 10px !important; }
+        .gjs-sm-sector-title { font-size: 11px !important; font-weight: 700 !important; }
+        .gjs-sm-composite { padding: 5px !important; }
+        .gjs-sm-stack { margin: 5px 0 !important; }
+        .gjs-sm-property { margin-bottom: 5px !important; }
+        .gjs-clm-tag { font-size: 10px !important; padding: 2px 5px !important; }
+        .gjs-pn-views-container { border-color: rgba(0,0,0,0.2) !important; }
+
         /* Fix for panel-actions overlap */
         #panel-actions {
             position: relative !important;
@@ -205,6 +217,9 @@ $_SESSION['current_page'] = $currentPage;
                         <i class="fa fa-refresh"></i> UPDATE AVAILABLE
                     </button>
                 </div>
+                <button onclick="openGlobalSettings()" class="bg-slate-800 hover:bg-slate-700 text-white w-10 h-10 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="<?= $uiLang === 'cs' ? 'Globální nastavení' : 'Site Settings' ?>">
+                    <i class="fa fa-globe"></i>
+                </button>
                 <button onclick="openPageSettings()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg font-bold text-xs transition-all shadow-lg active:transform active:scale-95 whitespace-nowrap">
                     <i class="fa fa-cog mr-2"></i><?= $uiLang === 'cs' ? 'NASTAVENÍ STRÁNKY' : 'PAGE SETTINGS' ?>
                 </button>
@@ -249,6 +264,35 @@ $_SESSION['current_page'] = $currentPage;
         </div>
     </div>
 
+    <!-- Global Site Settings Modal -->
+    <div id="global-settings-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+        <div class="bg-slate-800 w-full max-w-lg rounded-xl shadow-2xl border border-white/10 overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 class="text-white font-bold uppercase tracking-wider"><?= $uiLang === 'cs' ? 'Globální nastavení webu' : 'Global Site Settings' ?></h2>
+                <button onclick="closeGlobalSettings()" class="text-slate-400 hover:text-white"><i class="fa fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Název webu</label>
+                    <input type="text" id="site-name" class="w-full bg-slate-900 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[var(--primary)]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">404 Stránka (soubor, např. 404.php)</label>
+                    <select id="site-404" class="w-full bg-slate-900 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[var(--primary)]">
+                        <option value="">-- Výchozí --</option>
+                        <?php foreach ($editableFiles as $file): ?>
+                            <option value="<?= $file ?>"><?= $file ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-900/50 flex justify-end gap-4">
+                <button onclick="closeGlobalSettings()" class="px-6 py-2 text-slate-400 hover:text-white font-bold text-xs uppercase"><?= $uiLang === 'cs' ? 'Zrušit' : 'Cancel' ?></button>
+                <button onclick="saveGlobalSettings()" class="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white px-8 py-2 rounded-lg font-bold text-xs uppercase shadow-lg transition-all"><?= $uiLang === 'cs' ? 'ULOŽIT' : 'SAVE' ?></button>
+            </div>
+        </div>
+    </div>
+
     <div class="editor-row">
         <div class="editor-canvas">
             <div id="gjs"></div>
@@ -281,6 +325,37 @@ $_SESSION['current_page'] = $currentPage;
         $meta = CMS::getPageMeta($currentPage);
         ?>
         window.PAGE_META = <?php echo json_encode($meta); ?>;
+        window.SITE_CONFIG = <?php echo json_encode(CMS::getSiteConfig()); ?>;
+
+        function openGlobalSettings() {
+            document.getElementById('site-name').value = window.SITE_CONFIG.site_name || '';
+            document.getElementById('site-404').value = window.SITE_CONFIG.error_page_404 || '';
+            document.getElementById('global-settings-modal').classList.remove('hidden');
+        }
+
+        function closeGlobalSettings() {
+            document.getElementById('global-settings-modal').classList.add('hidden');
+        }
+
+        function saveGlobalSettings() {
+            const data = {
+                site_name: document.getElementById('site-name').value,
+                error_page_404: document.getElementById('site-404').value
+            };
+
+            fetch('settings.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.SITE_CONFIG = {...window.SITE_CONFIG, ...data.site_config}; // Update local cache
+                alert(data.message);
+                closeGlobalSettings();
+                if (data.status === 'success') location.reload(); // Reload to apply site name etc.
+            });
+        }
 
         // Check for updates
         function checkUpdates() {

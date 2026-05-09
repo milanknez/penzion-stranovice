@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <title>Fotogalerie | Penzion Statek Straňovice</title>
+    
     <meta name="description" content="Prohlédněte si fotografie našeho statku, penzionu a zvířat. Nahlédněte do atmosféry Straňovic v jižních Čechách.">
     <?php include 'includes/head.php'; ?>
     <style>
@@ -140,3 +140,6 @@
     </script>
 </body>
 </html>
+
+
+
