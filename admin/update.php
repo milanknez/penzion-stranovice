@@ -39,16 +39,26 @@ if ($action === 'check') {
 
     if ($remoteVersionFile && preg_match("/define\('APP_VERSION', '(.*?)'\)/", $remoteVersionFile, $matches)) {
         $remoteVersion = $matches[1];
-        if (version_compare($remoteVersion, APP_VERSION, '>')) {
+        $isAvailable = version_compare($remoteVersion, APP_VERSION, '>');
+        if ($isAvailable) {
             $response['updates_available'] = true;
             $response['message'] = "Nová verze $remoteVersion je k dispozici!";
             $response['version'] = $remoteVersion;
+            $response['local_version'] = APP_VERSION;
+            $response['remote_version'] = $remoteVersion;
         } else {
             $response['updates_available'] = false;
             $response['message'] = 'Máte aktuální verzi.';
+            $response['local_version'] = APP_VERSION;
+            $response['remote_version'] = $remoteVersion;
         }
     } else {
-        $response = ['status' => 'error', 'message' => 'Nepodařilo se ověřit verzi na GitHubu.'];
+        $response = [
+            'status' => 'error', 
+            'message' => 'Nepodařilo se ověřit verzi na GitHubu.',
+            'local_version' => APP_VERSION,
+            'debug_content' => substr($remoteVersionFile, 0, 100)
+        ];
     }
 } elseif ($action === 'pull') {
     // Download ZIP
