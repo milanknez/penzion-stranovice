@@ -1,9 +1,8 @@
 RewriteEngine On
-RewriteBase /
 
 # Skip existing files and directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Send everything else to router.php
+# Send everything else to router.php relative to the current directory
 RewriteRule ^(.*)$ router.php [L,QSA]
