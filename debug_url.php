@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require_once 'includes/CMS.php';
+require_once 'admin/version.php';
 echo json_encode([
     'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'],
     'REQUEST_URI' => $_SERVER['REQUEST_URI'],
