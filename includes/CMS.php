@@ -174,6 +174,17 @@ class CMS {
 
         if (empty($filesToPush)) return "Žádné změny k nahrání.";
 
+        // 3. Include all uploaded images
+        $uploadDir = $rootDir . '/assets/img/uploads/';
+        if (file_exists($uploadDir)) {
+            $files = scandir($uploadDir);
+            foreach ($files as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    $filesToPush['assets/img/uploads/' . $file] = file_get_contents($uploadDir . $file);
+                }
+            }
+        }
+
         return self::pushMultipleToGitHubAPI($repoPath, $filesToPush, $message, $branch, $token);
     }
 
@@ -192,13 +203,33 @@ class CMS {
 
         // 2. Create Tree
         $treeData = ['base_tree' => $lastCommitSha, 'tree' => []];
+        $binaryExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'ico', 'pdf'];
+
         foreach ($files as $path => $content) {
-            $treeData['tree'][] = [
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $treeEntry = [
                 'path' => $path,
                 'mode' => '100644',
-                'type' => 'blob',
-                'content' => $content
+                'type' => 'blob'
             ];
+
+            if (in_array($ext, $binaryExtensions)) {
+                // Create blob for binary file
+                $blobData = [
+                    'content' => base64_encode($content),
+                    'encoding' => 'base64'
+                ];
+                $blobRes = self::githubRequest("POST", "https://api.github.com/repos/$repo/git/blobs", $blobData, $headers);
+                if (isset($blobRes['sha'])) {
+                    $treeEntry['sha'] = $blobRes['sha'];
+                } else {
+                    return "ERROR: Nepodařilo se vytvořit blob pro $path: " . ($blobRes['message'] ?? 'Neznámá chyba');
+                }
+            } else {
+                $treeEntry['content'] = $content;
+            }
+
+            $treeData['tree'][] = $treeEntry;
         }
         $res = self::githubRequest("POST", "https://api.github.com/repos/$repo/git/trees", $treeData, $headers);
         $newTreeSha = $res['sha'] ?? null;
