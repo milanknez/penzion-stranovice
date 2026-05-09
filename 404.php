@@ -6,15 +6,26 @@ $meta = CMS::getPageMeta();
 <html lang="cs">
 <head>
     <?php include 'includes/head.php'; ?>
-    <style>* { box-sizing: border-box; } body {margin: 0;}*{box-sizing:border-box;}body{margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px;}#i87h{position:relative;}#irscn{width:122px;}</style>
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
     
     <main>
-        <body><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><!--?php include 'includes/header.php'; ?--><main><section class="section-padding"><div class="container"><div class="text-center mb-12"><h2 class="section-title">Stránka nenalezena</h2></div><p id="i87h"><strong data-start="217" data-end="244">Jejda, tady nic není 👀</strong><br data-start="244" data-end="247"/>
-Stránka mohla být přesunuta nebo smazána.<br data-start="290" data-end="293"/>
-Zkuste se vrátit zpět nebo přejít na úvod.</p></div><hr class="my-10 border-0 h-px bg-[var(--border)]"/><div class="grid md:grid-cols-2 gap-8 my-8"><img src="assets/img/uploads/logo_7_.png" id="irscn"/></div></section></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></main><!--?php include 'includes/footer.php'; ?--></body>
+        <section class="section-padding">
+            <div class="container text-center">
+                <div class="mb-8">
+                    <h1 class="text-6xl font-serif text-[var(--primary)] mb-4">404</h1>
+                    <h2 class="section-title">Stránka nenalezena</h2>
+                </div>
+                <p class="text-xl mb-10 opacity-80">
+                    Jejda, tady nic není 👀<br>
+                    Stránka mohla být přesunuta nebo smazána.
+                </p>
+                <div class="flex justify-center gap-4">
+                    <a href="index.php" class="btn btn-primary">Zpět na úvod</a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <?php include 'includes/footer.php'; ?>
