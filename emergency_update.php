@@ -1,10 +1,8 @@
 <?php
 /**
- * Emergency Update Script - upload this file directly to the server root via FTP
- * Navigate to: http://fidamedia.cz/w1/emergency_update.php
+ * Emergency Update v2 - with permission fix
  * DELETE THIS FILE AFTER USE!
  */
-
 set_time_limit(120);
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -16,7 +14,7 @@ $zipFile = __DIR__ . '/update_temp.zip';
 $tempFolder = __DIR__ . '/update_extract_temp/';
 
 echo "<pre>";
-echo "=== EMERGENCY UPDATE ===\n\n";
+echo "=== EMERGENCY UPDATE v2 ===\n\n";
 
 // 1. Download ZIP
 echo "1. Downloading ZIP from GitHub...\n";
@@ -28,76 +26,87 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-EmergencyUpdate');
 $content = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$error = curl_error($ch);
 curl_close($ch);
 
 if (!$content || $httpCode !== 200) {
-    die("FAILED: HTTP $httpCode, Error: $error\n");
+    die("FAILED: HTTP $httpCode\n");
 }
-
 file_put_contents($zipFile, $content);
-echo "   Downloaded " . strlen($content) . " bytes (HTTP $httpCode)\n";
+echo "   Downloaded " . strlen($content) . " bytes\n";
 
 // 2. Extract
-echo "2. Extracting ZIP...\n";
-if (!class_exists('ZipArchive')) {
-    die("FAILED: ZipArchive extension is not available!\n");
-}
-
+echo "2. Extracting...\n";
 $zip = new ZipArchive;
-if ($zip->open($zipFile) !== TRUE) {
-    die("FAILED: Cannot open ZIP file\n");
-}
-
+if ($zip->open($zipFile) !== TRUE) die("FAILED: Cannot open ZIP\n");
 if (!is_dir($tempFolder)) mkdir($tempFolder, 0755, true);
 $zip->extractTo($tempFolder);
 $zip->close();
-echo "   Extracted successfully\n";
 
-// 3. Find source directory
 $extractedDirs = array_filter(glob($tempFolder . '*'), 'is_dir');
 $sourceDir = reset($extractedDirs);
+if (!$sourceDir) die("FAILED: No source dir\n");
 
-if (!$sourceDir || !is_dir($sourceDir)) {
-    die("FAILED: No source directory found in ZIP\n");
-}
-echo "   Source: $sourceDir\n";
-
-// 4. Copy files (exclude config.php)
+// 3. Copy with permission fix
 echo "3. Copying files...\n";
 $copied = 0;
-$skipped = 0;
+$failed = 0;
+$failedFiles = [];
 
-function copyRecursive($src, $dst, &$copied, &$skipped) {
+function smartCopy($src, $dst) {
+    // Try chmod first
+    if (file_exists($dst)) {
+        @chmod($dst, 0666);
+    }
+    
+    // Try copy
+    if (@copy($src, $dst)) return true;
+    
+    // Fallback: read content and write
+    $content = file_get_contents($src);
+    if ($content !== false) {
+        // Try to delete and recreate
+        @unlink($dst);
+        if (@file_put_contents($dst, $content) !== false) {
+            @chmod($dst, 0644);
+            return true;
+        }
+    }
+    return false;
+}
+
+function copyRecursive($src, $dst, &$copied, &$failed, &$failedFiles) {
     $dir = opendir($src);
     if (!is_dir($dst)) @mkdir($dst, 0755, true);
     while (false !== ($file = readdir($dir))) {
         if ($file === '.' || $file === '..') continue;
         $srcFile = $src . '/' . $file;
         $dstFile = $dst . '/' . $file;
-
-        // Skip config.php and .git
         $rel = str_replace('\\', '/', $dstFile);
-        if (strpos($rel, 'admin/config.php') !== false || strpos($rel, '.git') !== false) {
-            $skipped++;
-            continue;
-        }
+        if (strpos($rel, 'admin/config.php') !== false || strpos($rel, '.git') !== false) continue;
 
         if (is_dir($srcFile)) {
-            copyRecursive($srcFile, $dstFile, $copied, $skipped);
+            copyRecursive($srcFile, $dstFile, $copied, $failed, $failedFiles);
         } else {
-            copy($srcFile, $dstFile);
-            $copied++;
+            if (smartCopy($srcFile, $dstFile)) {
+                $copied++;
+            } else {
+                $failed++;
+                $failedFiles[] = $dstFile;
+            }
         }
     }
     closedir($dir);
 }
 
 $rootDir = __DIR__;
-copyRecursive($sourceDir, $rootDir, $copied, $skipped);
-echo "   Copied: $copied files, Skipped: $skipped\n";
+copyRecursive($sourceDir, $rootDir, $copied, $failed, $failedFiles);
+echo "   Copied: $copied, Failed: $failed\n";
+if ($failed > 0) {
+    echo "   Failed files:\n";
+    foreach ($failedFiles as $f) echo "   - $f\n";
+}
 
-// 5. Cleanup
+// 4. Cleanup
 echo "4. Cleaning up...\n";
 function rrmdir($dir) {
     if (is_dir($dir)) {
@@ -112,14 +121,9 @@ function rrmdir($dir) {
 }
 rrmdir($tempFolder);
 if (file_exists($zipFile)) unlink($zipFile);
-echo "   Done!\n\n";
 
-// 6. Check new version
 if (file_exists(__DIR__ . '/admin/version.php')) {
     include __DIR__ . '/admin/version.php';
-    echo "NEW VERSION: " . APP_VERSION . "\n";
+    echo "\nNEW VERSION: " . APP_VERSION . "\n";
 }
-
-echo "\n=== UPDATE COMPLETE ===\n";
-echo "DELETE THIS FILE NOW: emergency_update.php\n";
-echo "</pre>";
+echo "\n=== DONE ===\nDELETE THIS FILE NOW!\n</pre>";
