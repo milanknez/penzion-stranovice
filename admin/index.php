@@ -364,12 +364,20 @@ $_SESSION['current_page'] = $currentPage;
 
         // Check for updates
         function checkUpdates() {
+            console.log('Checking for updates...');
             fetch('update.php?action=check')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
                 .then(data => {
+                    console.log('Update check result:', data);
                     if (data.updates_available) {
                         document.getElementById('update-banner').classList.remove('hidden');
                     }
+                })
+                .catch(err => {
+                    console.error('Update check failed:', err);
                 });
         }
 
@@ -415,6 +423,7 @@ $_SESSION['current_page'] = $currentPage;
         }
 
         setTimeout(checkUpdates, 2000); // Check after 2s
+        setInterval(checkUpdates, 60000); // Check every 60s
         function deleteCurrentPage() {
             if (!confirm('Opravdu chcete nenávratně smazat aktuální stránku? Tato akce nelze vrátit.')) return;
             
