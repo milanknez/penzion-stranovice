@@ -90,7 +90,7 @@ class CMS {
 
     public static function getBasePath() {
         // Detect base path (e.g. /w1) from script name
-        $base = str_replace(['/includes/CMS.php', '/admin/save.php', '/admin/index.php', '/router.php'], '', $_SERVER['SCRIPT_NAME']);
+        $base = str_replace(['/includes/CMS.php', '/admin/save.php', '/admin/index.php', '/router.php', '/index.php'], '', $_SERVER['SCRIPT_NAME']);
         return rtrim($base, '/');
     }
 
