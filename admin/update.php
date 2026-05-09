@@ -28,7 +28,15 @@ $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/v
 $githubZipUrl = "https://github.com/$repoPath/archive/refs/heads/$branch.zip";
 
 if ($action === 'check') {
-    $remoteVersionFile = @file_get_contents($githubVersionUrl);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $githubVersionUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-UpdateChecker');
+    $remoteVersionFile = curl_exec($ch);
+    curl_close($ch);
+
     if ($remoteVersionFile && preg_match("/define\('APP_VERSION', '(.*?)'\)/", $remoteVersionFile, $matches)) {
         $remoteVersion = $matches[1];
         if (version_compare($remoteVersion, APP_VERSION, '>')) {

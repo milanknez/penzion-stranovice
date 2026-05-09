@@ -415,6 +415,12 @@ $meta = CMS::getPageMeta();
             msg.classList.remove('text-sky-400');
             msg.classList.add('text-amber-500');
             msg.style.opacity = '1';
+            
+            // Force show update banner if the error is about a new version
+            if (data.git_output && data.git_output.includes('novější verze')) {
+                document.getElementById('update-banner').classList.remove('hidden');
+                alert(window.UI_LANG === 'en' ? 'A new version of CMS is available! Please update first using the yellow button.' : 'Je k dispozici nová verze CMS! Prosím, nejdříve proveďte aktualizaci pomocí žlutého tlačítka nahoře.');
+            }
         } else {
             alert('Error: ' + data.message);
         }

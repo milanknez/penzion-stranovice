@@ -113,8 +113,15 @@ class CMS {
         $branch = 'main';
         $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php";
         
-        $ctx = stream_context_create(['http' => ['timeout' => 5]]);
-        $remoteVersionFile = @file_get_contents($githubVersionUrl, false, $ctx);
+        // Use cURL instead of file_get_contents for better compatibility
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $githubVersionUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-UpdateChecker');
+        $remoteVersionFile = curl_exec($ch);
+        curl_close($ch);
         
         if ($remoteVersionFile && preg_match("/define\('APP_VERSION', '(.*?)'\)/", $remoteVersionFile, $matches)) {
             $remoteVersion = $matches[1];
