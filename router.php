@@ -5,6 +5,14 @@ $request = $_SERVER['REQUEST_URI'];
 $path = parse_url($request, PHP_URL_PATH);
 $slug = trim($path, '/');
 
+// Strip subdirectory prefix (e.g. "w1/svatby-a-akce" → "svatby-a-akce")
+$basePath = trim(CMS::getBasePath(), '/');
+if ($basePath && strpos($slug, $basePath . '/') === 0) {
+    $slug = substr($slug, strlen($basePath) + 1);
+} elseif ($slug === $basePath) {
+    $slug = '';
+}
+
 // Support PHP built-in server: serve existing files directly
 if (php_sapi_name() === 'cli-server') {
     $fullPath = __DIR__ . $path;
