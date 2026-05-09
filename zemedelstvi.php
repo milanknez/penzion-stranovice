@@ -8,7 +8,6 @@
 <html lang="cs">
 <head>
     
-    <meta name="description" content="Nabízíme profesionální zemědělské služby moderní technikou. Orba, sečení, lisování sena a doprava v okolí Malenic.">
     <?php include 'includes/head.php'; ?>
     <style>
         .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; margin-top: 3rem; }

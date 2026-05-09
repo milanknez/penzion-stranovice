@@ -35,14 +35,17 @@ class CMS {
 
         if ($pageName === null) {
             $scriptName = basename($_SERVER['SCRIPT_NAME']);
-            
-            // If running via router or if script name is not in pages, try to detect by URL
-            if ($scriptName === 'router.php' || !isset($pages[$scriptName])) {
-                $request = $_SERVER['REQUEST_URI'];
-                $path = parse_url($request, PHP_URL_PATH);
-                $slug = trim($path, '/');
-                
-                if (empty($slug)) {
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+            $path = parse_url($requestUri, PHP_URL_PATH);
+            $slug = trim($path, '/');
+
+            // 1. Try matching script name directly (e.g. zemedelstvi.php)
+            if (isset($pages[$scriptName])) {
+                $pageName = $scriptName;
+            } 
+            // 2. If it's a router or unknown script, try matching slug
+            else if ($scriptName === 'router.php' || !isset($pages[$scriptName])) {
+                if (empty($slug) || $slug === 'index' || $slug === 'index.php') {
                     $pageName = 'index.php';
                 } else {
                     foreach ($pages as $file => $config) {
@@ -51,9 +54,15 @@ class CMS {
                             break;
                         }
                     }
-                    // Fallback to slug.php if it exists and no config found
-                    if (!isset($pages[$pageName]) && file_exists($slug . '.php')) {
-                        $pageName = $slug . '.php';
+                    
+                    // Fallback: slug.php
+                    if ($pageName === null) {
+                        $potentialFile = $slug . '.php';
+                        if (file_exists($potentialFile)) {
+                            $pageName = $potentialFile;
+                        } else {
+                            $pageName = 'index.php'; // Final fallback
+                        }
                     }
                 }
             } else {
@@ -68,7 +77,6 @@ class CMS {
             'keywords' => ''
         ];
 
-        // Ensure title is never just the site name if we have a more specific one
         if (empty($meta['title'])) {
             $meta['title'] = $siteName;
         }
