@@ -88,14 +88,22 @@ class CMS {
         return $meta;
     }
 
+    public static function getBasePath() {
+        // Detect base path (e.g. /w1) from script name
+        $base = str_replace(['/includes/CMS.php', '/admin/save.php', '/admin/index.php', '/router.php'], '', $_SERVER['SCRIPT_NAME']);
+        return rtrim($base, '/');
+    }
+
     public static function url($file) {
-        if ($file === 'index.php') return '/';
+        $base = self::getBasePath();
+        
+        if ($file === 'index.php') return $base . '/';
         
         $pages = self::getPagesConfig();
         if (isset($pages[$file]) && !empty($pages[$file]['slug'])) {
-            return '/' . $pages[$file]['slug'];
+            return $base . '/' . $pages[$file]['slug'];
         }
-        return '/' . str_replace('.php', '', $file);
+        return $base . '/' . str_replace('.php', '', $file);
     }
 
     public static function isUpdateAvailable() {
