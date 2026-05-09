@@ -30,12 +30,14 @@ class CMS {
 
     public static function getPageMeta($pageName = null) {
         $pages = self::getPagesConfig();
-        
+        $siteConfig = self::getSiteConfig();
+        $siteName = $siteConfig['site_name'] ?? 'Statek Straňovice';
+
         if ($pageName === null) {
-            $pageName = basename($_SERVER['PHP_SELF']);
+            $scriptName = basename($_SERVER['SCRIPT_NAME']);
             
-            // If running via router.php, we need to find the file by slug
-            if ($pageName === 'router.php') {
+            // If running via router or if script name is not in pages, try to detect by URL
+            if ($scriptName === 'router.php' || !isset($pages[$scriptName])) {
                 $request = $_SERVER['REQUEST_URI'];
                 $path = parse_url($request, PHP_URL_PATH);
                 $slug = trim($path, '/');
@@ -49,20 +51,29 @@ class CMS {
                             break;
                         }
                     }
-                    // Fallback to slug.php if it exists
-                    if ($pageName === 'router.php' && file_exists($slug . '.php')) {
+                    // Fallback to slug.php if it exists and no config found
+                    if (!isset($pages[$pageName]) && file_exists($slug . '.php')) {
                         $pageName = $slug . '.php';
                     }
                 }
+            } else {
+                $pageName = $scriptName;
             }
         }
         
-        return $pages[$pageName] ?? [
+        $meta = $pages[$pageName] ?? [
             'slug' => str_replace('.php', '', $pageName),
-            'title' => self::getSiteConfig()['site_name'] ?? 'Web',
+            'title' => $siteName,
             'description' => '',
             'keywords' => ''
         ];
+
+        // Ensure title is never just the site name if we have a more specific one
+        if (empty($meta['title'])) {
+            $meta['title'] = $siteName;
+        }
+
+        return $meta;
     }
 
     public static function url($file) {
