@@ -111,7 +111,7 @@ class CMS {
         
         $repoPath = $repoParts[1];
         $branch = 'main';
-        $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php";
+        $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php?t=" . time();
         
         // Use cURL instead of file_get_contents for better compatibility
         $ch = curl_init();

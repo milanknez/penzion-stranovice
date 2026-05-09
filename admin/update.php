@@ -24,7 +24,7 @@ if (count($repoParts) < 2) {
 $repoPath = $repoParts[1]; // e.g. "milanknez/penzion-stranovice"
 $branch = 'main';
 
-$githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php";
+$githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php?t=" . time();
 $githubZipUrl = "https://github.com/$repoPath/archive/refs/heads/$branch.zip";
 
 if ($action === 'check') {
