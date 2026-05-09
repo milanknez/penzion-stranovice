@@ -9,6 +9,15 @@ const editor = grapesjs.init({
     width: 'auto',
     storageManager: false,
     
+    assetManager: {
+        upload: 'upload.php',
+        uploadName: 'files',
+        autoAdd: true,
+        uploadText: window.UI_LANG === 'en' ? 'Drop files here or click to upload' : 'Sem přetáhněte soubory nebo klikněte pro nahrání',
+        addUsedAssets: true,
+        assets: []
+    },
+    
     // I18N Handling
     i18n: {
         locale: window.UI_LANG || 'cs',
