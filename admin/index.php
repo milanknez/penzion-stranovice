@@ -233,6 +233,7 @@ $_SESSION['current_page'] = $currentPage;
                     <?= $uiLang === 'cs' ? 'ULOŽIT ZMĚNY' : 'SAVE CHANGES' ?>
                 </button>
                 <a href="login.php?logout=1" class="text-xs text-slate-400 hover:text-white transition-colors">Logout</a>
+                <span onclick="if(confirm('Vynutit aktualizaci z GitHubu?')) runUpdate()" class="text-[10px] text-slate-500 cursor-pointer hover:text-white ml-2">v<?php echo APP_VERSION; ?></span>
             </div>
         </div>
     </header>
