@@ -35,6 +35,8 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100vw;
 }
 
 body {
@@ -45,6 +47,7 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     position: relative;
+    width: 100%;
 }
 
 /* Decorative Outer Border (like in new-project.png) */
@@ -1036,10 +1039,17 @@ section::after {
     }
 }
 
+.about-grid > div {
+    min-width: 0;
+    width: 100%;
+}
+
 .reveal {
     opacity: 0;
     transform: translateX(-30px);
     transition: 1s ease-out;
+    width: 100%;
+    min-width: 0;
 }
 
 .reveal.visible {
@@ -1051,6 +1061,8 @@ section::after {
     opacity: 0;
     transform: translateY(40px);
     transition: 1s ease-out;
+    width: 100%;
+    min-width: 0;
 }
 
 .reveal-up.visible {
@@ -1376,6 +1388,16 @@ section::after {
     transition: all 0.3s ease;
     z-index: 1000;
     border-top: 3px solid var(--primary);
+    margin-top: 20px;
+}
+
+.dropdown::before {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: 0;
+    width: 100%;
+    height: 25px;
 }
 
 .nav-links li:hover .dropdown {
@@ -1518,8 +1540,17 @@ section::after {
 
     .about-grid,
     .program-row {
+        display: grid;
         grid-template-columns: 1fr !important;
         gap: 2.5rem;
+    }
+
+    .about-grid > :nth-child(1) {
+        order: 2;
+    }
+
+    .about-grid > :nth-child(2) {
+        order: 1;
     }
 
     .logo-badge {
@@ -1562,9 +1593,16 @@ section::after {
     .rooms-grid,
     .activities-grid,
     .amenities-grid,
+    .details-grid,
     .footer-grid {
         grid-template-columns: 1fr !important;
         gap: 2rem;
+    }
+
+    .room-gallery-main {
+        max-width: calc(100% - 8px);
+        box-shadow: 6px 6px 0px var(--border) !important;
+        border-width: 4px !important;
     }
 
     .footer-grid {

@@ -65,15 +65,15 @@
 
             <div class="rooms-grid">
                 <div class="room-card reveal-up">
-                    <a href="<?= CMS::url('pokoj.php') ?>" class="room-link">
+                    <a href="<?= CMS::url('kocici.php') ?>" class="room-link">
                         <div class="room-img" style="background-image: url('assets/img/kocici_1.jpg');">
-                            <div class="room-price">od 950 Kč / noc</div>
+                            <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('pokoj.php') ?>"><h3>Kočičí apartmán</h3></a>
+                        <a href="<?= CMS::url('kocici.php') ?>"><h3>Kočičí apartmán</h3></a>
                         <p>Prostorný apartmán se dvěma ložnicemi pro 5 osob a vlastní kuchyní.</p>
-                        <a href="<?= CMS::url('pokoj.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="<?= CMS::url('kocici.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.1s;">

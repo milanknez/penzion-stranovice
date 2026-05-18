@@ -1,126 +1,35 @@
 <!DOCTYPE html>
 <html lang="cs">
-
 <head>
     <?php include 'includes/head.php'; ?>
     <style>
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 3rem;
-            align-items: flex-start;
-        }
-
-        @media (max-width: 992px) {
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-        }
-
-        .room-gallery {
-            width: 100%;
-            min-width: 0;
-        }
-
-        .room-description {
-            width: 100%;
-            min-width: 0;
-        }
-
-        .room-gallery-main {
-            border-radius: 4px;
-            overflow: hidden;
-            border: 8px solid white;
-            box-shadow: 10px 10px 0px var(--border);
-            margin-bottom: 2rem;
-            cursor: zoom-in;
-            aspect-ratio: 4 / 3;
-            position: relative;
-            max-height: 450px;
-            z-index: 100;
-            width: 100%;
-        }
-
-        .room-gallery-main img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.5s ease;
-        }
-
-        .thumb-slider-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            margin-top: 1rem;
-            gap: 10px;
-            width: 100%;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        .thumb-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            flex-grow: 1;
-            padding: 5px 0;
-            min-width: 0;
-        }
-
-        .thumb-scroll img {
-            flex: 0 0 100px;
-            width: 100px;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 2px solid white;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-
-        .thumb-scroll img.active {
-            opacity: 1;
-            border-color: var(--primary) !important;
-        }
-
-        .slider-nav {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 200;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            color: var(--primary);
-            flex-shrink: 0;
-        }
+        .about-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; align-items: flex-start; }
+        @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
+        .room-gallery { width: 100%; min-width: 0; }
+        .room-description { width: 100%; min-width: 0; }
+        .room-gallery-main { border-radius: 4px; overflow: hidden; border: 8px solid white; box-shadow: 10px 10px 0px var(--border); margin-bottom: 2rem; cursor: zoom-in; aspect-ratio: 4 / 3; position: relative; max-height: 450px; z-index: 100; width: 100%; }
+        .room-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+        .thumb-slider-container { position: relative; display: flex; align-items: center; margin-top: 1rem; gap: 10px; width: 100%; overflow: hidden; min-width: 0; }
+        .thumb-scroll { display: flex; gap: 10px; overflow-x: hidden; scroll-behavior: smooth; flex-grow: 1; padding: 5px 0; min-width: 0; }
+        .thumb-scroll img { flex: 0 0 100px; width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 2px solid white; cursor: pointer; opacity: 0.7; transition: 0.2s; flex-shrink: 0; }
+        .thumb-scroll img.active { opacity: 1; border-color: var(--primary) !important; }
+        .slider-nav { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--primary); flex-shrink: 0; }
     </style>
 </head>
-
 <body>
     <?php include 'includes/header.php'; ?>
 
     <!-- Hero Section -->
     <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
         <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('assets/img/konsky/konsky-apartman225322.jpeg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/konsky/konsky-apartman225329.jpeg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/konsky/konsky-apartman225333.jpeg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('assets/img/kocici/kocici-apartman233327.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/kocici/kocici-apartman233331.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/kocici/kocici-apartman233334.jpeg');"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Apartmán</h2>
-            <h1 class="hero-title fadeInDelay">Koňský apartmán</h1>
+            <h1 class="hero-title fadeInDelay">Kočičí apartmán</h1>
         </div>
     </section>
 
@@ -130,36 +39,37 @@
             <div class="about-grid">
                 <div class="reveal">
                     <div class="room-gallery-main" id="main-gallery-trigger">
-                        <img src="assets/img/konsky/konsky-apartman225322.jpeg" alt="Koňský apartmán - Interiér" id="main-gallery-img">
+                        <img src="assets/img/kocici/kocici-apartman233327.jpeg" alt="Kočičí apartmán - Interiér" id="main-gallery-img">
                     </div>
                     <div class="thumb-slider-container">
                         <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
                         <div class="thumb-scroll" id="thumb-scroll">
-                            <img src="assets/img/konsky/konsky-apartman225322.jpeg" class="active">
-                            <img src="assets/img/konsky/konsky-apartman225329.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225333.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225349.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225352.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225417.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225433.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225438.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225441.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225446.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225448.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225452.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225500.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225504.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225508.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225511.jpeg">
-                            <img src="assets/img/konsky/konsky-apartman225515.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233327.jpeg" class="active">
+                            <img src="assets/img/kocici/kocici-apartman233331.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233334.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233337.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233338.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233341.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233345.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233348.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233350.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233355.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233357.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233400.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233403.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233411.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233415.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233419.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233423.jpeg">
+                            <img src="assets/img/kocici/kocici-apartman233425.jpeg">
                         </div>
                         <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
                     </div>
                 </div>
                 <div class="reveal">
-                    <span class="section-tag">Podkrovní apartmán</span>
-                    <h2 class="section-title">Kouzlo podkroví a naprostý klid</h2>
-                    <p>Tento prostorný apartmán je pro 5 osob. Disponuje plně vybavenou kuchyní s varnou deskou,
+                    <span class="section-tag">Rodinný apartmán</span>
+                    <h2 class="section-title">Pohodlí pro celou rodinu</h2>
+                    <p>Tento prostorný apartmá je pro 5 osob. Disponuje plně vybavenou kuchyní s varnou deskou,
                         troubou, lednicí, koupelnou se sprchou a dvěma ložnicemi. Jedna ložnice je s manželskou postelí,
                         druhá ložnice má tři jednolůžka. K dispozici je také TV s plochou obrazovkou a bezplatné Wi-Fi
                         připojení.</p>
@@ -180,12 +90,12 @@
                             style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic;">
                             * Při rezervaci pouze na 1 noc +10 % servisní poplatek k ceně.
                         </div>
-                        <a href="#contact" class="btn btn-primary">Rezervovat Koňský apartmán</a>
+                        <a href="#contact" class="btn btn-primary">Rezervovat Kočičí apartmán</a>
                     </div>
                 </div>
             </div>
 
-                 <div class="details-grid reveal-up"
+            <div class="details-grid reveal-up"
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem;">
                 
                 <!-- Levý sloupec: Vybavení (Čistý bílý design) -->
@@ -271,8 +181,7 @@
                 <div class="contact-info reveal">
                     <span class="section-tag">Rezervace</span>
                     <h2 class="section-title">Poptat termín</h2>
-                    <p>Zaujal vás náš Koňský apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší
-                        cenou.</p>
+                    <p>Zaujal vás náš Kočičí apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p>
                     <div class="info-item" style="margin-top: 2rem;">
                         <i data-lucide="mail"></i>
                         <div>
@@ -290,7 +199,7 @@
                 </div>
                 <div class="contact-form-wrapper reveal-up">
                     <form class="contact-form">
-                        <input type="hidden" name="room" value="Koňský apartmán">
+                        <input type="hidden" name="room" value="Kočičí apartmán">
                         <div class="form-row">
                             <div class="form-group"><label>Příjezd</label><input type="date" required></div>
                             <div class="form-group"><label>Odjezd</label><input type="date" required></div>
@@ -305,8 +214,7 @@
                                     <option>5 osob</option>
                                 </select>
                             </div>
-                            <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák"
-                                    required></div>
+                            <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák" required></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button>
                     </form>
@@ -317,5 +225,7 @@
 
     <?php include 'includes/footer.php'; ?>
 </body>
-
 </html>
+
+
+
