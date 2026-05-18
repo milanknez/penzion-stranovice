@@ -11,6 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
+    // Hero Background Slider
+    const heroSlider = document.getElementById('hero-bg-slider');
+    if (heroSlider) {
+        const slides = heroSlider.querySelectorAll('.hero-bg-slide');
+        if (slides.length > 1) {
+            let currentSlide = 0;
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 6000);
+        }
+    }
+
     // Navbar scroll effect
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
@@ -139,14 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const trigger = document.getElementById('main-gallery-trigger');
         if (trigger) {
             trigger.addEventListener('click', (e) => {
-                const lightbox = document.getElementById('lightbox');
-                const lightboxImg = document.getElementById('lightbox-img');
-                if (lightbox && lightboxImg) {
-                    lightboxImg.src = mainImg.src;
-                    lightbox.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    console.log("Lightbox opened with image:", mainImg.src);
-                }
+                e.preventDefault();
+                const allImgs = Array.from(thumbs).map(t => t.getAttribute('data-full') || t.src);
+                openLightbox(mainImg.src, allImgs);
             });
         }
     }
@@ -156,23 +165,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxImg = document.getElementById('lightbox-img');
     const prevBtn = document.getElementById('lightbox-prev');
     const nextBtn = document.getElementById('lightbox-next');
+    const lightboxThumbs = document.getElementById('lightbox-thumbs');
     let currentGalleryImages = [];
     let currentIndex = 0;
 
     const updateLightbox = () => {
         if (currentGalleryImages[currentIndex]) {
-            lightboxImg.style.opacity = '0';
-            setTimeout(() => {
-                lightboxImg.src = currentGalleryImages[currentIndex];
-                lightboxImg.style.opacity = '1';
-            }, 200);
+            // Okamžitá změna src bez blikání (bez opacity 0)
+            lightboxImg.src = currentGalleryImages[currentIndex];
+            
+            // Aktualizace aktivní miniatury v lightboxu
+            if (lightboxThumbs) {
+                lightboxThumbs.querySelectorAll('img').forEach((thumb, idx) => {
+                    if (idx === currentIndex) {
+                        thumb.classList.add('active');
+                        thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                });
+            }
         }
     };
 
     const openLightbox = (src, group = []) => {
         if (!lightbox || !lightboxImg) return;
         
-        // If we have a group of images, find the index
         if (group.length > 0) {
             currentGalleryImages = group;
             currentIndex = group.indexOf(src);
@@ -182,11 +200,28 @@ document.addEventListener('DOMContentLoaded', () => {
             currentIndex = 0;
         }
 
-        lightboxImg.src = src;
+        lightboxImg.src = currentGalleryImages[currentIndex];
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Show/hide nav buttons based on group size
+        // Vygenerování miniatur do spodního panelu
+        if (lightboxThumbs) {
+            lightboxThumbs.innerHTML = '';
+            if (currentGalleryImages.length > 1) {
+                currentGalleryImages.forEach((imgSrc, idx) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    if (idx === currentIndex) thumb.classList.add('active');
+                    thumb.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentIndex = idx;
+                        updateLightbox();
+                    });
+                    lightboxThumbs.appendChild(thumb);
+                });
+            }
+        }
+
         if (currentGalleryImages.length > 1) {
             if (prevBtn) prevBtn.style.display = 'flex';
             if (nextBtn) nextBtn.style.display = 'flex';

@@ -4,6 +4,7 @@
     <button class="lightbox-nav lightbox-prev" id="lightbox-prev"><i data-lucide="chevron-left"></i></button>
     <div class="lightbox-content">
         <img src="" alt="Zvětšený náhled" id="lightbox-img">
+        <div class="lightbox-thumbs" id="lightbox-thumbs"></div>
     </div>
     <button class="lightbox-nav lightbox-next" id="lightbox-next"><i data-lucide="chevron-right"></i></button>
 </div>

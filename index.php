@@ -79,12 +79,12 @@
                 <div class="room-card reveal-up" style="animation-delay: 0.1s;">
                     <a href="<?= CMS::url('konsky.php') ?>" class="room-link">
                         <div class="room-img" style="background-image: url('assets/img/konsky_1.jpg');">
-                            <div class="room-price">od 750 Kč / noc</div>
+                            <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
                         <a href="<?= CMS::url('konsky.php') ?>"><h3>Koňský apartmán</h3></a>
-                        <p>Útulný a tichý pokoj v tradičním stylu pro 2 osoby.</p>
+                        <p>Prostorný apartmán pro 5 osob s plně vybavenou kuchyní a dvěma ložnicemi.</p>
                         <a href="<?= CMS::url('konsky.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
