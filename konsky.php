@@ -308,6 +308,10 @@
                             <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák"
                                     required></div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>E-mail</label><input type="email" placeholder="jan.novak@email.cz" required></div>
+                            <div class="form-group"><label>Telefon</label><input type="tel" placeholder="+420 123 456 789"></div>
+                        </div>
                         <button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button>
                     </form>
                 </div>

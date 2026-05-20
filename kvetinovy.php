@@ -3,95 +3,242 @@
 <head>
     <?php include 'includes/head.php'; ?>
     <style>
-        .about-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; align-items: flex-start; }
-        @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
-        .room-gallery { width: 100%; min-width: 0; }
-        .room-description { width: 100%; min-width: 0; }
-        .room-gallery-main { border-radius: 4px; overflow: hidden; border: 8px solid white; box-shadow: 10px 10px 0px var(--border); margin-bottom: 2rem; cursor: zoom-in; aspect-ratio: 4 / 3; max-height: 450px; position: relative; z-index: 100; width: 100%; }
-        .room-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
-        .thumb-slider-container { position: relative; display: flex; align-items: center; margin-top: 1rem; gap: 10px; width: 100%; overflow: hidden; }
-        .thumb-scroll { display: flex; gap: 10px; overflow-x: hidden; scroll-behavior: smooth; flex-grow: 1; padding: 5px 0; }
-        .thumb-scroll img { flex: 0 0 100px; width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 2px solid white; cursor: pointer; opacity: 0.7; flex-shrink: 0; }
-        .thumb-scroll img.active { opacity: 1; border-color: var(--primary) !important; }
-        .slider-nav { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--primary); }
-        
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 3rem;
+            align-items: flex-start;
+        }
 
+        @media (max-width: 992px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .room-gallery {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .room-description {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .room-gallery-main {
+            border-radius: 4px;
+            overflow: hidden;
+            border: 8px solid white;
+            box-shadow: 10px 10px 0px var(--border);
+            margin-bottom: 2rem;
+            cursor: zoom-in;
+            aspect-ratio: 4 / 3;
+            position: relative;
+            max-height: 450px;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .room-gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .thumb-slider-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            gap: 10px;
+            width: 100%;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .thumb-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            flex-grow: 1;
+            padding: 5px 0;
+            min-width: 0;
+        }
+
+        .thumb-scroll img {
+            flex: 0 0 100px;
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid white;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .thumb-scroll img.active {
+            opacity: 1;
+            border-color: var(--primary) !important;
+        }
+
+        .slider-nav {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 200;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
 
-    <section class="hero" style="height: 50vh; min-height: 300px;">
-        <div class="hero-bg" style="background-image: url('assets/img/kvetinovy_1.jpg'); transform: scale(1);"></div>
+    <!-- Hero Section -->
+    <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
+        <div class="hero-bg-slider" id="hero-bg-slider">
+            <div class="hero-bg-slide active" style="background-image: url('assets/img/kvetinovy/kvetinovy-apartman233546.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/kvetinovy/kvetinovy-apartman233550.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/kvetinovy/kvetinovy-apartman233551.jpeg');"></div>
+        </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h2 class="hero-subtitle fadeIn">Ubytování</h2>
+            <h2 class="hero-subtitle fadeIn">Apartmán</h2>
             <h1 class="hero-title fadeInDelay">Květinový apartmán</h1>
         </div>
     </section>
 
-    <section class="room-detail section-padding">
+    <!-- Main Content -->
+    <section class="section-padding bg-light">
         <div class="container">
             <div class="about-grid">
-                <div class="room-gallery">
+                <div class="reveal">
                     <div class="room-gallery-main" id="main-gallery-trigger">
-                        <img src="assets/img/kvetinovy_1.jpg" alt="Květinový apartmán" id="main-gallery-img">
+                        <img src="assets/img/kvetinovy/kvetinovy-apartman233546.jpeg" alt="Květinový apartmán - Interiér" id="main-gallery-img">
                     </div>
                     <div class="thumb-slider-container">
-                        <div class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></div>
+                        <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
                         <div class="thumb-scroll" id="thumb-scroll">
-                            <img src="assets/img/kvetinovy_1.jpg" class="active">
-                            <img src="assets/img/kvetinovy_2.jpg">
-                            <img src="assets/img/kvetinovy_3.jpg">
-                            <img src="assets/img/kvetinovy_4.jpg">
-                            <img src="assets/img/kvetinovy_5.jpg">
-                            <img src="assets/img/kvetinovy_6.jpg">
-                            <img src="assets/img/kvetinovy_7.jpg">
-                            <img src="assets/img/kvetinovy_8.jpg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233546.jpeg" class="active">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233550.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233551.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233554.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233556.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233558.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233601.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233603.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233605.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233607.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233610.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233612.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233615.jpeg">
+                            <img src="assets/img/kvetinovy/kvetinovy-apartman233618.jpeg">
                         </div>
-                        <div class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></div>
+                        <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
                     </div>
                 </div>
-                <div class="room-description reveal">
+                <div class="reveal">
                     <span class="section-tag">Pohostinnost</span>
                     <h2 class="section-title">Vůně přírody a klid</h2>
-                    <p>Květinový apartmán nabízí prostorné a čisté ubytování s vlastní ledničkou a soukromou terasou.</p>
-                    <ul class="features-list">
-                        <li><i data-lucide="users"></i> Kapacita: 2 osoby</li>
-                        <li><i data-lucide="sun"></i> Soukromá terasa</li>
-                        <li><i data-lucide="wifi"></i> WiFi zdarma</li>
+                    <p>Tento prostorný apartmá je pro 3 osoby. Disponuje jednou ložnicí, velkou koupelnou se sprchou i vanou a malou lednicí s mrazáčkem. K dispozici je také TV s plochou obrazovkou a bezplatné Wi-Fi připojení.</p>
+
+                    <ul class="features-list" style="margin-top: 2rem;">
+                        <li><i data-lucide="users"></i> Kapacita: 3 osoby</li>
+                        <li><i data-lucide="bed"></i> 1x samostatná ložnice (1x manželská postel, 1x jednolůžko)</li>
+                        <li><i data-lucide="circle-parking"></i> Parkování zdarma</li>
                     </ul>
 
                     <div style="margin-top: 3rem;">
-                        <div style="font-family: 'Libre Baskerville'; font-size: 1.8rem; color: var(--primary); margin-bottom: 1rem;">
-                            od 850 Kč / noc
+                        <div style="font-family: 'Libre Baskerville'; font-size: 1.8rem; color: var(--primary); margin-bottom: 0.2rem;">
+                            1 500 Kč / noc
                         </div>
-                        <a href="index.php#contact" class="btn btn-primary">Rezervovat Květinový apartmán</a>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic;">
+                            * Při rezervaci pouze na jednu noc +10% servisní poplatek k ceně.
+                        </div>
+                        <a href="#contact" class="btn btn-primary">Rezervovat Květinový apartmán</a>
                     </div>
                 </div>
             </div>
 
-            <!-- More Details -->
-            <div class="room-feature-list reveal-up">
-                <div class="room-feature-item">
-                    <div class="room-feature-icon"><i data-lucide="utensils"></i></div>
-                    <h4>Vlastní kuchyně</h4>
-                    <p>Plně vybavené zázemí pro vaše rodinné vaření.</p>
+            <div class="details-grid reveal-up"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem;">
+                
+                <!-- Levý sloupec: Vybavení (Čistý bílý design) -->
+                <div class="detail-card"
+                    style="background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);">
+                    <h3
+                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem;">
+                        <i data-lucide="package-check"></i> Vybavení pokoje
+                    </h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="bed" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> 1 samostatná ložnice (1x manželská postel, 1x jednolůžko)
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="bath" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Velká koupelna se sprchou i vanou
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="tv" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Televize a Wi-Fi
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="refrigerator" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Malá lednice s mrazáčkem
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="coffee" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Rychlovarná konvice
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
+                            <i data-lucide="wind" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Fén
+                        </li>
+                    </ul>
                 </div>
-                <div class="room-feature-item">
-                    <div class="room-feature-icon"><i data-lucide="sun"></i></div>
-                    <h4>Soukromá terasa</h4>
-                    <p>Užijte si klidné chvíle na vlastní terase s výhledem.</p>
-                </div>
-                <div class="room-feature-item">
-                    <div class="room-feature-icon"><i data-lucide="wifi"></i></div>
-                    <h4>Wi-Fi zdarma</h4>
-                    <p>Zůstaňte ve spojení se světem i během odpočinku.</p>
-                </div>
-                <div class="room-feature-item">
-                    <div class="room-feature-icon"><i data-lucide="map-pin"></i></div>
-                    <h4>Krásy Šumavy</h4>
-                    <p>Penzion se nachází v ideální lokalitě pro výlety.</p>
+
+                <!-- Pravý sloupec: Doplňkové služby (Prémiový krémový design s akcentem a štítky) -->
+                <div class="detail-card"
+                    style="background: linear-gradient(145deg, #FAF7F2, #F3EFE6); padding: 3rem; border-radius: 8px; box-shadow: 0 15px 35px rgba(139, 94, 60, 0.12); border: 1px solid rgba(139, 94, 60, 0.2); border-top: 5px solid var(--primary);">
+                    <h3
+                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--text-dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid rgba(139, 94, 60, 0.15); padding-bottom: 1rem;">
+                        <span style="background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(139,94,60,0.15); color: var(--primary);"><i data-lucide="concierge-bell" style="width: 22px; height: 22px;"></i></span> Doplňkové služby
+                    </h3>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="coffee" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Snídaně</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">250 Kč</span>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="dog" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Příplatek za psa</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">400 Kč / noc</span>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="droplet" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Ručník</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">50 Kč</span>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="bike" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Půjčovna kol</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">300 Kč / den</span>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="compass" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Jízda na koni</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">od 400 Kč</span>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
+                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="baby" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Dětská postýlka</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">100 Kč / noc</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -131,11 +278,15 @@
                             <div class="form-group">
                                 <label>Počet hostů</label>
                                 <select>
-                                    <option>1 osoba</option>
-                                    <option>2 osoby</option>
+                                    <option>1-2 osoby</option>
+                                    <option>3 osoby</option>
                                 </select>
                             </div>
                             <div class="form-group"><label>Vaše jméno</label><input type="text" placeholder="Jan Novák" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>E-mail</label><input type="email" placeholder="jan.novak@email.cz" required></div>
+                            <div class="form-group"><label>Telefon</label><input type="tel" placeholder="+420 123 456 789"></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button>
                     </form>
@@ -147,6 +298,3 @@
     <?php include 'includes/footer.php'; ?>
 </body>
 </html>
-
-
-

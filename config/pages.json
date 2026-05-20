@@ -20,20 +20,20 @@
     "kvetinovy.php": {
         "slug": "kvetinovy-apartman",
         "title": "Květinový apartmán | Statek Straňovice",
-        "description": "Prostorné a klidné ubytování s terasou a výhledem do přírody.",
-        "keywords": "ubytování s terasou, penzion Malenice"
+        "description": "Prostorný apartmán pro 3 osoby s jednou ložnicí, velkou koupelnou se sprchou i vanou a malou lednicí v Malenicích na Šumavě.",
+        "keywords": "apartmán pro 3 osoby, ubytování Malenice, rodinný apartmán Šumava, Statek Straňovice"
     },
     "babiccin.php": {
         "slug": "babiccin-apartman",
         "title": "Babiččin apartmán | Statek Straňovice",
-        "description": "Útulný apartmán pro 4 osoby s tradiční atmosférou a manželskou postelí.",
-        "keywords": "apartmán pro 4 osoby, ubytování Straňovice, Statek Straňovice"
+        "description": "Prostorný apartmán pro 4 osoby s plně vybavenou kuchyní, koupelnou se sprchou a dvěma ložnicemi v Malenicích na Šumavě.",
+        "keywords": "apartmán pro 4 osoby, ubytování Malenice, Statek Straňovice"
     },
     "medovy.php": {
         "slug": "medovy-apartman",
         "title": "Medový apartmán | Statek Straňovice",
-        "description": "Velký rodinný apartmán pro 9 osob se třemi ložnicemi.",
-        "keywords": "apartmán pro 9 osob, ubytování pro skupiny, velký apartmán Šumava"
+        "description": "Prostorný apartmán pro 9 osob se třemi ložnicemi a plně vybavenou kuchyní v Malenicích na Šumavě.",
+        "keywords": "apartmán pro 9 osob, ubytování pro skupiny, velký apartmán Šumava, Statek Straňovice"
     },
     "akce.php": {
         "slug": "svatby-a-akce",

@@ -8,7 +8,7 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <div class="hero-bg" style="background-image: url('assets/img/hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('assets/img/hero_statek.jpg');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Vítejte v náruči přírody</h2>
@@ -90,37 +90,37 @@
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.2s;">
                     <a href="<?= CMS::url('kvetinovy.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/kvetinovy_1.jpg');">
-                            <div class="room-price">od 850 Kč / noc</div>
+                        <div class="room-img" style="background-image: url('assets/img/kvetinovy/kvetinovy-apartman233610.jpeg');">
+                            <div class="room-price">1 500 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
                         <a href="<?= CMS::url('kvetinovy.php') ?>"><h3>Květinový apartmán</h3></a>
-                        <p>Prostorný a čistý pokoj s vlastní ledničkou a terasou.</p>
+                        <p>Prostorný apartmán pro 3 osoby s ložnicí, velkou koupelnou se sprchou i vanou a malou lednicí.</p>
                         <a href="<?= CMS::url('kvetinovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.3s;">
                     <a href="<?= CMS::url('babiccin.php') ?>" class="room-link">
                         <div class="room-img" style="background-image: url('assets/img/babiccin_1.jpg');">
-                            <div class="room-price">od 850 Kč / noc</div>
+                            <div class="room-price">1 500 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
                         <a href="<?= CMS::url('babiccin.php') ?>"><h3>Babiččin apartmán</h3></a>
-                        <p>Útulný apartmán pro 4 osoby s tradiční venkovskou atmosférou.</p>
+                        <p>Prostorný apartmán pro 4 osoby s plně vybavenou kuchyní a koupelnou se sprchou.</p>
                         <a href="<?= CMS::url('babiccin.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.4s;">
                     <a href="<?= CMS::url('medovy.php') ?>" class="room-link">
                         <div class="room-img" style="background-image: url('assets/img/medovy_1.jpg');">
-                            <div class="room-price">od 1 250 Kč / noc</div>
+                            <div class="room-price">2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
                         <a href="<?= CMS::url('medovy.php') ?>"><h3>Medový apartmán</h3></a>
-                        <p>Velký rodinný apartmán se třemi ložnicemi pro až 9 hostů.</p>
+                        <p>Ideální volba pro větší skupiny přátel. Prostorný apartmán pro 9 osob se třemi ložnicemi.</p>
                         <a href="<?= CMS::url('medovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
