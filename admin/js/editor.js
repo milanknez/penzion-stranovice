@@ -330,6 +330,62 @@ if (window.INITIAL_CONTENT) {
         
         // Now set the components
         editor.setComponents(window.INITIAL_CONTENT);
+
+        // Helper to render Lucide icons without replacing the GrapesJS <i> component elements
+        const runLucide = () => {
+            const canvasWindow = editor.Canvas.getWindow();
+            if (!canvasWindow || !canvasWindow.lucide) return;
+            
+            const icons = canvasWindow.document.querySelectorAll('i[data-lucide]');
+            const tasks = [];
+            
+            icons.forEach(icon => {
+                // If it already has an SVG icon inside, we don't need to do anything
+                if (icon.querySelector('svg')) return;
+                
+                const iconName = icon.getAttribute('data-lucide');
+                if (!iconName) return;
+                
+                // Temporarily remove data-lucide so lucide.createIcons doesn't replace the <i> element itself
+                icon.removeAttribute('data-lucide');
+                icon.setAttribute('data-temp-lucide', iconName);
+                
+                // Create a temporary placeholder span inside the <i> tag
+                const span = canvasWindow.document.createElement('span');
+                span.setAttribute('data-lucide', iconName);
+                icon.appendChild(span);
+                
+                tasks.push(icon);
+            });
+            
+            if (tasks.length > 0) {
+                // Run Lucide createIcons inside the canvas iframe context
+                canvasWindow.lucide.createIcons();
+                
+                // Restore the data-lucide attributes and style the SVGs
+                tasks.forEach(icon => {
+                    const iconName = icon.getAttribute('data-temp-lucide');
+                    icon.setAttribute('data-lucide', iconName);
+                    icon.removeAttribute('data-temp-lucide');
+                    
+                    const svg = icon.querySelector('svg');
+                    if (svg) {
+                        svg.style.width = '100%';
+                        svg.style.height = '100%';
+                        svg.style.display = 'inline-block';
+                        svg.style.verticalAlign = 'middle';
+                    }
+                });
+            }
+        };
+
+        // Run Lucide after initialization
+        setTimeout(runLucide, 200);
+
+        // Run Lucide when components are added dynamically (e.g. dragged from block manager)
+        editor.on('component:add', () => {
+            setTimeout(runLucide, 50);
+        });
     });
 }
 
