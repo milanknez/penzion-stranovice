@@ -88,5 +88,11 @@
         "title": "404 | Statek Straňovice",
         "description": "",
         "keywords": ""
+    },
+    "test.php": {
+        "slug": "test",
+        "title": "Test",
+        "description": "",
+        "keywords": ""
     }
 }
