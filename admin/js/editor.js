@@ -221,6 +221,27 @@ const editor = grapesjs.init({
                 content: '<div class="grid md:grid-cols-3 gap-6 my-8"><div>Sloupec 1</div><div>Sloupec 2</div><div>Sloupec 3</div></div>' 
             },
             { 
+                id: 'container', 
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2.5" fill="none"/>
+                        <rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Kontejner</div>`, 
+                category: 'Prvky', 
+                content: '<div class="p-6 border border-dashed border-gray-300 rounded min-h-[60px] w-full">Sem přetáhněte obsah...</div>' 
+            },
+            { 
+                id: 'link-plain', 
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Odkaz</div>`, 
+                category: 'Prvky', 
+                content: '<a href="#" class="text-[var(--primary)] hover:underline">Text odkazu</a>' 
+            },
+            { 
                 id: 'link-arrow', 
                 label: `
                     <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -229,6 +250,16 @@ const editor = grapesjs.init({
                     <div class="gjs-block-label text-xs mt-1">Odkaz s šipkou</div>`, 
                 category: 'Prvky', 
                 content: '<a href="#" class="btn-link">Přečíst si více <i data-lucide="arrow-right"></i></a>' 
+            },
+            {
+                id: 'button-primary',
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 2v8h16V8H4z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Tlačítko</div>`,
+                category: 'Prvky',
+                content: '<a href="#" class="btn btn-primary my-4">Akční tlačítko</a>'
             },
             { 
                 id: 'icon-box', 
@@ -260,15 +291,82 @@ const editor = grapesjs.init({
                 category: 'Prvky', 
                 content: '<div class="aspect-video bg-gray-200 flex items-center justify-center rounded">Zde vložte YouTube embed URL</div>' 
             },
-            { 
-                id: 'text', 
+            {
+                id: 'heading-h3',
                 label: `
                     <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 9H20V11H4V9ZM4 13H20V15H4V13ZM4 17H14V19H4V17ZM4 5H20V7H4V5Z"/>
+                        <path d="M6 4v16h3v-6h6v6h3V4h-3v7H9V4H6z"/>
                     </svg>
-                    <div class="gjs-block-label text-xs mt-1">Text</div>`, 
+                    <div class="gjs-block-label text-xs mt-1">Nadpis H3</div>`,
+                category: 'Prvky',
+                content: '<h3 class="text-xl md:text-2xl font-serif font-bold text-[var(--primary)] mb-4">Podnadpis sekce</h3>'
+            },
+            { 
+                id: 'paragraph', 
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 9h16v2H4V9zm0 4h10v2H4v-2zm0 4h14v2H4v-2zM4 5h16v2H4V5z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Odstavec</div>`, 
                 category: 'Prvky', 
-                content: '<div class="p-4 text-gray-700">Vložte váš text...</div>' 
+                content: '<p class="mb-4">Tohle je odstavec textu. Poklepáním jej můžete upravit a začít psát...</p>' 
+            },
+            {
+                id: 'bullet-list',
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 10.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 8h14v2H8V8zm0 5.5h14v2H8v-2zm0 5.5h14v2H8v-2z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Seznam</div>`,
+                category: 'Prvky',
+                content: `
+                <ul class="space-y-2 my-4 list-disc list-inside text-gray-700">
+                    <li>První položka seznamu</li>
+                    <li>Druhá položka seznamu</li>
+                    <li>Třetí položka seznamu</li>
+                </ul>`
+            },
+            {
+                id: 'blockquote',
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Citace</div>`,
+                category: 'Prvky',
+                content: `
+                <blockquote class="border-l-4 border-[var(--primary)] pl-4 italic my-6 text-[var(--text-muted)]">
+                    "Tento pobyt předčil naše očekávání. Krásné prostředí statku a skvělí hostitelé."
+                    <cite class="block font-bold not-italic mt-2 text-xs text-[var(--text-dark)]">— Rodina Novákova, Praha</cite>
+                </blockquote>`
+            },
+            { 
+                id: 'table-plain', 
+                label: `
+                    <svg class="gjs-block-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 5H5V5h14v3zm-7 5H5V9h7v4zm7 0h-6V9h6v4zm-7 6H5v-4h7v4zm7 0h-6v-4h6v4z"/>
+                    </svg>
+                    <div class="gjs-block-label text-xs mt-1">Tabulka</div>`, 
+                category: 'Prvky', 
+                content: `
+                <table class="w-full border-collapse border border-[#E8DCC0] my-6 text-left">
+                    <thead>
+                        <tr class="bg-[#F9F4EB] text-gray-800">
+                            <th class="border border-[#E8DCC0] p-3 font-serif font-bold text-sm">Hlavička 1</th>
+                            <th class="border border-[#E8DCC0] p-3 font-serif font-bold text-sm">Hlavička 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-[#E8DCC0] p-3 text-sm">Hodnota 1</td>
+                            <td class="border border-[#E8DCC0] p-3 text-sm">Hodnota 2</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-[#E8DCC0] p-3 text-sm">Hodnota 3</td>
+                            <td class="border border-[#E8DCC0] p-3 text-sm">Hodnota 4</td>
+                        </tr>
+                    </tbody>
+                </table>`
             },
             { 
                 id: 'image', 
@@ -386,6 +484,205 @@ if (window.INITIAL_CONTENT) {
         editor.on('component:add', () => {
             setTimeout(runLucide, 50);
         });
+
+        // Expand 'Nastavení prvku' (Properties) panel when a component is selected
+        editor.on('component:selected', () => {
+            const propsSection = document.querySelector('.sidebar-section.section-props');
+            if (propsSection && propsSection.classList.contains('collapsed')) {
+                propsSection.classList.remove('collapsed');
+            }
+        });
+
+        // Context Menu on Right Click inside Editor Canvas
+        const iframe = editor.Canvas.getIframe();
+        if (iframe) {
+            // Create the context menu element dynamically in the main window
+            const contextMenu = document.createElement('div');
+            contextMenu.className = 'fixed hidden bg-slate-900 border border-slate-700/60 text-slate-200 text-xs rounded-lg shadow-2xl py-1 z-[99999] w-48 backdrop-blur-md bg-opacity-95 font-sans';
+            document.body.appendChild(contextMenu);
+
+            // Track copied styles
+            let copiedStyle = null;
+
+            // Function to hide context menu
+            const hideContextMenu = () => {
+                contextMenu.classList.add('hidden');
+            };
+
+            // Hide when clicking anywhere in main window
+            document.addEventListener('click', hideContextMenu);
+            
+            // Also hide on ESC key press
+            const escHandler = (e) => { if (e.key === 'Escape') hideContextMenu(); };
+            window.addEventListener('keydown', escHandler);
+
+            const onContextMenu = (e) => {
+                let targetComp = null;
+                
+                // 1. Get selected component
+                targetComp = editor.getSelected();
+
+                // 2. If nothing selected, try to find component from target element
+                if (!targetComp && e.target) {
+                    targetComp = editor.Components.getWrapper().find(e.target)[0];
+                    if (targetComp) {
+                        editor.select(targetComp);
+                    }
+                }
+
+                if (!targetComp || targetComp.get('type') === 'wrapper') {
+                    // Do not show menu on root wrapper
+                    return;
+                }
+
+                e.preventDefault();
+
+                // Calculate screen position relative to the main viewport using the iframe element
+                const rect = iframe.getBoundingClientRect();
+                let x, y;
+                
+                // e.view refers to the window object where event occurred
+                if (e.view === window) {
+                    // Main window coordinates (e.g. clicking GrapesJS overlays)
+                    x = e.clientX;
+                    y = e.clientY;
+                } else {
+                    // Iframe window coordinates (e.g. clicking inside page body)
+                    x = rect.left + e.clientX;
+                    y = rect.top + e.clientY;
+                }
+
+                // Clear previous menu items
+                contextMenu.innerHTML = '';
+
+                // Duplicate Component
+                const optDuplicate = document.createElement('button');
+                optDuplicate.className = 'w-full text-left px-4 py-2 hover:bg-indigo-600 hover:text-white flex items-center gap-3 transition-colors';
+                optDuplicate.innerHTML = '<i class="fa fa-clone w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Duplicate' : 'Duplikovat');
+                optDuplicate.onclick = () => {
+                    editor.runCommand('core:component-clone');
+                    hideContextMenu();
+                };
+
+                // Delete Component
+                const optDelete = document.createElement('button');
+                optDelete.className = 'w-full text-left px-4 py-2 hover:bg-red-600 hover:text-white flex items-center gap-3 transition-colors text-red-400';
+                optDelete.innerHTML = '<i class="fa fa-trash w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Delete' : 'Smazat');
+                optDelete.onclick = () => {
+                    editor.runCommand('core:component-delete');
+                    hideContextMenu();
+                };
+
+                // Divider 1
+                const divider1 = document.createElement('div');
+                divider1.className = 'border-t border-slate-800 my-1';
+
+                // Copy Style
+                const optCopyStyle = document.createElement('button');
+                optCopyStyle.className = 'w-full text-left px-4 py-2 hover:bg-indigo-600 hover:text-white flex items-center gap-3 transition-colors';
+                optCopyStyle.innerHTML = '<i class="fa fa-copy w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Copy Style' : 'Kopírovat styl');
+                optCopyStyle.onclick = () => {
+                    copiedStyle = { ...targetComp.getStyle() };
+                    hideContextMenu();
+                };
+
+                // Paste Style
+                const optPasteStyle = document.createElement('button');
+                optPasteStyle.className = 'w-full text-left px-4 py-2 flex items-center gap-3 transition-colors ' + 
+                    (copiedStyle ? 'hover:bg-indigo-600 hover:text-white text-slate-200' : 'text-slate-500 cursor-not-allowed');
+                optPasteStyle.innerHTML = '<i class="fa fa-paste w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Paste Style' : 'Vložit styl');
+                optPasteStyle.disabled = !copiedStyle;
+                if (copiedStyle) {
+                    optPasteStyle.onclick = () => {
+                        targetComp.setStyle(copiedStyle);
+                        hideContextMenu();
+                    };
+                }
+
+                // Divider 2
+                const divider2 = document.createElement('div');
+                divider2.className = 'border-t border-slate-800 my-1';
+
+                // Move Up
+                const optMoveUp = document.createElement('button');
+                optMoveUp.className = 'w-full text-left px-4 py-2 hover:bg-indigo-600 hover:text-white flex items-center gap-3 transition-colors';
+                optMoveUp.innerHTML = '<i class="fa fa-arrow-up w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Move Up' : 'Posunout nahoru');
+                optMoveUp.onclick = () => {
+                    const parent = targetComp.parent();
+                    if (parent) {
+                        const collection = parent.components();
+                        const index = collection.indexOf(targetComp);
+                        if (index > 0) {
+                            collection.add(targetComp, { at: index - 1 });
+                        }
+                    }
+                    hideContextMenu();
+                };
+
+                // Move Down
+                const optMoveDown = document.createElement('button');
+                optMoveDown.className = 'w-full text-left px-4 py-2 hover:bg-indigo-600 hover:text-white flex items-center gap-3 transition-colors';
+                optMoveDown.innerHTML = '<i class="fa fa-arrow-down w-4 text-center"></i> ' + (window.UI_LANG === 'en' ? 'Move Down' : 'Posunout dolů');
+                optMoveDown.onclick = () => {
+                    const parent = targetComp.parent();
+                    if (parent) {
+                        const collection = parent.components();
+                        const index = collection.indexOf(targetComp);
+                        if (index < collection.length - 1) {
+                            collection.add(targetComp, { at: index + 2 });
+                        }
+                    }
+                    hideContextMenu();
+                };
+
+                contextMenu.appendChild(optDuplicate);
+                contextMenu.appendChild(optDelete);
+                contextMenu.appendChild(divider1);
+                contextMenu.appendChild(optCopyStyle);
+                contextMenu.appendChild(optPasteStyle);
+                contextMenu.appendChild(divider2);
+                contextMenu.appendChild(optMoveUp);
+                contextMenu.appendChild(optMoveDown);
+
+                // Open & Position
+                contextMenu.style.left = `${x}px`;
+                contextMenu.style.top = `${y}px`;
+                contextMenu.classList.remove('hidden');
+            };
+
+            const bindContextMenu = () => {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc) {
+                    iframeDoc.removeEventListener('contextmenu', onContextMenu);
+                    iframeDoc.addEventListener('contextmenu', onContextMenu);
+                    
+                    iframeDoc.removeEventListener('click', hideContextMenu);
+                    iframeDoc.addEventListener('click', hideContextMenu);
+                    
+                    iframeDoc.removeEventListener('keydown', escHandler);
+                    iframeDoc.addEventListener('keydown', escHandler);
+                }
+            };
+
+            // Bind to main window canvas wrapper (#gjs)
+            const canvasEl = document.getElementById('gjs');
+            if (canvasEl) {
+                canvasEl.removeEventListener('contextmenu', onContextMenu);
+                canvasEl.addEventListener('contextmenu', onContextMenu);
+                
+                canvasEl.removeEventListener('click', hideContextMenu);
+                canvasEl.addEventListener('click', hideContextMenu);
+            }
+
+            // Bind to iframe document
+            bindContextMenu();
+
+            // Bind when iframe loads or reloads
+            iframe.addEventListener('load', bindContextMenu);
+
+            // Bind when components change or pages switch
+            editor.on('component:selected', bindContextMenu);
+        }
     });
 }
 

@@ -106,29 +106,35 @@ $_SESSION['current_page'] = $currentPage;
         .sidebar-section.collapsed > div:not(.sidebar-header) { opacity: 0; pointer-events: none; }
         
         .sidebar-header {
-            padding: 12px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+            padding: 8px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
             font-weight: 800; background: rgba(0,0,0,0.4); color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05);
             cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             user-select: none;
         }
         .sidebar-header::after {
-            content: '\f107'; font-family: 'FontAwesome'; font-size: 14px; transition: transform 0.3s;
+            content: '\f107'; font-family: 'FontAwesome'; font-size: 12px; transition: transform 0.3s;
         }
         .collapsed .sidebar-header::after { transform: rotate(-90deg); }
         
         /* Block Styling */
         .gjs-block {
-            width: calc(50% - 16px) !important;
-            min-height: 90px !important;
-            margin: 8px !important;
+            width: calc(50% - 8px) !important;
+            min-height: 65px !important;
+            margin: 4px !important;
             background: rgba(255,255,255,0.03) !important;
             border: 1px solid rgba(255,255,255,0.05) !important;
             border-radius: 6px !important;
             transition: all 0.2s !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 6px !important;
+            text-align: center !important;
         }
         .gjs-block:hover { background: rgba(255,255,255,0.08) !important; border-color: var(--accent) !important; }
-        .gjs-block-svg { width: 30px !important; height: 30px !important; margin-bottom: 10px !important; fill: var(--accent) !important; }
-        .gjs-block-label { font-size: 9px !important; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+        .gjs-block-svg { width: 20px !important; height: 20px !important; margin-bottom: 4px !important; fill: var(--accent) !important; }
+        .gjs-block-label { font-size: 8.5px !important; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; line-height: 1.1 !important; }
 
         /* GrapesJS UI Overrides */
         .gjs-one-bg { background-color: var(--panel-bg); }
@@ -141,14 +147,14 @@ $_SESSION['current_page'] = $currentPage;
 
         /* GrapesJS UI Overrides for smaller text in right panel */
         .gjs-sm-label, .gjs-sm-field, .gjs-sm-property, .gjs-clm-label, .gjs-field, .gjs-clm-field, .gjs-layer-name, .gjs-sm-title {
-            font-size: 11px !important;
+            font-size: 10px !important;
         }
-        .gjs-clm-tags-label { font-size: 10px !important; }
-        .gjs-sm-sector-title { font-size: 11px !important; font-weight: 700 !important; }
-        .gjs-sm-composite { padding: 5px !important; }
-        .gjs-sm-stack { margin: 5px 0 !important; }
-        .gjs-sm-property { margin-bottom: 5px !important; }
-        .gjs-clm-tag { font-size: 10px !important; padding: 2px 5px !important; }
+        .gjs-clm-tags-label { font-size: 9px !important; }
+        .gjs-sm-sector-title { font-size: 10px !important; font-weight: 700 !important; }
+        .gjs-sm-composite { padding: 4px !important; }
+        .gjs-sm-stack { margin: 4px 0 !important; }
+        .gjs-sm-property { margin-bottom: 4px !important; }
+        .gjs-clm-tag { font-size: 9px !important; padding: 2px 5px !important; }
         .gjs-pn-views-container { border-color: rgba(0,0,0,0.2) !important; }
 
         /* Fix for panel-actions overlap */
@@ -305,7 +311,7 @@ $_SESSION['current_page'] = $currentPage;
         </div>
 
         <div class="panel-right">
-            <div class="sidebar-section section-layers">
+            <div class="sidebar-section section-layers collapsed">
                 <div class="sidebar-header" onclick="this.parentElement.classList.toggle('collapsed')"><?= $uiLang === 'cs' ? 'VRSTVY' : 'LAYERS' ?></div>
                 <div id="layers-container" class="flex-1 overflow-y-auto overflow-x-hidden"></div>
             </div>
@@ -315,7 +321,7 @@ $_SESSION['current_page'] = $currentPage;
                 <div id="blocks-container" class="flex-1 overflow-y-auto overflow-x-hidden"></div>
             </div>
 
-            <div class="sidebar-section section-props">
+            <div class="sidebar-section section-props collapsed">
                 <div class="sidebar-header border-t border-black/20" onclick="this.parentElement.classList.toggle('collapsed')"><?= $uiLang === 'cs' ? 'NASTAVENÍ PRVKU' : 'PROPERTIES' ?></div>
                 <div id="styles-container" class="overflow-y-auto overflow-x-hidden"></div>
                 <div id="traits-container" class="overflow-y-auto overflow-x-hidden"></div>
