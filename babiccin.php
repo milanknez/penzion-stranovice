@@ -111,9 +111,9 @@
     <!-- Hero Section -->
     <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
         <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('assets/img/babiccin_1.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin_2.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin_3.jpg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('assets/img/babiccin/babiccin-apartman-222749.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin/babiccin-apartman-222753.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin/babiccin-apartman-222757.jpg');"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -128,14 +128,18 @@
             <div class="about-grid">
                 <div class="reveal">
                     <div class="room-gallery-main" id="main-gallery-trigger">
-                        <img src="assets/img/babiccin_1.jpg" alt="Babiččin apartmán - Interiér" id="main-gallery-img">
+                        <img src="assets/img/babiccin/babiccin-apartman-222749.jpg" alt="Babiččin apartmán - Interiér" id="main-gallery-img">
                     </div>
                     <div class="thumb-slider-container">
                         <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
                         <div class="thumb-scroll" id="thumb-scroll">
-                            <img src="assets/img/babiccin_1.jpg" class="active">
-                            <img src="assets/img/babiccin_2.jpg">
-                            <img src="assets/img/babiccin_3.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222749.jpg" class="active">
+                            <img src="assets/img/babiccin/babiccin-apartman-222753.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222757.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222808.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222816.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222825.jpg">
+                            <img src="assets/img/babiccin/babiccin-apartman-222832.jpg">
                         </div>
                         <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
                     </div>

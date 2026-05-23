@@ -102,7 +102,7 @@
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.3s;">
                     <a href="<?= CMS::url('babiccin.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/babiccin_1.jpg');">
+                        <div class="room-img" style="background-image: url('assets/img/babiccin/babiccin-apartman-222749.jpg');">
                             <div class="room-price">1 500 Kč / noc</div>
                         </div>
                     </a>
