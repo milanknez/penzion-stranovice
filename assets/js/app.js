@@ -99,13 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Timeline Modal
     const timelineModal = document.getElementById('timeline-modal');
-    const openTimelineBtn = document.getElementById('open-timeline');
-    if (timelineModal && openTimelineBtn) {
+    const openTimelineBtns = document.querySelectorAll('#open-timeline, .open-timeline');
+    if (timelineModal && openTimelineBtns.length > 0) {
         const closeBtn = timelineModal.querySelector('.close-modal');
-        openTimelineBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            timelineModal.style.display = "block";
-            renderTimeline();
+        openTimelineBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                timelineModal.style.display = "block";
+                renderTimeline();
+            });
         });
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
@@ -375,20 +377,246 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTimeline() {
         const container = document.getElementById('timeline-app');
         if (!container) return;
-        const rooms = ["Kočičí apartmán", "Koňský apartmán", "Květinový apartmán"];
+        const rooms = [
+            { id: "kocici", name: "Kočičí apartmán" },
+            { id: "konsky", name: "Koňský apartmán" },
+            { id: "kvetinovy", name: "Květinový apartmán" },
+            { id: "babiccin", name: "Babiččin apartmán" },
+            { id: "medovy", name: "Medový apartmán" }
+        ];
         const now = new Date();
-        let html = '<table class="timeline-table"><thead><tr><th>Pokoj</th>';
+        const dates = [];
         for(let i=0; i<14; i++) {
-            const d = new Date(); d.setDate(now.getDate() + i);
-            html += `<th>${d.getDate()}.${d.getMonth()+1}.</th>`;
+            const d = new Date();
+            d.setDate(now.getDate() + i);
+            dates.push(d);
         }
+        
+        const occupancy = window.occupancyData || {};
+        
+        let html = '<table class="timeline-table"><thead><tr><th>Pokoj</th>';
+        dates.forEach(d => {
+            html += `<th>${d.getDate()}.${d.getMonth()+1}.</th>`;
+        });
         html += '</tr></thead><tbody>';
+        
         rooms.forEach(room => {
-            html += `<tr><td>${room}</td>`;
-            for(let i=0; i<14; i++) html += `<td class="status-free"></td>`;
+            html += `<tr><td>${room.name}</td>`;
+            const roomOccupancy = occupancy[room.id] || [];
+            dates.forEach(d => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+                
+                const isOccupied = roomOccupancy.includes(dateStr);
+                const statusClass = isOccupied ? 'status-occupied' : 'status-free';
+                html += `<td class="${statusClass}"></td>`;
+            });
             html += '</tr>';
         });
         html += '</tbody></table>';
         container.innerHTML = html;
     }
+
+    const initContactFormValidation = () => {
+        const form = document.querySelector('.contact-form');
+        if (!form) return;
+
+        const arrivalInput = form.querySelector('input[type="date"]:nth-of-type(1)') || form.querySelectorAll('input[type="date"]')[0];
+        const departureInput = form.querySelector('input[type="date"]:nth-of-type(2)') || form.querySelectorAll('input[type="date"]')[1];
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const roomInput = form.querySelector('input[name="room"]');
+
+        if (!arrivalInput || !departureInput || !submitBtn) return;
+
+        // Create a warning message container below the date fields
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'booking-warning';
+        warningDiv.style.display = 'none';
+        
+        const dateRow = arrivalInput.closest('.form-row');
+        if (dateRow) {
+            dateRow.after(warningDiv);
+        }
+
+        const roomMapping = {
+            "Květinový apartmán": "kvetinovy",
+            "Koňský apartmán": "konsky",
+            "Kočičí apartmán": "kocici",
+            "Babiččin apartmán": "babiccin",
+            "Medový apartmán": "medovy"
+        };
+
+        const roomName = roomInput.value;
+        const roomId = roomMapping[roomName];
+        const occupiedDates = (window.occupancyData && roomId) ? (window.occupancyData[roomId] || []) : [];
+
+        let fpArrival = null;
+        let fpDeparture = null;
+
+        // Validation / Check occupancy logic (for warnings & fallback)
+        const checkOccupancy = () => {
+            const arrivalVal = arrivalInput.value;
+            const departureVal = departureInput.value;
+
+            arrivalInput.style.borderColor = '';
+            departureInput.style.borderColor = '';
+            warningDiv.style.display = 'none';
+            warningDiv.innerHTML = '';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '';
+
+            if (!arrivalVal || !departureVal) return;
+
+            const arrivalDate = new Date(arrivalVal);
+            const departureDate = new Date(departureVal);
+            
+            if (arrivalDate >= departureDate) {
+                warningDiv.innerHTML = '⚠️ Datum odjezdu musí být po datu příjezdu.';
+                warningDiv.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                return;
+            }
+
+            const datesToCheck = [];
+            let current = new Date(arrivalDate);
+            while (current < departureDate) {
+                const year = current.getFullYear();
+                const month = String(current.getMonth() + 1).padStart(2, '0');
+                const day = String(current.getDate()).padStart(2, '0');
+                datesToCheck.push(`${year}-${month}-${day}`);
+                current.setDate(current.getDate() + 1);
+            }
+
+            const overlaps = datesToCheck.filter(d => occupiedDates.includes(d));
+
+            if (overlaps.length > 0) {
+                const formattedOverlaps = overlaps.map(d => {
+                    const parts = d.split('-');
+                    return `${parseInt(parts[2])}.${parseInt(parts[1])}.`;
+                }).join(', ');
+
+                warningDiv.innerHTML = `⚠️ Vybraný termín koliduje s jinou rezervací. Apartmán je již obsazen v tyto dny: <strong>${formattedOverlaps}</strong>.`;
+                warningDiv.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+            }
+        };
+
+        if (typeof flatpickr !== 'undefined') {
+            // Localize to Czech
+            flatpickr.localize(flatpickr.l10ns.cs);
+
+            fpArrival = flatpickr(arrivalInput, {
+                locale: "cs",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "j. n. Y",
+                disable: occupiedDates,
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const d = dayElem.dateObj;
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const localDateStr = `${year}-${month}-${day}`;
+                    if (occupiedDates.includes(localDateStr)) {
+                        dayElem.classList.add("occupied-day");
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        const nextDay = new Date(selectedDates[0]);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        
+                        // Set minimum date of departure to arrival + 1 day
+                        fpDeparture.set("minDate", nextDay);
+
+                        // Find the next occupied date after selected arrival
+                        const arrivalMs = selectedDates[0].getTime();
+                        let nextOccupied = null;
+                        occupiedDates.forEach(d => {
+                            const occMs = new Date(d).getTime();
+                            if (occMs >= arrivalMs) {
+                                if (!nextOccupied || occMs < nextOccupied.getTime()) {
+                                    nextOccupied = new Date(occMs);
+                                }
+                            }
+                        });
+
+                        // Limit departure maxDate so they cannot select a range containing occupied nights
+                        if (nextOccupied) {
+                            fpDeparture.set("maxDate", nextOccupied);
+                        } else {
+                            fpDeparture.set("maxDate", null);
+                        }
+
+                        // Auto-open departure calendar
+                        setTimeout(() => fpDeparture.open(), 50);
+                    }
+                    checkOccupancy();
+                }
+            });
+
+            fpDeparture = flatpickr(departureInput, {
+                locale: "cs",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "j. n. Y",
+                disable: occupiedDates,
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const d = dayElem.dateObj;
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const localDateStr = `${year}-${month}-${day}`;
+                    if (occupiedDates.includes(localDateStr)) {
+                        dayElem.classList.add("occupied-day");
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    checkOccupancy();
+                }
+            });
+        } else {
+            // Fallback for native inputs
+            const todayStr = new Date().toISOString().split('T')[0];
+            arrivalInput.min = todayStr;
+
+            arrivalInput.addEventListener('change', () => {
+                if (arrivalInput.value) {
+                    departureInput.min = arrivalInput.value;
+                }
+                checkOccupancy();
+            });
+            departureInput.addEventListener('change', checkOccupancy);
+        }
+
+        // Form Submit Simulation
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Odesílám...';
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                submitBtn.innerText = 'Děkujeme! Ozveme se vám.';
+                submitBtn.style.backgroundColor = '#4A5D23';
+                form.reset();
+                if (fpArrival) fpArrival.clear();
+                if (fpDeparture) fpDeparture.clear();
+                setTimeout(() => {
+                    submitBtn.innerText = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.style.backgroundColor = '';
+                    checkOccupancy();
+                }, 3000);
+            }, 1500);
+        });
+    };
+
+    // Initialize Validation
+    initContactFormValidation();
 });

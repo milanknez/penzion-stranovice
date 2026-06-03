@@ -13,7 +13,7 @@
 <div class="modal" id="timeline-modal">
     <div class="modal-content" style="max-width: 1100px;">
         <span class="close-modal">&times;</span>
-        <h2 class="section-title">Timeline obsazenosti</h2>
+        <h2 class="section-title">Obsazenost</h2>
         <p class="text-center" style="margin-bottom: 2rem;">Aktuální přehled volných termínů v našem penzionu.</p>
         
         <div class="timeline-container" id="timeline-app">

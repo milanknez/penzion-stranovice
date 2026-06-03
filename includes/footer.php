@@ -13,6 +13,7 @@
             <ul>
                 <li><a href="index.php#about">O nás</a></li>
                 <li><a href="index.php#rooms">Pokoje</a></li>
+                <li><a href="#" id="open-timeline">Obsazenost pokojů</a></li>
                 <li><a href="index.php#activities">Okolí</a></li>
                 <li><a href="index.php#contact">Kontakt</a></li>
             </ul>
@@ -34,6 +35,12 @@
     <?php include 'modals.php'; ?>
 </div>
 
+<script>
+    window.occupancyData = <?php echo json_encode(SyncBooking::getOccupancy()); ?>;
+</script>
+<!-- Flatpickr (beautiful date picker) -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
 <script src="assets/js/app.js?v=<?= filemtime(__DIR__ . '/../assets/js/app.js') ?>"></script>
 <script>
     // Re-init icons for Lucide if needed

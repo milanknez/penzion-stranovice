@@ -1704,3 +1704,184 @@ section::after {
 
 .room-feature-item:hover { transform: translateY(-5px); box-shadow: 10px 10px 0px var(--border); }
 
+/* Timeline Occupancy Table */
+.timeline-container {
+    width: 100%;
+    overflow-x: auto;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.timeline-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 0.9rem;
+    min-width: 800px;
+}
+
+.timeline-table th,
+.timeline-table td {
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid #f0e9d7;
+}
+
+.timeline-table th {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    background: #FAF3E3;
+}
+
+.timeline-table th:first-child,
+.timeline-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background: #FAF3E3;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    border-right: 2px solid var(--border);
+    min-width: 180px;
+}
+
+.timeline-table td.status-free {
+    background: #EAF0E0;
+    position: relative;
+    cursor: default;
+    transition: background 0.3s;
+}
+
+.timeline-table td.status-free:hover {
+    background: #DFE8D3;
+}
+
+.timeline-table td.status-occupied {
+    background: #FEEEEE;
+    position: relative;
+    cursor: default;
+    transition: background 0.3s;
+}
+
+.timeline-table td.status-occupied:hover {
+    background: #FDDFDF;
+}
+
+.timeline-table td.status-occupied::after {
+    content: '✕';
+    font-size: 0.7rem;
+    color: #C62828;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.timeline-table td.status-free::after {
+    content: '✓';
+    font-size: 0.7rem;
+    color: #2E7D32;
+    display: inline-block;
+}
+
+/* Booking Warning */
+.booking-warning {
+    background-color: #FFF0F0;
+    border-left: 4px solid #D32F2F;
+    color: #C62828;
+    padding: 0.8rem 1.2rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease-out;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Flatpickr Custom Theme Override */
+.flatpickr-calendar {
+    background: #FDF5E6 url('https://www.transparenttextures.com/patterns/handmade-paper.png') !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+    font-family: inherit !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    color: var(--primary-dark) !important;
+    fill: var(--primary-dark) !important;
+}
+
+.flatpickr-current-month {
+    font-size: 0.95rem !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-family: 'Libre Baskerville', serif !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+.flatpickr-current-month input.cur-year {
+    font-family: 'Libre Baskerville', serif !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+.flatpickr-months .flatpickr-prev-month, 
+.flatpickr-months .flatpickr-next-month {
+    color: var(--primary) !important;
+    fill: var(--primary) !important;
+}
+
+.flatpickr-day.selected, 
+.flatpickr-day.startRange, 
+.flatpickr-day.endRange, 
+.flatpickr-day.selected.inRange, 
+.flatpickr-day.startRange.inRange, 
+.flatpickr-day.endRange.inRange, 
+.flatpickr-day.selected:focus, 
+.flatpickr-day.startRange:focus, 
+.flatpickr-day.endRange:focus, 
+.flatpickr-day.selected:hover, 
+.flatpickr-day.startRange:hover, 
+.flatpickr-day.endRange:hover, 
+.flatpickr-day.selected.prevMonthDay, 
+.flatpickr-day.selected.nextMonthDay {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+}
+
+.flatpickr-day.today {
+    border-color: var(--secondary) !important;
+}
+
+.flatpickr-day.today:hover {
+    background: var(--secondary) !important;
+    color: white !important;
+    border-color: var(--secondary) !important;
+}
+
+.flatpickr-day.occupied-day, 
+.flatpickr-day.occupied-day:hover {
+    color: #8A2525 !important;
+    background: rgba(211, 47, 47, 0.25) !important;
+    border-color: transparent !important;
+    border-radius: 4px !important;
+    opacity: 1 !important;
+    text-decoration: line-through !important;
+    text-decoration-color: rgba(138, 37, 37, 0.6) !important;
+    cursor: not-allowed !important;
+}
+
+.flatpickr-day:hover {
+    background: #EAF0E0 !important;
+    border-color: #EAF0E0 !important;
+}
+

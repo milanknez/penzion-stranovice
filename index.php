@@ -57,11 +57,16 @@
         </div>
     </section>
 
-    <!-- Rooms Section -->
     <section class="rooms section-padding" id="rooms">
         <div class="container text-center">
             <span class="section-tag">Ubytování</span>
             <h2 class="section-title">Naše útulné apartmány</h2>
+            <div style="margin-top: -1rem; margin-bottom: 3rem;">
+                <a href="#" id="open-timeline" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; color: white;">
+                    <i data-lucide="calendar" style="width: 18px; height: 18px;"></i>
+                    Zobrazit kalendář obsazenosti
+                </a>
+            </div>
 
             <div class="rooms-grid">
                 <div class="room-card reveal-up">
