@@ -1,22 +1,27 @@
 {
     "kocici": {
         "name": "Kočičí apartmán",
-        "ical_url": "https://ical.booking.com/v1/export?t=8484765f-c17e-4efb-a64d-7eeaf567bc11"
+        "ical_url": "https://ical.booking.com/v1/export?t=8484765f-c17e-4efb-a64d-7eeaf567bc11",
+        "megaubytko_ical_url": "https://www.megaubytko.cz/ical-export/8c6db6a6-a6ef-4eeb-a1c8-8946715290ac.ics"
     },
     "konsky": {
         "name": "Koňský apartmán",
-        "ical_url": "https://ical.booking.com/v1/export?t=246fa4d7-0adf-4e58-8671-bcbd77b75615"
+        "ical_url": "https://ical.booking.com/v1/export?t=246fa4d7-0adf-4e58-8671-bcbd77b75615",
+        "megaubytko_ical_url": "https://www.megaubytko.cz/ical-export/ebfccf99-7632-46ca-bd22-1d20863e05ba.ics"
     },
     "kvetinovy": {
         "name": "Květinový apartmán",
-        "ical_url": "https://ical.booking.com/v1/export?t=478e9507-c68c-4a68-819f-3174894919a0"
+        "ical_url": "https://ical.booking.com/v1/export?t=478e9507-c68c-4a68-819f-3174894919a0",
+        "megaubytko_ical_url": "https://www.megaubytko.cz/ical-export/fd250aaf-86de-4859-a667-0b4c6a9bd395.ics"
     },
     "babiccin": {
         "name": "Babiččin apartmán",
-        "ical_url": "https://ical.booking.com/v1/export?t=fe6a57c7-f98d-4c2a-aeac-a9c432b6e761"
+        "ical_url": "https://ical.booking.com/v1/export?t=fe6a57c7-f98d-4c2a-aeac-a9c432b6e761",
+        "megaubytko_ical_url": "https://www.megaubytko.cz/ical-export/6628c7b2-fc82-40a7-a718-8c3c99c1d7f9.ics"
     },
     "medovy": {
         "name": "Medový apartmán",
-        "ical_url": "https://ical.booking.com/v1/export?t=04811129-541c-4761-aa4b-407505f30d6c"
+        "ical_url": "https://ical.booking.com/v1/export?t=04811129-541c-4761-aa4b-407505f30d6c",
+        "megaubytko_ical_url": "https://www.megaubytko.cz/ical-export/6da8404e-7239-4707-909a-351a4eacc6f1.ics"
     }
 }

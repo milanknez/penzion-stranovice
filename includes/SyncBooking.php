@@ -11,17 +11,24 @@ class SyncBooking {
         $occupancy = [];
 
         foreach ($rooms as $id => $room) {
-            if (empty($room['ical_url'])) {
-                $occupancy[$id] = [];
-                continue;
+            $roomDates = [];
+            $urls = [];
+
+            if (!empty($room['ical_url'])) {
+                $urls[] = $room['ical_url'];
+            }
+            if (!empty($room['megaubytko_ical_url'])) {
+                $urls[] = $room['megaubytko_ical_url'];
             }
 
-            $icalContent = @file_get_contents($room['ical_url']);
-            if ($icalContent) {
-                $occupancy[$id] = self::parseIcal($icalContent);
-            } else {
-                $occupancy[$id] = [];
+            foreach ($urls as $url) {
+                $icalContent = @file_get_contents($url);
+                if ($icalContent) {
+                    $roomDates = array_merge($roomDates, self::parseIcal($icalContent));
+                }
             }
+
+            $occupancy[$id] = array_values(array_unique($roomDates));
         }
 
         file_put_contents(self::$outputPath, json_encode($occupancy));
