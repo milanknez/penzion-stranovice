@@ -7,10 +7,53 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit('Unauthorized');
 }
 
-$action = $_GET['action'] ?? 'check';
+$action = $_GET['action'] ?? $_POST['action'] ?? 'check';
 $response = ['status' => 'success', 'message' => ''];
 
-// Parse REPO_URL to get GitHub URLs
+if ($action === 'save_project_repo') {
+    header('Content-Type: application/json');
+    $data = json_decode(file_get_contents('php://input'), true);
+    $projectRepoUrl = trim($data['project_repo_url'] ?? '');
+    $githubToken = trim($data['github_token'] ?? '');
+    
+    $configPath = __DIR__ . '/config.php';
+    if (file_exists($configPath)) {
+        $content = file_get_contents($configPath);
+        if (preg_match("/define\('PROJECT_REPO_URL',\s*'.*?'\);/", $content)) {
+            $content = preg_replace("/define\('PROJECT_REPO_URL',\s*'.*?'\);/", "define('PROJECT_REPO_URL', '" . addslashes($projectRepoUrl) . "');", $content);
+        } else {
+            $content = str_replace("define('REPO_URL',", "define('PROJECT_REPO_URL', '" . addslashes($projectRepoUrl) . "');\ndefine('REPO_URL',", $content);
+        }
+        if (preg_match("/define\('GITHUB_TOKEN',\s*'.*?'\);/", $content)) {
+            $content = preg_replace("/define\('GITHUB_TOKEN',\s*'.*?'\);/", "define('GITHUB_TOKEN', '" . addslashes($githubToken) . "');", $content);
+        }
+        file_put_contents($configPath, $content);
+        echo json_encode(['status' => 'success', 'message' => 'Nastavení projektového repozitáře bylo uloženo.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Soubor config.php nebyl nalezen.']);
+    }
+    exit;
+}
+
+if ($action === 'save_repo') {
+    header('Content-Type: application/json');
+    $data = json_decode(file_get_contents('php://input'), true);
+    $repoUrl = trim($data['repo_url'] ?? '');
+    $githubToken = trim($data['github_token'] ?? '');
+    
+    $configPath = __DIR__ . '/config.php';
+    if (file_exists($configPath)) {
+        $content = file_get_contents($configPath);
+        $content = preg_replace("/define\('REPO_URL',\s*'.*?'\);/", "define('REPO_URL', '" . addslashes($repoUrl) . "');", $content);
+        $content = preg_replace("/define\('GITHUB_TOKEN',\s*'.*?'\);/", "define('GITHUB_TOKEN', '" . addslashes($githubToken) . "');", $content);
+        file_put_contents($configPath, $content);
+        echo json_encode(['status' => 'success', 'message' => 'Nastavení repozitáře bylo uloženo.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Soubor config.php nebyl nalezen.']);
+    }
+    exit;
+}
+
 $repoUrl = REPO_URL;
 $repoClean = str_replace('.git', '', $repoUrl);
 $repoParts = explode('github.com/', $repoClean);
@@ -21,7 +64,7 @@ if (count($repoParts) < 2) {
     exit;
 }
 
-$repoPath = $repoParts[1]; // e.g. "milanknez/penzion-stranovice"
+$repoPath = $repoParts[1];
 $branch = 'main';
 
 $githubVersionUrl = "https://raw.githubusercontent.com/$repoPath/$branch/admin/version.php?nocache=" . uniqid();
@@ -58,23 +101,36 @@ if ($action === 'check') {
         $response = [
             'status' => 'error', 
             'message' => 'Nepodařilo se ověřit verzi na GitHubu.',
-            'local_version' => APP_VERSION,
-            'debug_content' => substr($remoteVersionFile, 0, 100)
+            'local_version' => APP_VERSION
         ];
     }
 } elseif ($action === 'pull') {
-    // Download ZIP
     $zipFile = 'update_temp.zip';
+    $token = defined('GITHUB_TOKEN') ? GITHUB_TOKEN : '';
     
-    // Set up context for file_get_contents to handle potential redirects and timeouts
-    $ctx = stream_context_create([
-        'http' => ['timeout' => 30, 'follow_location' => 1]
-    ]);
+    $downloadUrl = !empty($token) 
+        ? "https://api.github.com/repos/$repoPath/zipball/$branch" 
+        : $githubZipUrl;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $downloadUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'FidaCMS-Updater');
     
-    $content = @file_get_contents($githubZipUrl, false, $ctx);
+    $headers = ['Accept: application/vnd.github.v3+json'];
+    if (!empty($token)) {
+        $headers[] = 'Authorization: token ' . $token;
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $content = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
     
-    if (!$content) {
-        $response = ['status' => 'error', 'message' => 'Nepodařilo se stáhnout aktualizační balíček z ' . $githubZipUrl];
+    if (!$content || $httpCode !== 200) {
+        $response = ['status' => 'error', 'message' => 'Nepodařilo se stáhnout aktualizační balíček z ' . $githubZipUrl . ' (HTTP ' . $httpCode . ')'];
     } else {
         file_put_contents($zipFile, $content);
         
@@ -86,13 +142,10 @@ if ($action === 'check') {
                 $zip->extractTo($tempFolder);
                 $zip->close();
                 
-                // GitHub ZIPs contain a root folder like "penzion-stranovice-main"
-                // We need to find this folder name
                 $extractedDirs = array_filter(glob($tempFolder . '*'), 'is_dir');
                 $sourceDir = reset($extractedDirs);
                 
                 if ($sourceDir && is_dir($sourceDir)) {
-                    // Recursive function to copy files
                     if (!function_exists('copyRecursive')) {
                         function copyRecursive($src, $dst, $exclude = []) {
                             $dir = opendir($src);
@@ -102,7 +155,6 @@ if ($action === 'check') {
                                     $srcFile = $src . '/' . $file;
                                     $dstFile = $dst . '/' . $file;
                                     
-                                    // Check exclusion
                                     $isExcluded = false;
                                     foreach ($exclude as $ex) {
                                         if (strpos($dstFile, $ex) !== false) {
@@ -123,7 +175,6 @@ if ($action === 'check') {
                         }
                     }
 
-                    // Exclude local config to prevent overwriting settings
                     $exclude = [
                         'admin/config.php',
                         '.git'
@@ -132,7 +183,6 @@ if ($action === 'check') {
                     $rootDir = realpath(__DIR__ . '/../');
                     copyRecursive($sourceDir, $rootDir, $exclude);
                     
-                    // Cleanup
                     if (!function_exists('rrmdir')) {
                         function rrmdir($dir) {
                             if (is_dir($dir)) {
@@ -154,13 +204,13 @@ if ($action === 'check') {
 
                     $response['message'] = 'Aktualizace proběhla úspěšně! Všechny soubory byly aktualizovány.';
                 } else {
-                    $response = ['status' => 'error', 'message' => 'V archivu nebyla nalezena zdrojová složka. Obsah archivu: ' . json_encode(scandir($tempFolder))];
+                    $response = ['status' => 'error', 'message' => 'V archivu nebyla nalezena zdrojová složka.'];
                 }
             } else {
-                $response = ['status' => 'error', 'message' => 'Nepodařilo se otevřít stažený ZIP archiv. Soubor mohl být poškozen.'];
+                $response = ['status' => 'error', 'message' => 'Nepodařilo se otevřít stažený ZIP archiv.'];
             }
         } else {
-            $response = ['status' => 'error', 'message' => 'Na serveru chybí PHP rozšíření ZipArchive. Aktualizaci nelze provést automaticky.'];
+            $response = ['status' => 'error', 'message' => 'Na serveru chybí PHP rozšíření ZipArchive.'];
         }
     }
 }
@@ -168,4 +218,3 @@ if ($action === 'check') {
 header('Content-Type: application/json');
 echo json_encode($response);
 exit;
-

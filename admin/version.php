@@ -1,3 +1,4 @@
 <?php
-// Fida CMS Version - This file is automatically updated
-define('APP_VERSION', '1.0.47');
+// Fida CMS Version
+define('APP_VERSION', '1.2.1');
+define('CMS_VERSION', '1.2.1');

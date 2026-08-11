@@ -5,10 +5,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Script v2 loaded");
     // alert("JS V2 ACTIVE"); // Uncomment if still nothing happens
-    
+
     // Lucide Icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+    }
+
+    // Auto-fill contact form message from URL parameter ?program=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const programParam = urlParams.get('program');
+    if (programParam) {
+        const messageTextarea = document.querySelector('.contact-form textarea[name="zprava"], textarea[name="zprava"]');
+        if (messageTextarea) {
+            messageTextarea.value = `Dobrý den,\nmám zájem o program: ${programParam}.\nProsím o více informací a volné termíny.`;
+        }
     }
 
     // Hero Background Slider
@@ -64,21 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelector('.nav-links');
     
     if (mobileToggle && navLinks) {
-        // Toggle menu on click
         mobileToggle.onclick = (e) => {
             e.stopPropagation();
             navLinks.classList.toggle('active');
-            // Toggle icon if needed (optional)
         };
 
-        // Close menu when clicking a link (but NOT a dropdown toggle)
         navLinks.querySelectorAll('a:not(.has-dropdown)').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
             });
         });
 
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (navLinks.classList.contains('active') && !navLinks.contains(e.target) && e.target !== mobileToggle) {
                 navLinks.classList.remove('active');
@@ -89,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Dropdown toggles
     document.querySelectorAll('.has-dropdown').forEach(dropdown => {
         dropdown.onclick = (e) => {
-            if (window.innerWidth <= 1150) { // Changed from 992 to match burger menu breakpoint
+            if (window.innerWidth <= 1150) {
                 e.preventDefault();
                 e.stopPropagation();
                 dropdown.parentElement.classList.toggle('active');
@@ -97,7 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Timeline Modal
+    // Smooth scroll for hash links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (!href || href === '#' || this.classList.contains('has-dropdown') || this.classList.contains('open-room-calendar')) return;
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Timeline Modal (homepage open-timeline buttons only)
     const timelineModal = document.getElementById('timeline-modal');
     const openTimelineBtns = document.querySelectorAll('#open-timeline, .open-timeline');
     if (timelineModal && openTimelineBtns.length > 0) {
@@ -107,17 +126,236 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 timelineModal.style.display = "block";
                 renderTimeline();
+                fetch('plugins/booking-sync/api.php?action=sync')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && typeof data === 'object' && !data.error) {
+                            window.occupancyData = data;
+                            renderTimeline();
+                        }
+                    })
+                    .catch(() => {});
             });
         });
         if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                timelineModal.style.display = "none";
-            });
+            closeBtn.addEventListener('click', () => { timelineModal.style.display = "none"; });
         }
         window.addEventListener('click', (e) => {
             if (e.target == timelineModal) timelineModal.style.display = "none";
         });
     }
+
+    // ── Availability Calendar Modal (.open-room-calendar) ───────────────────
+    (function() {
+        const overlay   = document.getElementById('avail-modal');
+        if (!overlay) return;
+
+        const closeBtn   = document.getElementById('avail-modal-close');
+        const title      = document.getElementById('avail-modal-title');
+        const grid       = document.getElementById('avail-cal-grid');
+        const monthLabel = document.getElementById('avail-month-label');
+        const confirmBtn = document.getElementById('avail-confirm-btn');
+        const selArrival = document.getElementById('avail-sel-arrival');
+        const selDepart  = document.getElementById('avail-sel-departure');
+
+        const MONTHS_CS = ['Leden','Únor','Březen','Duben','Květen','Červen',
+                           'Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+
+        let currentRoom = '';
+        let bookedDates = new Set();
+        let viewYear, viewMonth;
+        let selStart = null, selEnd = null;  // YYYY-MM-DD strings
+
+        // Helper: YYYY-MM-DD string from viewYear/viewMonth/day number
+        function toYMD(y, m, d) {
+            return y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        }
+        // Format YYYY-MM-DD to Czech readable
+        function fmtCZ(ymd) {
+            const p = ymd.split('-');
+            return parseInt(p[2]) + '. ' + parseInt(p[1]) + '. ' + p[0];
+        }
+        // Today as YYYY-MM-DD (local)
+        function todayYMD() {
+            const t = new Date();
+            return toYMD(t.getFullYear(), t.getMonth(), t.getDate());
+        }
+
+        function renderCalendar() {
+            // Remove old day cells (keep day-name headers = first 7 children)
+            const headers = Array.from(grid.querySelectorAll('.avail-day-name'));
+            grid.innerHTML = '';
+            headers.forEach(h => grid.appendChild(h));
+
+            monthLabel.textContent = MONTHS_CS[viewMonth] + ' ' + viewYear;
+
+            const today = todayYMD();
+            const firstDay = new Date(viewYear, viewMonth, 1);
+            // Monday=0 offset
+            let offset = (firstDay.getDay() + 6) % 7;
+            for (let i=0; i<offset; i++) {
+                const blank = document.createElement('div');
+                blank.className = 'avail-day empty';
+                grid.appendChild(blank);
+            }
+
+            const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+            for (let d=1; d<=daysInMonth; d++) {
+                const ymd  = toYMD(viewYear, viewMonth, d);
+                const cell = document.createElement('div');
+                cell.className = 'avail-day';
+                cell.textContent = d;
+                cell.dataset.date = ymd;
+
+                if (ymd < today) {
+                    cell.classList.add('past');
+                } else if (bookedDates.has(ymd)) {
+                    cell.classList.add('booked');
+                } else {
+                    cell.classList.add('free');
+                }
+
+                if (ymd === today) cell.classList.add('today');
+
+                // Highlight selected range (string comparison works for YYYY-MM-DD)
+                if (selStart && selEnd) {
+                    if (ymd === selStart) cell.classList.add('arrival');
+                    else if (ymd === selEnd) cell.classList.add('departure');
+                    else if (ymd > selStart && ymd < selEnd) cell.classList.add('in-range');
+                } else if (selStart && ymd === selStart) {
+                    cell.classList.add('arrival');
+                }
+
+                if (!cell.classList.contains('past') && !cell.classList.contains('booked')) {
+                    cell.addEventListener('click', onDayClick);
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        function onDayClick(e) {
+            const ymd = e.currentTarget.dataset.date;
+            if (!selStart || (selStart && selEnd)) {
+                selStart = ymd; selEnd = null;
+            } else {
+                if (ymd <= selStart) { selStart = ymd; selEnd = null; }
+                else {
+                    // Check no booked dates inside range
+                    let ok = true;
+                    // Iterate day-by-day using Date only for iteration
+                    const parts = selStart.split('-');
+                    let cur = new Date(+parts[0], +parts[1]-1, +parts[2]+1);
+                    const endParts = ymd.split('-');
+                    const endDate = new Date(+endParts[0], +endParts[1]-1, +endParts[2]);
+                    while (cur < endDate) {
+                        const cy = cur.getFullYear(), cm = cur.getMonth(), cd = cur.getDate();
+                        const cymd = toYMD(cy, cm, cd);
+                        if (bookedDates.has(cymd)) { ok = false; break; }
+                        cur.setDate(cur.getDate()+1);
+                    }
+                    if (ok) selEnd = ymd;
+                    else { selStart = ymd; selEnd = null; }
+                }
+            }
+            updateSelectionInfo();
+            renderCalendar();
+        }
+
+        function updateSelectionInfo() {
+            selArrival.textContent = selStart ? 'Příjezd: ' + fmtCZ(selStart) : 'Příjezd: —';
+            selDepart.textContent  = selEnd   ? 'Odjezd: '  + fmtCZ(selEnd)   : 'Odjezd: —';
+            confirmBtn.disabled    = !(selStart && selEnd);
+        }
+
+
+        function openModal(roomId, roomName) {
+            currentRoom = roomId;
+            selStart = null; selEnd = null;
+            if (title) title.textContent = 'Obsazenost – ' + (roomName || 'apartmán');
+            updateSelectionInfo();
+
+            const now = new Date();
+            viewYear  = now.getFullYear();
+            viewMonth = now.getMonth();
+
+            // Load occupancy data
+            bookedDates = new Set();
+            fetch('plugins/booking-sync/api.php')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data[roomId] && Array.isArray(data[roomId])) {
+                        bookedDates = new Set(data[roomId]);
+                    }
+                    renderCalendar();
+                })
+                .catch(() => renderCalendar());
+
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Nav buttons
+        document.getElementById('avail-prev-month').addEventListener('click', () => {
+            viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; } renderCalendar();
+        });
+        document.getElementById('avail-next-month').addEventListener('click', () => {
+            viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; } renderCalendar();
+        });
+        document.getElementById('avail-prev-year').addEventListener('click', () => {
+            viewYear--; renderCalendar();
+        });
+        document.getElementById('avail-next-year').addEventListener('click', () => {
+            viewYear++; renderCalendar();
+        });
+
+        // Confirm — pre-fill form and scroll
+        confirmBtn.addEventListener('click', () => {
+            if (!selStart || !selEnd) return;
+            const arrival = selStart, departure = selEnd;
+            closeModal();
+
+            // Pre-fill date inputs (selStart/selEnd are already YYYY-MM-DD strings)
+            const arrInput = document.querySelector('input[name="prijezd"]');
+            const depInput = document.querySelector('input[name="odjezd"]');
+            if (arrInput) {
+                arrInput.value = arrival;
+                arrInput.dispatchEvent(new Event('change', { bubbles: true }));
+                arrInput.style.outline = '3px solid var(--primary, #8b5e3c)';
+                setTimeout(() => { arrInput.style.outline = ''; }, 2500);
+            }
+            if (depInput) {
+                depInput.value = departure;
+                depInput.dispatchEvent(new Event('change', { bubbles: true }));
+                depInput.style.outline = '3px solid var(--primary, #8b5e3c)';
+                setTimeout(() => { depInput.style.outline = ''; }, 2500);
+            }
+
+            // Scroll to reservation form
+            const form = document.querySelector('#poptat-termin') ||
+                         document.querySelector('.contact-form') ||
+                         (arrInput ? arrInput.closest('section, form') : null);
+            if (form) setTimeout(() => form.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+        });
+
+        // Close handlers
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        // Attach to all .open-room-calendar buttons
+        document.querySelectorAll('.open-room-calendar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(btn.dataset.room || '', btn.dataset.roomName || '');
+            });
+        });
+    })();
+
 
     // --- GALLERY LOGIC ---
     const mainImg = document.getElementById('main-gallery-img');
@@ -132,8 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
             thumb.addEventListener('click', (e) => {
                 thumbs.forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
-                
-                // Get image path
                 const path = thumb.getAttribute('data-full') || thumb.src;
                 mainImg.src = path;
             });
@@ -173,10 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateLightbox = () => {
         if (currentGalleryImages[currentIndex]) {
-            // Okamžitá změna src bez blikání (bez opacity 0)
             lightboxImg.src = currentGalleryImages[currentIndex];
-            
-            // Aktualizace aktivní miniatury v lightboxu
             if (lightboxThumbs) {
                 lightboxThumbs.querySelectorAll('img').forEach((thumb, idx) => {
                     if (idx === currentIndex) {
@@ -206,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Vygenerování miniatur do spodního panelu
         if (lightboxThumbs) {
             lightboxThumbs.innerHTML = '';
             if (currentGalleryImages.length > 1) {
@@ -233,6 +465,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Gallery Filter Logic
+    const filterBtns = document.querySelectorAll('.gallery-filter .filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-grid .gallery-item');
+
+    if (filterBtns.length > 0 && galleryItems.length > 0) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-filter');
+
+                galleryItems.forEach(item => {
+                    const category = item.getAttribute('data-category');
+                    if (filter === 'all' || category === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+
     // Global click listener for gallery items
     document.addEventListener('click', (e) => {
         const galleryImg = e.target.closest('.gallery-item img');
@@ -248,9 +505,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetImg) {
             e.preventDefault();
             const container = targetImg.closest('.gallery-grid') || targetImg.closest('.room-gallery') || targetImg.closest('.about-grid') || targetImg.closest('.horse-gallery');
-            const imgs = container ? Array.from(container.querySelectorAll('img')).map(img => img.src) : [targetImg.src];
-            
-            console.log("Opening lightbox for:", targetImg.src);
+            const imgs = container ? Array.from(container.querySelectorAll('img')).filter(img => {
+                const parentItem = img.closest('.gallery-item');
+                return !parentItem || (parentItem.style.display !== 'none' && getComputedStyle(parentItem).display !== 'none');
+            }).map(img => img.src) : [targetImg.src];
             openLightbox(targetImg.src, imgs);
         }
     });
@@ -302,26 +560,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Route Modal Logic
+    // Route Modal Logic with Dynamic Leaflet Map
     const routeModal = document.getElementById('route-modal');
+    const stranoviceStart = [49.12386, 13.89667];
+    let modalMap = null;
+
     const routeData = {
+        'stranovice': {
+            title: 'Straňovice a okolní rybník',
+            description: 'Pohodová procházka v okolí našeho statku ve Straňovicích (Straňovice 1, Malenice). Trasa vede po vyhlídkových pastvinách k odpočinkové zóně u Straňovického rybníka.',
+            highlights: ['Rybářská odpočinková zóna', 'Pohodová procházka v přírodě', '15 minut chůze od penzionu'],
+            destCoords: [49.1255, 13.8860]
+        },
         'malenice': {
-            title: 'Procházka Malenicemi',
-            description: 'Pohodová procházka z našeho statku do centra obce. Trasa vede po málo frekventované asfaltové cestě, vhodná i pro kočárky.',
-            highlights: ['Barokní kostel sv. Jakuba', 'Hřbitov s hrobem Z. Podskalského', 'Místní mlýn'],
-            mapImg: 'assets/img/map_malenice.png'
+            title: 'Procházka do Malenic & Památky',
+            description: 'Příjemná trasa ze Straňovic 1 do centra obcí Malenice. Navštívit můžete opravenou faru se sezónními výstavami a barokní kostel sv. Jakuba.',
+            highlights: ['Barokní kostel sv. Jakuba', 'Hřbitov (Z. Podskalský, J. Jirásková)', 'Opravená fara a letní kavárnička'],
+            destCoords: [49.1292, 13.8828]
+        },
+        'mechorost': {
+            title: 'Naučná stezka Skalka - Mechorost',
+            description: 'Trasa ze Straňovic 1 směrem na Zlešice okolo kapličky sv. Václava na Hůrce. Nádherná lesní stezka s panoramatickým výhledem na údolí řeky Volyňky.',
+            highlights: ['Kaplička sv. Václava na Hůrce', 'Výhledy na údolí řeky Volyňky', 'Naučné tabule o fauně a flóře'],
+            destCoords: [49.1350, 13.8920]
+        },
+        'volyne_koupaliste': {
+            title: 'Koupaliště Volyně',
+            description: 'Trasa ze Straňovic 1 do Volyně na historické prvorepublikové koupaliště z roku 1939 s čistou průtokovou vodou.',
+            highlights: ['Nejstarší přírodní koupaliště v ČR', 'Stylové dřevěné kabinky', 'Občerstvení a plavecký bazén'],
+            destCoords: [49.1642, 13.8872]
+        },
+        'rohanov': {
+            title: 'Přírodní koupaliště Rohanov',
+            description: 'Cesta ze Straňovic 1 do Lhoty nad Rohanovem k průzračnému přírodnímu koupališti přímo pod šumavskými hřebeny.',
+            highlights: ['Průzračná přírodní voda', 'Šumavské lesy v okolí', 'Dětské brouzdaliště a hřiště'],
+            destCoords: [49.1415, 13.6820]
+        },
+        'wellness': {
+            title: 'Sauny & Wellness centrum',
+            description: 'Trasa ze Straňovic 1 do saunového světa v Prachaticích a plaveckého areálu ve Strakonicích s celoročním provozem.',
+            highlights: ['Finská a parní sauna', 'Celoroční plavecký bazén', 'Relaxační zóny pro rodiny'],
+            destCoords: [49.0125, 13.9980]
+        },
+        'zadov': {
+            title: 'Ski areál Zadov',
+            description: 'Pohodlná trasa autem ze Straňovic 1 do srdce zimních sportů na Zadově. Sjezdovky, lanovky, večerní lyžování a rozhledna.',
+            highlights: ['Vyhřívaná rozhledna na můstku', 'Sjezdovky s večerním osvětlením', 'Půjčovny a lyžařská škola'],
+            destCoords: [49.0667, 13.6333]
+        },
+        'kubovahut': {
+            title: 'Kubova Huť & Sjezdovky',
+            description: 'Trasa ze Straňovic 1 do nejvýše položené železniční stanice v ČR (995 m n. m.). Rodinný ski areál s tratěmi pod Boubínem.',
+            highlights: ['Nejvyšší vlaková stanice v ČR', 'Sjezdovky pro rodiny s dětmi', 'Výchozí bod na Boubín'],
+            destCoords: [48.9833, 13.7833]
+        },
+        'kvilda': {
+            title: 'Kvilda & Běžecká stopa',
+            description: 'Výpravná trasa ze Straňovic 1 na Kvildu. Nástupní místo na desítky kilometrů upravovaných běžeckých okruhů Bílé stopy v NP Šumava.',
+            highlights: ['Bílá stopa Šumava', 'Informační středisko s jelením výběhem', 'Půjčovny běžek i kávárny'],
+            destCoords: [49.0185, 13.5802]
         },
         'kasperk': {
             title: 'Cesta na Hrad Kašperk',
-            description: 'Z parkoviště pod hradem vede příjemná cesta lesem. Samotný hrad nabízí unikátní prohlídkové okruhy zaměřené na stavbu hradu i život v podhradí.',
+            description: 'Trasa ze Straňovic 1 pod hrad Kašperk. Z parkoviště pod hradem vede příjemná cesta lesem. Nejvyšší královský hrad v Čechách.',
             highlights: ['Výhled z hradních věží', 'Pustý hrádek', 'Interaktivní expozice pro děti'],
-            mapImg: 'assets/img/map_kasperk.png'
+            destCoords: [49.1561, 13.5647]
         },
         'boubin': {
-            title: 'Výšlap na Boubín',
-            description: 'Trasa z Kaplice k jezírku a dále na vrchol k rozhledně. Cesta vede srdcem pralesa po dřevěných chodníčcích a lesních pěšinách.',
+            title: 'Výšlap na Boubínský prales',
+            description: 'Trasa ze Straňovic 1 k Idině Pile a Boubínskému jezírku. Výšlap na vrchol k rozhledně s výhledem až na Alpy.',
             highlights: ['Boubínské jezírko', 'Rozhledna s kruhovým výhledem', 'Zážitková stezka Idina Pila'],
-            mapImg: 'assets/img/map_boubin.png'
+            destCoords: [48.9772, 13.8117]
+        },
+        'mestecka': {
+            title: 'Městečka a hrady (Volyně, Strakonice)',
+            description: 'Výletní trasa ze Straňovic 1 po okruhu památek: Židovská synagoga Čkyně, Volyňská tvrz, zámek Vimperk a Strakonický hrad.',
+            highlights: ['Židovská synagoga Čkyně', 'Strakonický hrad s věží Rumpál', 'Zámek a pivovar Vimperk'],
+            destCoords: [49.2614, 13.9022]
+        },
+        'gastro': {
+            title: 'Potraviny 24/7 & Hospůdky',
+            description: 'Gastro doporučení ze Straňovic 1. Obchod COOP Jednota 24/7 v Malenicích, Malenická hospůdka Na Zámostí a kiosky Pod Věncem.',
+            highlights: ['COOP Malenice 24/7 (nákup i v noci)', 'Malenická hospůdka Na Zámostí', 'Kiosky Pod Věncem v Lčovicích'],
+            destCoords: [49.1290, 13.8830]
         }
     };
 
@@ -329,31 +650,96 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const routeKey = btn.getAttribute('data-route');
-            const data = routeData[routeKey];
+            let data = routeData[routeKey];
+            if (window._tripTipsPluginData && Array.isArray(window._tripTipsPluginData)) {
+                const found = window._tripTipsPluginData.find(t => t.id === routeKey);
+                if (found) {
+                    data = {
+                        title: found.title,
+                        description: found.description,
+                        highlights: found.highlights || [found.badge, 'Vzdálenost: ' + found.distance, 'Doba: ' + found.time],
+                        destCoords: found.coords
+                    };
+                }
+            }
+
+            const currentStart = (window._tripTipsPluginConfig && window._tripTipsPluginConfig.start_coords) ? window._tripTipsPluginConfig.start_coords : stranoviceStart;
             
             if (data && routeModal) {
                 document.getElementById('route-title').textContent = data.title;
                 document.getElementById('route-description').textContent = data.description;
                 
-                // Update Map
-                const mapPlaceholder = document.querySelector('.route-map-placeholder');
-                if (mapPlaceholder && data.mapImg) {
-                    mapPlaceholder.innerHTML = `<img src="${data.mapImg}" alt="${data.title}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 12px;">`;
-                    mapPlaceholder.style.background = 'white';
+                const mapyLink = document.getElementById('route-mapy-cz-link');
+                if (mapyLink && data.destCoords) {
+                    mapyLink.href = `https://mapy.cz/trasa?start=${currentStart[1]},${currentStart[0]}&end=${data.destCoords[1]},${data.destCoords[0]}`;
                 }
 
                 const highlightsList = document.getElementById('route-highlights');
-                highlightsList.innerHTML = '';
-                data.highlights.forEach(h => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px; color: var(--primary); margin-right: 8px; vertical-align: middle;"></i> ${h}`;
-                    highlightsList.appendChild(li);
-                });
+                if (highlightsList) {
+                    highlightsList.innerHTML = '';
+                    data.highlights.forEach(h => {
+                        const li = document.createElement('li');
+                        li.style.display = 'flex';
+                        li.style.alignItems = 'center';
+                        li.style.gap = '6px';
+                        li.style.fontSize = '0.9rem';
+                        li.style.color = '#444';
+                        li.innerHTML = `<i data-lucide="check-circle-2" style="width: 16px; height: 16px; color: var(--primary); flex-shrink:0;"></i> ${h}`;
+                        highlightsList.appendChild(li);
+                    });
+                }
                 
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 
                 routeModal.style.display = "block";
                 document.body.style.overflow = "hidden";
+
+                // Initialize Leaflet Map inside Modal
+                setTimeout(() => {
+                    const mapContainer = document.getElementById('modal-map-container');
+                    if (mapContainer && typeof L !== 'undefined') {
+                        if (modalMap) {
+                            modalMap.remove();
+                        }
+                        
+                        modalMap = L.map('modal-map-container').setView(currentStart, 11);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '&copy; OpenStreetMap'
+                        }).addTo(modalMap);
+
+                        // Pension Pin
+                        const pIcon = L.divIcon({
+                            className: 'custom-modal-pin',
+                            html: `<div style="background:#2d5a27; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; border:2px solid white; box-shadow:0 3px 6px rgba(0,0,0,0.3);">🏡</div>`,
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16]
+                        });
+                        const startAddressLabel = (window._tripTipsPluginConfig && window._tripTipsPluginConfig.pension_address) ? window._tripTipsPluginConfig.pension_address : 'Start: Straňovice 1';
+                        L.marker(currentStart, { icon: pIcon }).addTo(modalMap).bindPopup(`<b>${startAddressLabel}</b>`);
+
+                        // Destination Pin & Polyline
+                        if (data.destCoords) {
+                            const dIcon = L.divIcon({
+                                className: 'custom-modal-pin',
+                                html: `<div style="background:#6b8e23; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; border:2px solid white; box-shadow:0 3px 6px rgba(0,0,0,0.3);">📍</div>`,
+                                iconSize: [32, 32],
+                                iconAnchor: [16, 16]
+                            });
+                            L.marker(data.destCoords, { icon: dIcon }).addTo(modalMap).bindPopup(`<b>Cíl: ${data.title}</b>`);
+
+                            const routePolyline = L.polyline([currentStart, data.destCoords], {
+                                color: '#2d5a27',
+                                weight: 4,
+                                opacity: 0.8,
+                                dashArray: '6, 10'
+                            }).addTo(modalMap);
+
+                            modalMap.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+                        }
+                    }
+                }, 150);
             }
         });
     });
@@ -373,6 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 
     function renderTimeline() {
         const container = document.getElementById('timeline-app');
@@ -408,7 +795,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const day = String(d.getDate()).padStart(2, '0');
                 const dateStr = `${year}-${month}-${day}`;
-                
                 const isOccupied = roomOccupancy.includes(dateStr);
                 const statusClass = isOccupied ? 'status-occupied' : 'status-free';
                 html += `<td class="${statusClass}"></td>`;
@@ -430,7 +816,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!arrivalInput || !departureInput || !submitBtn) return;
 
-        // Create a warning message container below the date fields
         const warningDiv = document.createElement('div');
         warningDiv.className = 'booking-warning';
         warningDiv.style.display = 'none';
@@ -448,14 +833,13 @@ document.addEventListener('DOMContentLoaded', () => {
             "Medový apartmán": "medovy"
         };
 
-        const roomName = roomInput.value;
+        const roomName = roomInput ? roomInput.value : '';
         const roomId = roomMapping[roomName];
         const occupiedDates = (window.occupancyData && roomId) ? (window.occupancyData[roomId] || []) : [];
 
         let fpArrival = null;
         let fpDeparture = null;
 
-        // Validation / Check occupancy logic (for warnings & fallback)
         const checkOccupancy = () => {
             const arrivalVal = arrivalInput.value;
             const departureVal = departureInput.value;
@@ -506,7 +890,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (typeof flatpickr !== 'undefined') {
-            // Localize to Czech
             flatpickr.localize(flatpickr.l10ns.cs);
 
             fpArrival = flatpickr(arrivalInput, {
@@ -530,11 +913,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (selectedDates.length > 0) {
                         const nextDay = new Date(selectedDates[0]);
                         nextDay.setDate(nextDay.getDate() + 1);
-                        
-                        // Set minimum date of departure to arrival + 1 day
                         fpDeparture.set("minDate", nextDay);
 
-                        // Find the next occupied date after selected arrival
                         const arrivalMs = selectedDates[0].getTime();
                         let nextOccupied = null;
                         occupiedDates.forEach(d => {
@@ -546,14 +926,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
 
-                        // Limit departure maxDate so they cannot select a range containing occupied nights
                         if (nextOccupied) {
                             fpDeparture.set("maxDate", nextOccupied);
                         } else {
                             fpDeparture.set("maxDate", null);
                         }
 
-                        // Auto-open departure calendar
                         setTimeout(() => fpDeparture.open(), 50);
                     }
                     checkOccupancy();
@@ -582,7 +960,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } else {
-            // Fallback for native inputs
             const todayStr = new Date().toISOString().split('T')[0];
             arrivalInput.min = todayStr;
 
@@ -595,28 +972,252 @@ document.addEventListener('DOMContentLoaded', () => {
             departureInput.addEventListener('change', checkOccupancy);
         }
 
-        // Form Submit Simulation
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const originalText = submitBtn.innerText;
             submitBtn.innerText = 'Odesílám...';
             submitBtn.disabled = true;
-            setTimeout(() => {
-                submitBtn.innerText = 'Děkujeme! Ozveme se vám.';
-                submitBtn.style.backgroundColor = '#4A5D23';
-                form.reset();
-                if (fpArrival) fpArrival.clear();
-                if (fpDeparture) fpDeparture.clear();
+
+            const formData = new FormData(form);
+
+            fetch('send.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    submitBtn.innerText = 'Děkujeme! Ozveme se vám.';
+                    submitBtn.style.backgroundColor = '#4A5D23';
+                    form.reset();
+                    if (fpArrival) fpArrival.clear();
+                    if (fpDeparture) fpDeparture.clear();
+                } else {
+                    alert(data.message || 'Chyba při odesílání formuláře.');
+                    submitBtn.innerText = originalText;
+                }
+            })
+            .catch(err => {
+                alert('Chyba při komunikaci se serverem. Zkontrolujte prosím připojení.');
+                submitBtn.innerText = originalText;
+            })
+            .finally(() => {
                 setTimeout(() => {
                     submitBtn.innerText = originalText;
                     submitBtn.disabled = false;
                     submitBtn.style.backgroundColor = '';
                     checkOccupancy();
-                }, 3000);
-            }, 1500);
+                }, 4000);
+            });
         });
     };
 
     // Initialize Validation
     initContactFormValidation();
+
+    // --- ROOM CALENDAR MODAL LOGIC ---
+    const initRoomCalendarModal = () => {
+        const modal = document.getElementById('room-calendar-modal');
+        if (!modal) return;
+
+        const titleEl           = document.getElementById('room-calendar-title');
+        const prevBtn           = document.getElementById('cal-prev-month');
+        const nextBtn           = document.getElementById('cal-next-month');
+        const monthSelect       = document.getElementById('cal-month-select');
+        const yearSelect        = document.getElementById('cal-year-select');
+        const daysGrid          = document.getElementById('calendar-days-grid');
+        const closeBtn          = modal.querySelector('.close-modal');
+        const reserveActionBtn  = document.getElementById('cal-reserve-action-btn');
+        const selectionInfo     = document.getElementById('cal-selection-info');
+        const selectedRangeText = document.getElementById('cal-selected-range-text');
+
+        const monthNames = [
+            'Leden','Únor','Březen','Duben','Květen','Červen',
+            'Červenec','Srpen','Září','Říjen','Listopad','Prosinec'
+        ];
+
+        let activeRoomId   = '';
+        let activeRoomName = '';
+        let viewYear  = new Date().getFullYear();
+        let viewMonth = new Date().getMonth();
+        let selectedArrival   = null;  // YYYY-MM-DD
+        let selectedDeparture = null;  // YYYY-MM-DD
+
+        const formatCzechDate = (iso) => {
+            if (!iso) return '';
+            const [y, m, d] = iso.split('-');
+            return `${parseInt(d,10)}. ${parseInt(m,10)}. ${y}`;
+        };
+
+        const updateSelectionUI = () => {
+            if (!selectionInfo) return;
+            if (selectedArrival && selectedDeparture) {
+                selectionInfo.style.display = 'block';
+                if (selectedRangeText)
+                    selectedRangeText.innerText = `${formatCzechDate(selectedArrival)} – ${formatCzechDate(selectedDeparture)}`;
+            } else if (selectedArrival) {
+                selectionInfo.style.display = 'block';
+                if (selectedRangeText)
+                    selectedRangeText.innerText = `${formatCzechDate(selectedArrival)} (vyberte odjezd)`;
+            } else {
+                selectionInfo.style.display = 'none';
+                if (selectedRangeText) selectedRangeText.innerText = '';
+            }
+        };
+
+        const populateSelects = () => {
+            if (!monthSelect || !yearSelect) return;
+            monthSelect.innerHTML = monthNames.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+            const yr = new Date().getFullYear();
+            yearSelect.innerHTML = [yr-1, yr, yr+1, yr+2].map(y => `<option value="${y}">${y}</option>`).join('');
+        };
+
+        const renderCalendar = () => {
+            if (!daysGrid) return;
+            monthSelect.value = viewMonth;
+            yearSelect.value  = viewYear;
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const occupancy = (window.occupancyData && activeRoomId)
+                ? (window.occupancyData[activeRoomId] || []) : [];
+
+            const firstDayRaw    = new Date(viewYear, viewMonth, 1).getDay();
+            const startDayOffset = firstDayRaw === 0 ? 6 : firstDayRaw - 1;
+            const daysInMonth    = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+            let html = '';
+            for (let i = 0; i < startDayOffset; i++) html += `<div class="cal-day-cell empty"></div>`;
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(viewYear, viewMonth, d);
+                dateObj.setHours(0,0,0,0);
+                const mm  = String(viewMonth+1).padStart(2,'0');
+                const dd  = String(d).padStart(2,'0');
+                const iso = `${viewYear}-${mm}-${dd}`;
+
+                const isOcc  = occupancy.includes(iso);
+                const isPast = dateObj < today;
+                const isTod  = dateObj.getTime() === today.getTime();
+
+                const cls = ['cal-day-cell'];
+                if (isPast) cls.push('past');
+                if (isTod)  cls.push('today');
+                cls.push(isOcc ? 'occupied' : 'free');
+
+                if (iso === selectedArrival)        cls.push('selected-start');
+                else if (iso === selectedDeparture) cls.push('selected-end');
+                else if (selectedArrival && selectedDeparture && iso > selectedArrival && iso < selectedDeparture)
+                    cls.push('in-range');
+
+                html += `<div class="${cls.join(' ')}" data-date="${iso}">
+                    <span class="cal-day-number">${d}</span>
+                    <span class="cal-day-status">${isOcc ? 'Obsazeno' : 'Volno'}</span>
+                </div>`;
+            }
+            daysGrid.innerHTML = html;
+
+            // Klik pouze na volné, budoucí dny
+            daysGrid.querySelectorAll('.cal-day-cell.free:not(.past)').forEach(cell => {
+                cell.addEventListener('click', () => {
+                    const clicked = cell.getAttribute('data-date');
+                    if (!clicked) return;
+
+                    if (!selectedArrival || (selectedArrival && selectedDeparture)) {
+                        selectedArrival = clicked; selectedDeparture = null;
+                    } else if (clicked > selectedArrival) {
+                        const occ = (window.occupancyData && activeRoomId)
+                            ? (window.occupancyData[activeRoomId] || []) : [];
+                        const conflict = occ.some(od => od >= selectedArrival && od <= clicked);
+                        if (conflict) { selectedArrival = clicked; selectedDeparture = null; }
+                        else          { selectedDeparture = clicked; }
+                    } else {
+                        selectedArrival = clicked; selectedDeparture = null;
+                    }
+                    updateSelectionUI();
+                    renderCalendar();
+                });
+            });
+        };
+
+        const openModal = (roomId, roomName) => {
+            activeRoomId = roomId;
+            activeRoomName = roomName || 'Apartmán';
+            if (titleEl) titleEl.innerText = `Obsazenost – ${activeRoomName}`;
+            selectedArrival = null; selectedDeparture = null;
+            updateSelectionUI();
+            viewYear = new Date().getFullYear(); viewMonth = new Date().getMonth();
+            if (!window.occupancyData || Object.keys(window.occupancyData).length === 0) {
+                fetch('plugins/booking-sync/api.php')
+                    .then(r => r.json())
+                    .then(data => { window.occupancyData = data; renderCalendar(); })
+                    .catch(err => console.error('Chyba při načítání obsazenosti:', err));
+            }
+            renderCalendar();
+            modal.style.display = 'flex';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        };
+
+        const closeModal = () => { modal.style.display = 'none'; };
+
+        // Tlačítko Rezervovat – přenese data do formuláře a scrolluje k němu
+        if (reserveActionBtn) {
+            reserveActionBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const savedArrival   = selectedArrival;
+                const savedDeparture = selectedDeparture;
+                closeModal();
+
+                setTimeout(() => {
+                    const form = document.querySelector('.contact-form');
+                    if (form) {
+                        // Flatpickr mění type date inputu – hledáme podle _flatpickr instance
+                        const fpInputs = Array.from(form.querySelectorAll('input')).filter(i => i._flatpickr);
+                        const arrInput = fpInputs[0];
+                        const depInput = fpInputs[1];
+
+                        if (arrInput && savedArrival) {
+                            arrInput._flatpickr.setDate(savedArrival, true);
+                        }
+                        if (depInput && savedDeparture) {
+                            depInput._flatpickr.setDate(savedDeparture, true);
+                        }
+
+                        const target = document.getElementById('poptat-termin') || form;
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else if (activeRoomId) {
+                        const slugs = {
+                            babiccin: 'babiccin.php', kocici: 'kocici.php',
+                            konsky: 'konsky.php', kvetinovy: 'kvetinovy.php', medovy: 'medovy.php'
+                        };
+                        const params = new URLSearchParams();
+                        if (savedArrival)   params.set('arrival',   savedArrival);
+                        if (savedDeparture) params.set('departure', savedDeparture);
+                        const qs = params.toString() ? `?${params.toString()}` : '';
+                        window.location.href = `${slugs[activeRoomId] || activeRoomId + '.php'}#poptat-termin${qs}`;
+                    }
+                }, 200);
+            });
+        }
+
+        populateSelects();
+
+        document.querySelectorAll('.open-room-calendar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(btn.getAttribute('data-room'), btn.getAttribute('data-room-name'));
+            });
+        });
+
+        if (closeBtn)    closeBtn.addEventListener('click', closeModal);
+        if (prevBtn)     prevBtn.addEventListener('click', () => { viewMonth===0?(viewMonth=11,viewYear--):viewMonth--; renderCalendar(); });
+        if (nextBtn)     nextBtn.addEventListener('click', () => { viewMonth===11?(viewMonth=0,viewYear++):viewMonth++; renderCalendar(); });
+        if (monthSelect) monthSelect.addEventListener('change', e => { viewMonth=parseInt(e.target.value,10); renderCalendar(); });
+        if (yearSelect)  yearSelect.addEventListener('change',  e => { viewYear=parseInt(e.target.value,10);  renderCalendar(); });
+        window.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key==='Escape' && modal.style.display==='flex') closeModal(); });
+    };
+
+    initRoomCalendarModal();
 });

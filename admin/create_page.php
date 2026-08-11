@@ -11,18 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $filename = $data['filename'] ?? '';
     
-    // Basic validation
     if (empty($filename)) {
         echo json_encode(['status' => 'error', 'message' => 'Název souboru nesmí být prázdný.']);
         exit;
     }
 
-    // Append .php if missing
     if (strpos($filename, '.') === false) {
         $filename .= '.php';
     }
 
-    // Safety check
     if (!preg_match('/^[a-z0-9_-]+\.php$/i', $filename)) {
         echo json_encode(['status' => 'error', 'message' => 'Neplatný název souboru. Používejte jen písmena, čísla, pomlčky a podtržítka.']);
         exit;
@@ -35,35 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Template for new page
-    $template = "<?php 
-require_once 'includes/CMS.php';
-\$meta = CMS::getPageMeta();
-?>
-<!DOCTYPE html>
-<html lang=\"cs\">
-<head>
-    <?php include 'includes/head.php'; ?>
-</head>
-<body>
-    <?php include 'includes/header.php'; ?>
-    
-    <main>
-        <section class=\"section-padding\">
-            <div class=\"container\">
-                <h1>Nová stránka: " . str_replace('.php', '', $filename) . "</h1>
-                <p>Zde začněte tvořit svůj obsah...</p>
-            </div>
-        </section>
-    </main>
-
-    <?php include 'includes/footer.php'; ?>
-    <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
-</body>
-</html>";
+    $template = "<?php\nrequire_once __DIR__ . '/admin/includes/CMS.php';\nCMS::getHeader();\n?>\n<section class=\"py-20 max-w-7xl mx-auto px-6 space-y-8\">\n    <h1 class=\"text-4xl font-extrabold text-white\">" . htmlspecialchars(ucfirst(str_replace('.php', '', $filename))) . "</h1>\n    <p class=\"text-slate-300\">Zde začněte tvořit obsah nové stránky...</p>\n</section>\n<?php\nCMS::getFooter();\n?>\n";
 
     if (file_put_contents($targetPath, $template)) {
-        // Register in pages.json
         $pagesPath = ROOT_DIR . 'config/pages.json';
         $pages = [];
         if (file_exists($pagesPath)) {
@@ -79,8 +50,7 @@ require_once 'includes/CMS.php';
         ];
         file_put_contents($pagesPath, json_encode($pages, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-        // Auto-commit
-        require_once ROOT_DIR . 'includes/CMS.php';
+        require_once __DIR__ . '/includes/CMS.php';
         $gitResult = CMS::gitCommit("Create new page: $filename");
 
         echo json_encode([

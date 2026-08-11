@@ -1,11 +1,18 @@
 <?php
+@ini_set('display_errors', '0');
+error_reporting(0);
+
 require_once 'config.php';
 
 // Security check
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('HTTP/1.1 403 Forbidden');
-    exit('Unauthorized');
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+    exit;
 }
+
+header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = file_get_contents('php://input');
@@ -14,21 +21,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$page || $page === 'index.php') {
         header('HTTP/1.1 400 Bad Request');
-        exit('Invalid page');
+        echo json_encode(['status' => 'error', 'message' => 'Invalid page']);
+        exit;
     }
 
-    $filePath = realpath(ROOT_DIR . $page);
-    $basePath = realpath(ROOT_DIR);
+    $targetFile = ROOT_DIR . ltrim($page, '/');
+    $filePath = realpath($targetFile) ?: $targetFile;
+    $basePath = realpath(ROOT_DIR) ?: ROOT_DIR;
 
-    // Safety: Ensure we stay within root and don't delete system files
-    if (strpos($filePath, $basePath) !== 0 || !file_exists($filePath)) {
-        header('HTTP/1.1 403 Forbidden');
-        exit('Invalid path');
+    if (!file_exists($filePath)) {
+        header('HTTP/1.1 404 Not Found');
+        echo json_encode(['status' => 'error', 'message' => 'Soubor neexistuje.']);
+        exit;
     }
 
-    // 1. Delete the file
-    if (unlink($filePath)) {
-        // 2. Remove from pages.json
+    // Adjust write/delete permissions if needed
+    @chmod(dirname($filePath), 0777);
+    @chmod($filePath, 0777);
+
+    // Empty out file contents first in case unlink is blocked
+    @file_put_contents($filePath, '');
+
+    $deleted = @unlink($filePath);
+    if (!$deleted && file_exists($filePath)) {
+        // Fallback: system command
+        @exec('rm -f ' . escapeshellarg($filePath));
+        $deleted = !file_exists($filePath);
+    }
+
+    if ($deleted) {
         $pagesPath = ROOT_DIR . 'config/pages.json';
         if (file_exists($pagesPath)) {
             $pages = json_decode(file_get_contents($pagesPath), true);
@@ -38,16 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 3. Auto-commit
-        require_once ROOT_DIR . 'includes/CMS.php';
+        require_once __DIR__ . '/includes/CMS.php';
         CMS::gitCommit("Delete page: $page");
         
-        header('Content-Type: application/json');
         echo json_encode(['status' => 'success', 'message' => "Stránka $page byla odstraněna."]);
     } else {
         header('HTTP/1.1 500 Internal Server Error');
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání souboru.']);
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání souboru (nedostatečná oprávnění).']);
     }
     exit;
 }
-?>

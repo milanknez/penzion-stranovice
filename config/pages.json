@@ -65,6 +65,12 @@
         "description": "Nabízíme profesionální ustájení pro vaše koně v klidném prostředí s rozlehlými pastvinami.",
         "keywords": "ustájení koní, koňské pastviny, Malenice, Šumava"
     },
+    "dovolena-s-vlastnim-konem.php": {
+        "slug": "dovolena-s-vlastnim-konem",
+        "title": "Dovolená s vlastním koněm | Statek Straňovice",
+        "description": "Přijeďte na dovolenou i se svým koněm na Statek Straňovice v Pošumaví. Komfortní ubytování pro vás a pastevní zázemí pro vašeho koně.",
+        "keywords": "dovolená s vlastním koněm, ubytování s koněm, pastevní ustájení, vyjížďky na koni, Šumava, Statek Straňovice"
+    },
     "vylety.php": {
         "slug": "tipy-na-vylety",
         "title": "Tipy na výlety | Statek Straňovice",
@@ -82,6 +88,12 @@
         "title": "Služby v zemědělství | Statek Straňovice",
         "description": "Nabízíme zemědělské práce a služby pro farmáře v okolí Malenic a Strakonic.",
         "keywords": "zemědělské služby, práce na poli, Statek Straňovice"
+    },
+    "ochrana-osobnich-udaju.php": {
+        "slug": "ochrana-osobnich-udaju",
+        "title": "Ochrana osobních údajů | Statek Straňovice",
+        "description": "Informace o zpracování a ochraně osobních údajů (GDPR) na Statku Straňovice.",
+        "keywords": "GDPR, ochrana osobních údajů, Statek Straňovice"
     },
     "404.php": {
         "slug": "404",

@@ -1,8 +1,20 @@
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Admin asset mapping rules
+    RewriteRule ^admin/assets/(.*)$ assets/$1 [L]
+    RewriteRule ^admin/uploads/(.*)$ uploads/$1 [L]
 
-# Skip existing files and directories
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+    # If the file or directory exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-# Send everything else to router.php relative to the current directory
-RewriteRule ^(.*)$ router.php [L,QSA]
+    # Automatic .php extension matching (e.g. /o-nas -> o-nas.php)
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.*)$ $1.php [L]
+    
+    # Route all other requests to router.php
+    RewriteRule ^(.*)$ router.php [QSA,L]
+</IfModule>

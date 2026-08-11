@@ -60,6 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Auto-fill contact form message from URL parameter ?program=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const programParam = urlParams.get('program');
+    if (programParam) {
+        const messageTextarea = document.querySelector('.contact-form textarea[name="zprava"]');
+        if (messageTextarea) {
+            messageTextarea.value = `Dobrý den,\nmám zájem o program: ${programParam}.\nProsím o více informací a volné termíny.`;
+        }
+    }
+
     // Form Submission
     const form = document.querySelector('.contact-form');
     if (form) {
@@ -69,16 +79,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalText = btn.innerText;
             btn.innerText = 'Odesílám...';
             btn.disabled = true;
-            setTimeout(() => {
-                btn.innerText = 'Děkujeme! Ozveme se vám.';
-                btn.style.backgroundColor = '#4A5D23';
-                form.reset();
+
+            const formData = new FormData(form);
+
+            fetch('send.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerText = 'Děkujeme! Ozveme se vám.';
+                    btn.style.backgroundColor = '#4A5D23';
+                    form.reset();
+                } else {
+                    alert(data.message || 'Chyba při odesílání formuláře.');
+                    btn.innerText = originalText;
+                }
+            })
+            .catch(err => {
+                alert('Chyba při komunikaci se serverem. Zkontrolujte prosím připojení.');
+                btn.innerText = originalText;
+            })
+            .finally(() => {
                 setTimeout(() => {
                     btn.innerText = originalText;
                     btn.disabled = false;
                     btn.style.backgroundColor = '';
-                }, 3000);
-            }, 1500);
+                }, 4000);
+            });
         });
     }
 

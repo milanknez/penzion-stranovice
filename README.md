@@ -9,10 +9,25 @@ Tento projekt je lehký, souborově orientovaný CMS postavený na PHP a GrapesJ
 - **SEO URL**: Podpora pro hezké adresy (např. `/kocici-apartman` místo `pokoj.php`).
 
 ## Lokální spuštění
+
+### Pomocí Dockeru (Doporučeno)
+Spusťte kontejner příkazem:
+```bash
+docker compose up -d
+```
+Aplikace poběží na [http://localhost:8002](http://localhost:8002).
+
+Zastavení kontejneru:
+```bash
+docker compose down
+```
+
+### Pomocí vestavěného PHP serveru
 Pro správné fungování SEO adres na vestavěném PHP serveru spouštějte projekt příkazem:
 ```bash
 php -S localhost:8002 router.php
 ```
+
 
 ## Konfigurace serveru (Deployment)
 

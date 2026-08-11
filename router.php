@@ -1,60 +1,14 @@
 <?php
-require_once 'includes/CMS.php';
-
-$request = $_SERVER['REQUEST_URI'];
-$path = parse_url($request, PHP_URL_PATH);
-$slug = trim($path, '/');
-
-// Strip subdirectory prefix (e.g. "w1/svatby-a-akce" → "svatby-a-akce")
-$basePath = trim(CMS::getBasePath(), '/');
-if ($basePath && strpos($slug, $basePath . '/') === 0) {
-    $slug = substr($slug, strlen($basePath) + 1);
-} elseif ($slug === $basePath) {
-    $slug = '';
-}
-
-// Support PHP built-in server: serve existing files directly
+/**
+ * Main Front Controller Router
+ */
 if (php_sapi_name() === 'cli-server') {
-    $fullPath = __DIR__ . $path;
-    if (file_exists($fullPath)) {
-        if (is_file($fullPath)) return false;
-        if (is_dir($fullPath) && file_exists($fullPath . '/index.php')) return false;
+    $file = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (is_file($file)) {
+        return false;
     }
 }
 
+require_once __DIR__ . '/admin/core/Router.php';
 
-$pages = CMS::getPagesConfig();
-$found = false;
-
-foreach ($pages as $file => $config) {
-    if (isset($config['slug']) && $config['slug'] === $slug && $slug !== '') {
-        define('CURRENT_PAGE', $file);
-        require $file;
-        $found = true;
-        break;
-    }
-}
-
-if (!$found) {
-    if (empty($slug)) {
-        define('CURRENT_PAGE', 'index.php');
-        require 'index.php';
-    } else if (file_exists($slug . '.php')) {
-        define('CURRENT_PAGE', $slug . '.php');
-        require $slug . '.php';
-    } else {
-        $siteConfig = CMS::getSiteConfig();
-        $errorPage = $siteConfig['error_page_404'] ?? null;
-        
-        if ($errorPage && file_exists($errorPage)) {
-            header("HTTP/1.0 404 Not Found");
-            require $errorPage;
-        } else {
-            header("HTTP/1.0 404 Not Found");
-            echo "404 - Stránka nenalezena";
-        }
-    }
-}
-
-
-
+CMSRouter::dispatch();
