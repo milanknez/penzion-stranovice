@@ -1,0 +1,13 @@
+name: penzion-stranovice
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: penzion-stranovice-web
+    ports:
+      - "8002:80"
+    volumes:
+      - .:/var/www/html
+    restart: unless-stopped

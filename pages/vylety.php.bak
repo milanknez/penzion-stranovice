@@ -1,0 +1,1960 @@
+<?php
+require_once __DIR__ . '/../admin/includes/CMS.php';
+CMS::getHeader();
+?>
+<style>
+    .trip-filters-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin: 2.5rem 0 1.5rem;
+    }
+    .filter-btn {
+        background: #ffffff;
+        border: 2px solid var(--border, #e2e8f0);
+        color: var(--text-dark, #2d3748);
+        padding: 0.65rem 1.4rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .filter-btn:hover {
+        border-color: var(--primary, #2d5a27);
+        color: var(--primary, #2d5a27);
+        transform: translateY(-2px);
+    }
+    .filter-btn.active {
+        background: var(--primary, #2d5a27);
+        color: #ffffff;
+        border-color: var(--primary, #2d5a27);
+        box-shadow: 0 4px 12px rgba(45, 90, 39, 0.25);
+    }
+    
+    .trip-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .trip-card {
+        background: #ffffff;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: var(--shadow, 0 4px 20px rgba(0,0,0,0.08));
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid var(--border, #e2e8f0);
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        opacity: 1;
+        transform: scale(1);
+    }
+    .trip-card.is-hidden {
+        display: none !important;
+    }
+    .trip-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+    .trip-img-wrapper {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+        width: 100%;
+        background: #f8fafc;
+    }
+    .trip-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+    .trip-card:hover .trip-img {
+        transform: scale(1.08);
+    }
+    .trip-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--primary, #2d5a27);
+        backdrop-filter: blur(4px);
+        color: #ffffff;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    .trip-content {
+        padding: 1.75rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .trip-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--text-light, #718096);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .trip-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .trip-title {
+        margin-bottom: 0.75rem;
+        font-size: 1.3rem;
+        color: var(--text-dark, #1a202c);
+        line-height: 1.35;
+        font-weight: 700;
+    }
+    .trip-description {
+        color: var(--text-muted, #4a5568);
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+        font-size: 0.95rem;
+    }
+    .trip-highlights {
+        margin-bottom: 1.5rem;
+        padding-left: 0;
+        list-style: none;
+        color: var(--text-muted, #4a5568);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    .trip-highlights li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.4rem;
+    }
+    .trip-highlights li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--primary, #2d5a27);
+        font-weight: bold;
+    }
+    .trip-footer {
+        margin-top: auto;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border, #edf2f7);
+    }
+    .btn-gmaps {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        background: var(--primary, #2d5a27);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(45, 90, 39, 0.25);
+        width: 100%;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-gmaps:hover {
+        background: #1e3d1a;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(45, 90, 39, 0.35);
+    }
+    
+    .distance-section {
+        background: var(--bg-light, #f8fafc);
+        border-radius: 24px;
+        padding: 4rem 2rem;
+        margin: 4rem 0;
+        border: 1px solid var(--border, #e2e8f0);
+    }
+    .distance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+    }
+    .distance-item {
+        background: #ffffff;
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid var(--border, #e2e8f0);
+        transition: transform 0.3s ease;
+    }
+    .distance-item:hover {
+        transform: translateY(-4px);
+    }
+    .distance-val {
+        display: block;
+        font-size: 2.3rem;
+        font-weight: 800;
+        color: var(--primary, #2d5a27);
+        margin-bottom: 0.4rem;
+        line-height: 1;
+    }
+    .distance-label {
+        color: var(--text-dark, #2d3748);
+        font-size: 1rem;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero" style="height: 55vh; min-height: 420px;">
+    <div class="hero-bg" style="background-image: url(/assets/img/vylety_hero.png);"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <h2 class="hero-subtitle fadeIn">Objevujte krásy jižních Čech a Šumavy</h2>
+        <h1 class="hero-title fadeInDelay">Tipy na výlety a okolí</h1>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="section-padding">
+    <div class="container">
+        <div class="text-center" style="max-width: 800px; margin-inline: auto;">
+            <span class="section-tag">Kam vyrazit</span>
+            <h2 class="section-title">Co navštívit v okolí Straňovic</h2>
+            <p class="section-description">
+                Penzion a statek ve Straňovicích je skvělým výchozím bodem pro pěší túry, cyklovýlety, lyžování, wellness i gurmánské zážitky. Vyberte si kategorii a naplánujte si perfektní den.
+            </p>
+
+            <!-- Filter Buttons -->
+            <div class="trip-filters-wrapper">
+                <button class="filter-btn active" data-filter="all">
+                    <i data-lucide="grid"></i> Všechny tipy (62)
+                </button>
+                <button class="filter-btn" data-filter="okoli">
+                    <i data-lucide="compass"></i> Okolí a Památky
+                </button>
+                <button class="filter-btn" data-filter="koupanie">
+                    <i data-lucide="waves"></i> Koupání a Wellness
+                </button>
+                <button class="filter-btn" data-filter="zima">
+                    <i data-lucide="snowflake"></i> Lyžování a Běžky
+                </button>
+                <button class="filter-btn" data-filter="gastro">
+                    <i data-lucide="utensils"></i> Gastro a Nákupy
+                </button>
+            </div>
+        </div>
+
+        <!-- Trip Grid -->
+        <div class="trip-grid" id="tripGrid">
+
+            <!-- 1. Venkovní bazén Penzionu Straňovice -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Venkovní bazén Penzionu Straňovice" class="trip-img">
+                    <span class="trip-badge">U penzionu</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> Přímo u penzionu</span>
+                        <span><i data-lucide="clock"></i> 0 min</span>
+                    </div>
+                    <h3 class="trip-title">Venkovní bazén Penzionu Straňovice</h3>
+                    <p class="trip-description">Přímo v areálu našeho statku ve Straňovicích je pro ubytované hosty k dispozici osvěžující venkovní bazén pro letní relaxaci.</p>
+                    <ul class="trip-highlights">
+                        <li>Venkovní bazén exkluzivně pro ubytované</li>
+                        <li>Osvěžení v horkých letních dnech</li>
+                        <li>Pohodlná lehátka a trávník okolo</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.12386,13.89667" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Venkovní ohniště a Posezení u Penzionu -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Venkovní ohniště a Posezení u Penzionu" class="trip-img">
+                    <span class="trip-badge">U penzionu</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> Přímo u penzionu</span>
+                        <span><i data-lucide="clock"></i> 0 min</span>
+                    </div>
+                    <h3 class="trip-title">Venkovní ohniště a Posezení u Penzionu</h3>
+                    <p class="trip-description">Romantické venkovní ohniště s dřevem a posezením pro ubytované hosty. Ideální pro večerní opékání špekáčků a kytaru pod hvězdami.</p>
+                    <ul class="trip-highlights">
+                        <li>Tradiční venkovní ohniště s posezením</li>
+                        <li>Příprava dřeva na opékání</li>
+                        <li>Klidné večerní posezení na statku</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.12386,13.89667" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Straňovický rybník u řeky Volyňky -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Straňovický rybník u řeky Volyňky" class="trip-img">
+                    <span class="trip-badge">Pěšky 2 min</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 200 m od penzionu</span>
+                        <span><i data-lucide="clock"></i> 2 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Straňovický rybník u řeky Volyňky</h3>
+                    <p class="trip-description">Odpočinková zóna u Straňovického rybníka na řece Volyňce. Ráj pro rybáře a klidná přírodní oáza pro krátkou večerní či ranní procházku.</p>
+                    <ul class="trip-highlights">
+                        <li>Odpočinková rybářská zóna</li>
+                        <li>Krásné přírodní prostředí u řeky Volyňky</li>
+                        <li>Jen pár kroků od penzionu</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1255,13.8860" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Opravená Fara v Malenicích a Letní kavárna -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_malenice.png" alt="Opravená Fara v Malenicích a Letní kavárna" class="trip-img">
+                    <span class="trip-badge">2 km / Pěšky</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km od penzionu</span>
+                        <span><i data-lucide="clock"></i> 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Opravená Fara v Malenicích a Letní kavárna</h3>
+                    <p class="trip-description">Krásně zrekonstruovaný objekt historické fary v Malenicích. Pořádají se zde sezónní výstavy, funguje tu letní kavárnička a zázemí s dětským hřištěm.</p>
+                    <ul class="trip-highlights">
+                        <li>Letní kavárna a sezónní výstavy</li>
+                        <li>Dětské hřiště v klidném dvoře fary</li>
+                        <li>Historická architektura</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1292,13.8812" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Barokní kostel sv. Jakuba v Malenicích -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_malenice.png" alt="Barokní kostel sv. Jakuba v Malenicích" class="trip-img">
+                    <span class="trip-badge">2 km / Památka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Barokní kostel sv. Jakuba v Malenicích</h3>
+                    <p class="trip-description">Dominanta obce Malenice – barokní kostel sv. Jakuba ze 14. století s dochovaným historickým interiérem a zvonicí.</p>
+                    <ul class="trip-highlights">
+                        <li>Barokní architektonická dominanta</li>
+                        <li>Historický interiér kostela</li>
+                        <li>V centru památkové zóny Malenic</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1292,13.8808" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Památný hřbitov v Malenicích -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_malenice.png" alt="Památný hřbitov v Malenicích" class="trip-img">
+                    <span class="trip-badge">2 km / Historie</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Památný hřbitov v Malenicích</h3>
+                    <p class="trip-description">Unikátní malenický hřbitov – místo posledního odpočinku architekta Josefa Zítka (stavitele Národního divadla), archiváře Františka Teplého, režiséra Zdeňka Podskalského a herečky Jiřiny Jiráskové.</p>
+                    <ul class="trip-highlights">
+                        <li>Hrob režiséra Zdeňka Podskalského a Jiřiny Jiráskové</li>
+                        <li>Hrob architekta Josefa Zítka (stavitel ND)</li>
+                        <li>Památný archivář a kněz František Teplý</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1294,13.8810" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Vila Zdeňka Podskalského v Malenicích -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_malenice.png" alt="Vila Zdeňka Podskalského v Malenicích" class="trip-img">
+                    <span class="trip-badge">2 km / Architektura</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Vila Zdeňka Podskalského v Malenicích</h3>
+                    <p class="trip-description">Stylová rodinná vila režiséra Zdeňka Podskalského v Malenicích. Objekt je v soukromém vlastnictví a lze si jej prohlédnout zvenčí při procházce obcí.</p>
+                    <ul class="trip-highlights">
+                        <li>Rodinné sídlo slavného režiséra</li>
+                        <li>Stylová architektura u řeky</li>
+                        <li>Prohlídka zvenčí při procházce obcí</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1288,13.8820" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Malinové slavnosti v Malenicích -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/event.png" alt="Malinové slavnosti v Malenicích" class="trip-img">
+                    <span class="trip-badge">Červenec / Akce</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> Červencová sobota</span>
+                    </div>
+                    <h3 class="trip-title">Malinové slavnosti v Malenicích</h3>
+                    <p class="trip-description">Tradiční červencová slavnost v Malenicích plná malinových specialit, KOLÁČŮ, řemeslného jarmarku, živé hudby a programu pro děti.</p>
+                    <ul class="trip-highlights">
+                        <li>Tradiční červencová akce</li>
+                        <li>Malinové koláče, dobroty a jarmark</li>
+                        <li>Kulturní a hudební program</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1290,13.8815" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Víceúčelové sportovní hřiště Malenice -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Víceúčelové sportovní hřiště Malenice" class="trip-img">
+                    <span class="trip-badge">2 km / Sport</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 4 min autem / 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Víceúčelové sportovní hřiště Malenice</h3>
+                    <p class="trip-description">Moderní víceúčelové sportovní hřiště v Malenicích ideální pro tenis, volejbal, nohejbal, malou kopanou a mičudové hry s rodinou či přáteli.</p>
+                    <ul class="trip-highlights">
+                        <li>Kvalitní umělý povrch pro míčové sporty</li>
+                        <li>Skvělé vyžití pro dospělé i děti</li>
+                        <li>Pouhé 2 km od penzionu</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1275,13.8835" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Kaplička sv. Václava na Hůrce -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Kaplička sv. Václava na Hůrce" class="trip-img">
+                    <span class="trip-badge">Pěšky / Vyhlídka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2.5 km</span>
+                        <span><i data-lucide="clock"></i> 45 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Kaplička sv. Václava na Hůrce</h3>
+                    <p class="trip-description">Malebná kaplička sv. Václava na návrší Hůrka nad obcí Malenice s panoramatickým výhledem na údolí řeky Volyňky a šumavské podhůří.</p>
+                    <ul class="trip-highlights">
+                        <li>Nádherný výhled na údolí řeky Volyňky</li>
+                        <li>Klidné místo pro odpočinek a fotky</li>
+                        <li>Trasa nad obcí směrem na Zlešice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1350,13.8850" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. Naučná stezka Mechorost (Skalka nad Malenicemi) -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Naučná stezka Mechorost (Skalka nad Malenicemi)" class="trip-img">
+                    <span class="trip-badge">Pěšky / Příroda</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2.5 km</span>
+                        <span><i data-lucide="clock"></i> 45 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Naučná stezka Mechorost (Skalka nad Malenicemi)</h3>
+                    <p class="trip-description">Naučná stezka Skalka – Mechorost vedoucí z Malenic směrem na Zlešice. Obsahuje tabule o fauně, flóře a historii zdejší krajiny.</p>
+                    <ul class="trip-highlights">
+                        <li>Příjemná lesní naučná stezka</li>
+                        <li>Informační tabule o přírodě Šumavska</li>
+                        <li>Propojení na výhledy z Hůrky</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1360,13.8860" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12. Procházka a Cyklostezka podél řeky Volyňky -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero.png" alt="Procházka a Cyklostezka podél řeky Volyňky" class="trip-img">
+                    <span class="trip-badge">Pěšky / Kolo</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 1 - 6 km</span>
+                        <span><i data-lucide="clock"></i> Dle libosti</span>
+                    </div>
+                    <h3 class="trip-title">Procházka a Cyklostezka podél řeky Volyňky</h3>
+                    <p class="trip-description">Romantická a nenáročná trasa podél meandrující řeky Volyňky ze Straňovic přes Malenice až do Lčovic nebo Volyně. Vhodné pro pěší procházky i cyklovýlety.</p>
+                    <ul class="trip-highlights">
+                        <li>Klidná trasa podél zurčící řeky</li>
+                        <li>Vhodné pro dospělé, děti i kočárky</li>
+                        <li>Možnost zastávky na občerstvení po cestě</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1260,13.8850" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 13. Čkyně – Židovská synagoga -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/event.png" alt="Čkyně – Židovská synagoga" class="trip-img">
+                    <span class="trip-badge">4 km / Památka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 4 km</span>
+                        <span><i data-lucide="clock"></i> 6 min autem / 15 min vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Čkyně – Židovská synagoga</h3>
+                    <p class="trip-description">Unikátně zrenovovaná klasicistní židovská synagoga ve Čkyni s expozicí o židovské komunitě a kulturním sále.</p>
+                    <ul class="trip-highlights">
+                        <li>Kompletně zrekonstruovaná synagoga</li>
+                        <li>Expozice o židovské historii regionu</li>
+                        <li>Kulturní přednášky a akce</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1120,13.8290" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 14. Čkyně – Historický židovský hřbitov -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/event.png" alt="Čkyně – Historický židovský hřbitov" class="trip-img">
+                    <span class="trip-badge">4 km / Historie</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 4.5 km</span>
+                        <span><i data-lucide="clock"></i> 7 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Čkyně – Historický židovský hřbitov</h3>
+                    <p class="trip-description">Cenný historický židovský hřbitov ze 17. století u obce Čkyně obklopený kamennou zdí a vzrostlými stromy.</p>
+                    <ul class="trip-highlights">
+                        <li>Náhrobky ze 17. až 20. století</li>
+                        <li>Tiché a tajuplné pietní místo</li>
+                        <li>Nedaleko židovské synagogy</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1140,13.8310" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 15. Volyně – Gotická tvrz a Městské muzeum -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Volyně – Gotická tvrz a Městské muzeum" class="trip-img">
+                    <span class="trip-badge">6 km / Muzeum</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Volyně – Gotická tvrz a Městské muzeum</h3>
+                    <p class="trip-description">Historická gotická tvrz ve Volyni sídlící Městské muzeum s bohatými expozicemi etnografie, řemesel a sezónními výstavami.</p>
+                    <ul class="trip-highlights">
+                        <li>Starobylá gotická tvrz</li>
+                        <li>Městské muzeum Volyně</li>
+                        <li>Celoroční výstavy a kulturní akce</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1660,13.8860" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 16. Volyně – Renesanční radnice a Náměstí -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Volyně – Renesanční radnice a Náměstí" class="trip-img">
+                    <span class="trip-badge">6 km / Památka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Volyně – Renesanční radnice a Náměstí</h3>
+                    <p class="trip-description">Starobylé renesanční náměstí ve Volyni s radnicí ze 16. století, mariánským sloupem a kavárničkami.</p>
+                    <ul class="trip-highlights">
+                        <li>Renesanční radnice s věžními hodinami</li>
+                        <li>Historické náměstí s mariánským sloupem</li>
+                        <li>Kavárny a restaurace na náměstí</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1655,13.8870" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 17. Zřícenina hradu Helfenburk -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/chov_hero.png" alt="Zřícenina hradu Helfenburk" class="trip-img">
+                    <span class="trip-badge">18 km / Hrad</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 18 km</span>
+                        <span><i data-lucide="clock"></i> 22 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Zřícenina hradu Helfenburk</h3>
+                    <p class="trip-description">Mohutná a romantická zřícenina jednoho z největších jihočeských hradů. Z dochované věže je nádherný výhled na Šumavu a okolní krajinu.</p>
+                    <ul class="trip-highlights">
+                        <li>Mohutné hradby a zachovalá hradní věž</li>
+                        <li>Vyhlídka na šumavské podhůří</li>
+                        <li>Krásná procházka lesem ke hradu</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1411,14.0041" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 18. Klostermannova rozhledna na Javorníku -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Klostermannova rozhledna na Javorníku" class="trip-img">
+                    <span class="trip-badge">24 km / Rozhledna</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 24 km</span>
+                        <span><i data-lucide="clock"></i> 28 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Klostermannova rozhledna na Javorníku</h3>
+                    <p class="trip-description">Kamenná rozhledna na vrcholu hora Javorník (1066 m n. m.). Nabízí neopakovatelný kruhový výhled na celou Šumavu a za dobré viditelnosti až na Alpy.</p>
+                    <ul class="trip-highlights">
+                        <li>Vrchol Javorník (1066 m n. m.)</li>
+                        <li>Úchvatný kruhový výhled na Šumavu</li>
+                        <li>Naučná stezka K. Klostermanna</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1360,13.6550" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 19. Královský hrad Kašperk -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_kasperk.png" alt="Královský hrad Kašperk" class="trip-img">
+                    <span class="trip-badge">25 km / Hrad</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 25 km</span>
+                        <span><i data-lucide="clock"></i> 30 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Královský hrad Kašperk</h3>
+                    <p class="trip-description">Nejvýše položený královský hrad v ČR založený Karlem IV. r. 1356. Prohlídkové okruhy, kostýmované akce pro rodiny a stezka na Pustý hrádek.</p>
+                    <ul class="trip-highlights">
+                        <li>Nejvýše položený hrad založený Karlem IV.</li>
+                        <li>Vyhlídky z hradních věží</li>
+                        <li>Stezka na vyhlídku Pustý hrádek</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1561,13.5574" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 20. Historické městečko Kašperské Hory -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_kasperk.png" alt="Historické městečko Kašperské Hory" class="trip-img">
+                    <span class="trip-badge">25 km / Město</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 25 km</span>
+                        <span><i data-lucide="clock"></i> 30 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Historické městečko Kašperské Hory</h3>
+                    <p class="trip-description">Malebné horské městečko pod hradem Kašperk s Muzeem Šumavy, Muzeem motocyklů, historickým náměstím a kavárnami.</p>
+                    <ul class="trip-highlights">
+                        <li>Muzeum Šumavy a Muzeum motocyklů</li>
+                        <li>Náměstí s barokní radnicí</li>
+                        <li>Kavárny a výchozí bod na turistické trasy</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1440,13.5550" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 21. Renesanční vodní zámek Kratochvíle -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/event.png" alt="Renesanční vodní zámek Kratochvíle" class="trip-img">
+                    <span class="trip-badge">30 km / Zámek</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 30 km</span>
+                        <span><i data-lucide="clock"></i> 32 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Renesanční vodní zámek Kratochvíle</h3>
+                    <p class="trip-description">Perla české renesance nedaleko Netolic. Kouzelný vodní zámek obklopený vodním příkopem a udržovanou italskou renesanční zahradou.</p>
+                    <ul class="trip-highlights">
+                        <li>Unikátní vodní zámek v italském stylu</li>
+                        <li>Nádherné renesanční zahrady</li>
+                        <li>Bohatá výzdoba a zámecké prohlídky</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0592,14.1685" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 22. Zámek Vimperk -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Zámek Vimperk" class="trip-img">
+                    <span class="trip-badge">12 km / Zámek</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 15 min autem / vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Zámek Vimperk</h3>
+                    <p class="trip-description">Monumentální zrekonstruovaný zámek Vimperk s novými prohlídkovými okruhy, expozicí sklářství a knihtiskařství.</p>
+                    <ul class="trip-highlights">
+                        <li>Nově zrekonstruovaný zámecký areál</li>
+                        <li>Expozice šumavského sklářství a tiskařství</li>
+                        <li>Zámecká zahrada a vyhlídka</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0535,13.7820" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 23. Sídlo NP Šumava Vimperk -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Sídlo NP Šumava Vimperk" class="trip-img">
+                    <span class="trip-badge">12 km / NP Šumava</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 15 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Sídlo Správy NP Šumava (Vimperk)</h3>
+                    <p class="trip-description">Sídlo Správy NP Šumava ve Vimperku. Informační centrum s mapami, materiály a nabídkou programů v národním parku.</p>
+                    <ul class="trip-highlights">
+                        <li>Informační středisko NP Šumava</li>
+                        <li>Prodej turistických map a průvodců</li>
+                        <li>Tipy na trasy a ekologický program</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0528,13.7850" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 24. Centrum Vimperka -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Centrum Vimperka" class="trip-img">
+                    <span class="trip-badge">12 km / Historie</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 15 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Historické centrum městečka Vimperk</h3>
+                    <p class="trip-description">Svažité historické náměstí ve Vimperku s městskými hradbami, Černou věží, kostelem sv. Bartoloměje a kavárnami.</p>
+                    <ul class="trip-highlights">
+                        <li>Svažité náměstí s měšťanskými domy</li>
+                        <li>Černá věž a pozůstatky hradeb</li>
+                        <li>Restaurace a kavárničky</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0545,13.7825" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 25. Strakonický hrad a Věž Rumpál -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero.png" alt="Strakonický hrad a Věž Rumpál" class="trip-img">
+                    <span class="trip-badge">22 km / Hrad</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem / vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Strakonický hrad a Věž Rumpál</h3>
+                    <p class="trip-description">Rozsáhlý hradní areál johanitů na soutoku Otavy a Volyňky s věží Rumpál a Muzeem středního Pootaví (expozice dudáctví a motocyklů ČZ).</p>
+                    <ul class="trip-highlights">
+                        <li>Hradní věž Rumpál s vyhlídkou</li>
+                        <li>Slavná expozice dudáctví a motocyklů ČZ</li>
+                        <li>Kapitula a hradní nádvoří</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2588,13.9025" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 26. Naučná stezka Podskalí u Otavy -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero.png" alt="Naučná stezka Podskalí u Otavy" class="trip-img">
+                    <span class="trip-badge">22 km / Příroda</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Naučná stezka Podskalí u Otavy</h3>
+                    <p class="trip-description">Oblíbený lesopark a romantická přírodní stezka podél řeky Otavy ve Strakonicích. Vhodné na odpočinkovou procházku i běh.</p>
+                    <ul class="trip-highlights">
+                        <li>Lesopark a stezka podél řeky Otavy</li>
+                        <li>Dětská hřiště a stánky s občerstvením</li>
+                        <li>Klidná oáza ve Strakonicích</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2620,13.8950" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 27. Boubínský prales a Boubínské jezírko -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_boubin.png" alt="Boubínský prales a Boubínské jezírko" class="trip-img">
+                    <span class="trip-badge">18 km / Prales</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 18 km</span>
+                        <span><i data-lucide="clock"></i> Celodenní výlet</span>
+                    </div>
+                    <h3 class="trip-title">Boubínský prales a Boubínské jezírko</h3>
+                    <p class="trip-description">Svatoznámý prales se staletými smrky a jedlemi, chráněný již od roku 1858. Romantické Boubínské jezírko vybudované r. 1836 pro plavení dřeva.</p>
+                    <ul class="trip-highlights">
+                        <li>Chráněný prales starý přes 160 let</li>
+                        <li>Romantické Boubínské jezírko</li>
+                        <li>Naučná stezka okolo pralesa</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=48.9772,13.8181" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 28. Rozhledna na vrcholu Boubína -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/map_boubin.png" alt="Rozhledna na vrcholu Boubína" class="trip-img">
+                    <span class="trip-badge">18 km / Vrchol</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 18 km</span>
+                        <span><i data-lucide="clock"></i> Celodenní výlet</span>
+                    </div>
+                    <h3 class="trip-title">Rozhledna na vrcholu Boubína</h3>
+                    <p class="trip-description">Dřevěná rozhledna na páté nejvyšší hoře české části Šumavy (1362 m n. m.). Nádherný výhled na Šumavu a za jasného počasí až na Alpy.</p>
+                    <ul class="trip-highlights">
+                        <li>Dřevěná rozhledna ve výšce 1362 m n. m.</li>
+                        <li>Kruhový výhled na Šumavu a Alpy</li>
+                        <li>Vrcholové výšlapy z Kubovy Huti či Kaplice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=48.9790,13.8150" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 29. Zelené autobusy NP Šumava -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Zelené autobusy NP Šumava" class="trip-img">
+                    <span class="trip-badge">NP Šumava</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> Od 25 km</span>
+                        <span><i data-lucide="clock"></i> Dle tras</span>
+                    </div>
+                    <h3 class="trip-title">Šumava NP a Zelené autobusy z Vimperka</h3>
+                    <p class="trip-description">Během letní sezóny můžete z Vimperka využít ekologické Zelené autobusy NP Šumava (www.np.sumava.cz), které vás pohodlně vyvezou na šumavské hřebeny.</p>
+                    <ul class="trip-highlights">
+                        <li>Ekologická doprava po hřebenech Šumavy</li>
+                        <li>Spoje přímo z Vimperka</li>
+                        <li>Informace na www.np.sumava.cz</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0530,13.7810" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 30. Zálezly a Budilov -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Zálezly a Budilov" class="trip-img">
+                    <span class="trip-badge">8 km / Procházka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 8 km</span>
+                        <span><i data-lucide="clock"></i> 10 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Zálezly (Kamenec) a Budilov</h3>
+                    <p class="trip-description">Malebná trasa po šumavském podhůří ze Zálezel přes vrch Kamenec do Budilova. Klidná příroda bez davů turistů s kapličkami a výhledy.</p>
+                    <ul class="trip-highlights">
+                        <li>Klidné šumavské podhůří</li>
+                        <li>Trasa přes vrch Kamenec</li>
+                        <li>Tradiční šumavské osady Zálezly a Budilov</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0950,13.8650" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 31. Keltská stezka Předgezdov -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Keltská stezka Předgezdov" class="trip-img">
+                    <span class="trip-badge">10 km / Historie</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 10 km</span>
+                        <span><i data-lucide="clock"></i> 12 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Keltská stezka Předgezdov (Předenice)</h3>
+                    <p class="trip-description">Historická Keltská stezka v okolí Předgezdova a Předenic připomínající dávné keltské osídlení v údolí Volyňky.</p>
+                    <ul class="trip-highlights">
+                        <li>Historické keltské lokality a hradiště</li>
+                        <li>Příjemná naučná stezka v přírodě</li>
+                        <li>Zajímavosti o dávné historii Šumavska</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1450,13.8750" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 32. Zemědělské muzeum ve Lhově -->
+            <div class="trip-card" data-category="okoli">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/chov_hero.png" alt="Zemědělské muzeum ve Lhově" class="trip-img">
+                    <span class="trip-badge">12 km / Tradice</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 14 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Zemědělské muzeum ve Lhově</h3>
+                    <p class="trip-description">Expozice staré zemědělské techniky a náčiní ve Lhově (u Mladíkovic/Vacova). Ukázka venkovského života a práce našich předků.</p>
+                    <ul class="trip-highlights">
+                        <li>Historické stroje a traktory</li>
+                        <li>Ukázka tradičních venkovských řemesel</li>
+                        <li>Zajímavá zastávka pro rodiny</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1350,13.7850" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 33. Retro koupaliště Volyně -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/trip_1786312326_151.jpg" alt="Retro koupaliště Volyně" class="trip-img">
+                    <span class="trip-badge">6 km / Koupaliště</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Retro koupaliště Volyně</h3>
+                    <p class="trip-description">Nejstarší dochované přírodní koupaliště v ČR z roku 1939. Nabízí neopakovatelnou prvorepublikovou atmosféru, dřevěné kabinky, čistou průtokovou vodu a stánek s občerstvením.</p>
+                    <ul class="trip-highlights">
+                        <li>Nejstarší přírodní koupaliště v ČR (1939)</li>
+                        <li>Prvorepublikové dřevěné kabinky</li>
+                        <li>Čistá protékající přírodní voda</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1642,13.8820" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 34. Přírodní koupaliště Rohanov -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero.png" alt="Přírodní koupaliště Rohanov" class="trip-img">
+                    <span class="trip-badge">18 km / Přírodní</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 18 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Přírodní koupaliště Rohanov</h3>
+                    <p class="trip-description">Koupaliště Lhota nad Rohanovem pod Šumavou. Průzračně čistá přírodní nádrž bez chemie, obklopená šumavskými lesy a čistým horským vzduchem.</p>
+                    <ul class="trip-highlights">
+                        <li>Přírodní nádrž s čistou vodou bez chemie</li>
+                        <li>Krásné šumavské prostředí u lesa</li>
+                        <li>Dětské hřiště a kiosek</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1415,13.7260" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 35. Krytý bazén Strakonice -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/room.png" alt="Krytý bazén Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Bazén</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Krytý plavecký bazén Strakonice</h3>
+                    <p class="trip-description">Krytý plavecký bazén ve Strakonicích s 25m dráhami, dětským bazénkem, tobogánem a vířivkami pro celoroční plavání.</p>
+                    <ul class="trip-highlights">
+                        <li>Plavecký 25m bazén a tobogán</li>
+                        <li>Dětský bazének a vířivky</li>
+                        <li>Celoroční provoz</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2550,13.8990" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 36. Letní koupaliště Strakonice -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/room.png" alt="Letní koupaliště Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Letní</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Letní koupaliště Strakonice</h3>
+                    <p class="trip-description">Slunné venkovní letní koupaliště ve Strakonicích s velkým bazénem, tobogánem, travnatými plážemi a občerstvením.</p>
+                    <ul class="trip-highlights">
+                        <li>Slunné travnaté pláže a velký bazén</li>
+                        <li>Tobogán a dětské vodní atrakce</li>
+                        <li>Stánky s občerstvením</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2555,13.8980" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 37. Krytý bazén Prachatice -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/room.png" alt="Krytý bazén Prachatice" class="trip-img">
+                    <span class="trip-badge">25 km / Bazén</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 25 km</span>
+                        <span><i data-lucide="clock"></i> 25 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Krytý plavecký bazén Prachatice</h3>
+                    <p class="trip-description">Moderní krytý bazén v Prachaticích s divokou řekou, vířivkami, tobogánem a dětským bazénkem.</p>
+                    <ul class="trip-highlights">
+                        <li>Divoká řeka a vířivky</li>
+                        <li>Plavecký bazén a tobogán</li>
+                        <li>Příjemné rodinné prostředí</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0125,13.9980" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 38. Saunový svět Prachatice -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/room.png" alt="Saunový svět Prachatice" class="trip-img">
+                    <span class="trip-badge">25 km / Sauny</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 25 km</span>
+                        <span><i data-lucide="clock"></i> 25 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Saunový svět a Wellness Prachatice</h3>
+                    <p class="trip-description">Vyhlášený saunový svět v Prachaticích s finskou saunou, parní lázní, infrasaunou a ochlazovacím bazénkem.</p>
+                    <ul class="trip-highlights">
+                        <li>Finská sauna, parní lázeň a infrasauna</li>
+                        <li>Ochlazovací bazének a odpočívárna</li>
+                        <li>Dokonalá relaxace i v zimě</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0128,13.9985" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 39. Křišťanovský rybník -->
+            <div class="trip-card" data-category="koupanie">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Křišťanovský rybník" class="trip-img">
+                    <span class="trip-badge">30 km / Rašelina</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 30 km</span>
+                        <span><i data-lucide="clock"></i> 30 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Křišťanovský rybník – Rašelinové koupání</h3>
+                    <p class="trip-description">Přírodní rybník s léčivou rašelinovou vodou obklopený šumavskými lesy nedaleko Prachatic. Koupání s blahodárnými účinky na pokožku a klouby.</p>
+                    <ul class="trip-highlights">
+                        <li>Léčivá rašelinová tmavá voda</li>
+                        <li>Přírodní koupaliště v srdci přírody</li>
+                        <li>Klidná lokalita bez davů</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=48.9560,14.0550" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 40. Ski areál Zadov -->
+            <div class="trip-card" data-category="zima">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hay_bales.png" alt="Ski areál Zadov" class="trip-img">
+                    <span class="trip-badge">32 km / Sjezdovky</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 32 km</span>
+                        <span><i data-lucide="clock"></i> 35 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Ski areál Zadov</h3>
+                    <p class="trip-description">Hlavní šumavské lyžařské středisko. Sedačkové lanovky, sjezdovky pro začátečníky i zkušené lyžaře, večerní lyžování a vyhlídka na skokanském můstku.</p>
+                    <ul class="trip-highlights">
+                        <li>Sedačkové lanovky a večerní lyžování</li>
+                        <li>Lyžařská škola a půjčovna vybavení</li>
+                        <li>Vyhřívaná rozhledna na skokanském můstku</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0667,13.6333" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 41. Ski areál Kubova Huť -->
+            <div class="trip-card" data-category="zima">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/chov_hero.png" alt="Ski areál Kubova Huť" class="trip-img">
+                    <span class="trip-badge">26 km / Lyže a Vlak</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 26 km</span>
+                        <span><i data-lucide="clock"></i> 28 min autem / vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Ski areál Kubova Huť</h3>
+                    <p class="trip-description">Příjemné sjezdové lyžování pod vrcholem Boubína v nejvýše položené železniční stanici v ČR (995 m n. m.). Vhodné pro rodiny s dětmi.</p>
+                    <ul class="trip-highlights">
+                        <li>Nejvýše položené vlakové nádraží v ČR (995 m)</li>
+                        <li>Rodinné sjezdovky a dětský vlek</li>
+                        <li>Nástup na běžecké trasy pod Boubínem</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=48.9833,13.7833" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 42. Kvilda a Běžecká Bílá stopa -->
+            <div class="trip-card" data-category="zima">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/prodej_hero.png" alt="Kvilda a Běžecká Bílá stopa" class="trip-img">
+                    <span class="trip-badge">38 km / Běžky</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 38 km</span>
+                        <span><i data-lucide="clock"></i> 40 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Kvilda a Běžecká Bílá stopa</h3>
+                    <p class="trip-description">Mekka šumavského běžeckého lyžování. Nástup na desítky kilometrů pravidelně upravovaných běžeckých okruhů Šumavské Bílé stopy (www.bilastopa.cz).</p>
+                    <ul class="trip-highlights">
+                        <li>Pravidelně upravovaná Bílá stopa (bilastopa.cz)</li>
+                        <li>Desítky km upravovaných hřebenových tras</li>
+                        <li>Dětské sjezdové vleky na Kvildě</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0185,13.5795" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 43. Jednota COOP 24/7 Malenice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Jednota COOP 24/7 Malenice" class="trip-img">
+                    <span class="trip-badge">Nákupy 24/7</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km od penzionu</span>
+                        <span><i data-lucide="clock"></i> 3 min autem / 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Jednota COOP 24/7 Malenice</h3>
+                    <p class="trip-description">Samoobslužná prodejna potravin s nepřetržitým provozem 24/7 (www.jednotavolyne.cz). Pomocí mobilní aplikace nebo bankovní identity nakoupíte čerstvé pečivo, potraviny a nápoje kdykoliv – i v noci.</p>
+                    <ul class="trip-highlights">
+                        <li>Nákupy 24 hodin denně 7 dní v týdnu</li>
+                        <li>Čerstvé pečivo, mléčné výrobky a nápoje</li>
+                        <li>Pouhé 2 km od Penzionu Straňovice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1285,13.8810" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 44. Hospůdka Na Zámostí – Malenice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Hospůdka Na Zámostí – Malenice" class="trip-img">
+                    <span class="trip-badge">Hospůdka / Pivo</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 4 min autem / 25 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Hospůdka Na Zámostí – Malenice</h3>
+                    <p class="trip-description">Oblíbená malenická hospůdka u řeky Volyňky. Nabízí skvěle ošetřené točené pivo, rychlé občerstvení a příjemnou venkovní terásku.</p>
+                    <ul class="trip-highlights">
+                        <li>Točené pivo a chlazené nápoje</li>
+                        <li>Teráska s venkovním posezením</li>
+                        <li>Oblíbená zastávka místních i turistů</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1295,13.8825" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 45. Malenická hospůdka -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Malenická hospůdka" class="trip-img">
+                    <span class="trip-badge">Tradiční hospoda</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 2 km</span>
+                        <span><i data-lucide="clock"></i> 4 min autem / 20 min pěšky</span>
+                    </div>
+                    <h3 class="trip-title">Malenická hospůdka</h3>
+                    <p class="trip-description">Klasický vesnický hostinec přímo v centru Malenic. Nabízí příjemné posezení, čepované pivo a tradiční pivní specialitky.</p>
+                    <ul class="trip-highlights">
+                        <li>Příjemná vesnická atmosféra</li>
+                        <li>Točené pivo a drobné občerstvení</li>
+                        <li>V centru obci Malenice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1288,13.8812" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 46. Kiosk Občerstvení Pod Věncem – Lčovice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/vylety_hero.png" alt="Kiosk Občerstvení Pod Věncem – Lčovice" class="trip-img">
+                    <span class="trip-badge">Cyklo / Kiosk</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 5 km</span>
+                        <span><i data-lucide="clock"></i> 7 min autem / cyklo</span>
+                    </div>
+                    <h3 class="trip-title">Kiosk Občerstvení Pod Věncem – Lčovice</h3>
+                    <p class="trip-description">Populární cyklistický a turistický kiosk pod vrcholem Věnec u Lčovic podél řeky Volyňky. Klobásy z grilu, točené pivo, limo a posezení v přírodě.</p>
+                    <ul class="trip-highlights">
+                        <li>Výborná zastávka při cyklovýletu</li>
+                        <li>Grilované klobásky a točené pivo</li>
+                        <li>Krásné prostředí u potoka a cyklostezky</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1170,13.8580" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 47. Hospoda Na Hřišti – Čkyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Hospoda Na Hřišti – Čkyně" class="trip-img">
+                    <span class="trip-badge">4 km / Hospoda</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 4 km</span>
+                        <span><i data-lucide="clock"></i> 6 min autem / 15 min vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Hospoda Na Hřišti – Čkyně</h3>
+                    <p class="trip-description">Příjemná vesnická hospoda u hřiště ve Čkyni s točeným pivem, venkovním posezením na terase a přátelskou atmosférou.</p>
+                    <ul class="trip-highlights">
+                        <li>Točené pivo a chlazené nápoje</li>
+                        <li>Prostranná venkovní terasa</li>
+                        <li>Pouhé 4 km od penzionu</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1105,13.8260" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 48. Restaurace Votavka – Čkyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Restaurace Votavka – Čkyně" class="trip-img">
+                    <span class="trip-badge">4 km / Restaurace</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 4 km</span>
+                        <span><i data-lucide="clock"></i> 6 min autem / 15 min vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace Votavka – Čkyně</h3>
+                    <p class="trip-description">Tradiční česká restaurace ve Čkyni známá poctivou kuchyní, denním menu, minutkami a příjemnou obsluhou.</p>
+                    <ul class="trip-highlights">
+                        <li>Tradiční česká kuchyně a hotovky</li>
+                        <li>Příjemné prostředí s obsluhou</li>
+                        <li>V centru obce Čkyně</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1120,13.8280" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 49. Bufet a Kavárna LUCIE – Čkyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Bufet a Kavárna LUCIE – Čkyně" class="trip-img">
+                    <span class="trip-badge">4 km / Kavárna</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 4 km</span>
+                        <span><i data-lucide="clock"></i> 6 min autem / 15 min vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Bufet a Kavárna LUCIE – Čkyně</h3>
+                    <p class="trip-description">Útulný bufet a kavárna ve Čkyni na lahodnou kávu, čerstvé domáci zákusky, zmrzlinu a rychlé teplé i studené občerstvení.</p>
+                    <ul class="trip-highlights">
+                        <li>Výborná káva a domáci zákusky</li>
+                        <li>Svěží zmrzlina a rychlé občerstvení</li>
+                        <li>Příjemné posezení ve Čkyni</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1115,13.8275" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 50. Restaurace U Poštů – Volyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Restaurace U Poštů – Volyně" class="trip-img">
+                    <span class="trip-badge">6 km / Vyhlášená</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem / 10 min vlakem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace U Poštů – Volyně</h3>
+                    <p class="trip-description">Vyhlášená rodinná restaurace ve Volyni s poctivou českou kuchyní, výbornými steaky, denním menu a přátelskou obsluhou.</p>
+                    <ul class="trip-highlights">
+                        <li>Poctivá česká kuchyně a denní menu</li>
+                        <li>Vyhlášená restaurace v regionu</li>
+                        <li>Široký výběr jídel a nápojů</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1650,13.8865" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 51. Hostinec Pod Radnicí – Volyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/hero_statek.jpg" alt="Hostinec Pod Radnicí – Volyně" class="trip-img">
+                    <span class="trip-badge">6 km / Náměstí</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Hostinec Pod Radnicí – Volyně</h3>
+                    <p class="trip-description">Tradiční hostinec přímo na historickém náměstí ve Volyni pod starobylou radnicí. Točené pivo a česká klasika.</p>
+                    <ul class="trip-highlights">
+                        <li>Přímo na náměstí ve Volyni</li>
+                        <li>Točené pivo a tradiční kuchyně</li>
+                        <li>Historické prostředí u radnice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1662,13.8872" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 52. Pivnice Fefík – Volyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Pivnice Fefík – Volyně" class="trip-img">
+                    <span class="trip-badge">6 km / Pivnice</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Pivnice Fefík – Volyně</h3>
+                    <p class="trip-description">Oblíbená volyňská pivnice s výborně ošetřeným pivem, chladným občerstvením a přátelskou šumavskou atmosférou.</p>
+                    <ul class="trip-highlights">
+                        <li>Skvěle ošetřené točené pivo</li>
+                        <li>Klasická pivní atmosféra</li>
+                        <li>Oblíbené místo místních štamgastů</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1645,13.8855" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 53. Hospůdka Na Nové – Volyně -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Hospůdka Na Nové – Volyně" class="trip-img">
+                    <span class="trip-badge">6 km / Hospůdka</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 6 km</span>
+                        <span><i data-lucide="clock"></i> 8 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Hospůdka Na Nové – Volyně</h3>
+                    <p class="trip-description">Příjemná hospůdka ve Volyni s točeným pivem, venkovní teráskou a poctivým pivním občerstvením po výletě.</p>
+                    <ul class="trip-highlights">
+                        <li>Točené pivo a chuťovky k pivu</li>
+                        <li>Venkovní teráska s posezením</li>
+                        <li>Klidná lokalita ve Volyni</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.1670,13.8880" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 54. Zámecký minipivovar Vimperk -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Zámecký minipivovar Vimperk" class="trip-img">
+                    <span class="trip-badge">12 km / Minipivovar</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 15 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Zámecký minipivovar Vimperk</h3>
+                    <p class="trip-description">Řemeslný pivovar u zámku Vimperk s vlastními nefiltrovanými pivy a výbornou poctivou gastronomií.</p>
+                    <ul class="trip-highlights">
+                        <li>Vlastní řemeslná nefiltrovaná piva</li>
+                        <li>Výborná poctivá kuchyně</li>
+                        <li>Krásné prostředí u zámku Vimperk</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0538,13.7815" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 55. Supermarkety Vimperk -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Supermarkety Vimperk" class="trip-img">
+                    <span class="trip-badge">12 km / Nákupy</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 12 km</span>
+                        <span><i data-lucide="clock"></i> 15 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Supermarkety a Nákupy Vimperk</h3>
+                    <p class="trip-description">Pro větší nákupy potravin a zboží jsou ve Vimperku k dispozici supermarkety Penny, Billa a Tesco.</p>
+                    <ul class="trip-highlights">
+                        <li>Supermarkety Penny, Billa a Tesco</li>
+                        <li>Kompletní nákupní sortiment</li>
+                        <li>Pouhých 15 minut autem</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.0560,13.7850" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 56. U Jiskrů Kbelnice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="U Jiskrů Kbelnice" class="trip-img">
+                    <span class="trip-badge">20 km / Zájezdní hostinec</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 20 km</span>
+                        <span><i data-lucide="clock"></i> 18 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Šumavský hostinec U Jiskrů – Kbelnice</h3>
+                    <p class="trip-description">Vyhlášený zájezdní hostinec šéfkuchaře Martina Jiskry v Kbelnici u Strakonic. Tradiční české recepty v nejvyšší kvalitě z lokálních surovin.</p>
+                    <ul class="trip-highlights">
+                        <li>Vyhlášená gastronomie Martina Jiskry</li>
+                        <li>Tradiční české recepty z lokálních surovin</li>
+                        <li>Prvotřídní gurmánský zážitek</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2780,13.9250" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 57. Sůl a Řepa Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Sůl a Řepa Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Špičková gastronomie</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace Sůl a Řepa – Strakonice</h3>
+                    <p class="trip-description">Moderní a vyhlášená restaurace ve Strakonicích zaměřená na sezónní lokální farmářské suroviny a moderní pojetí české gastronomie.</p>
+                    <ul class="trip-highlights">
+                        <li>Moderní pohled na českou kuchyni</li>
+                        <li>Sezónní a lokální farmářské suroviny</li>
+                        <li>Ocenění v gastro průvodcích</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2615,13.9010" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 58. Sokolovna Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Sokolovna Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Tradiční</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Hostinec Sokolovna – Strakonice</h3>
+                    <p class="trip-description">Tradiční strakonická restaurace v budově Sokolovny s poctivou českou kuchyní, denním menu a čepovaným pivem.</p>
+                    <ul class="trip-highlights">
+                        <li>Poctivá česká kuchyně a hotovky</li>
+                        <li>Příjemné prostorné sály</li>
+                        <li>Tradiční hospodské prostředí</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2600,13.9020" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 59. Zámecká bašta Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Zámecká bašta Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / U hradu</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace Zámecká bašta – Strakonice</h3>
+                    <p class="trip-description">Stylová restaurace v bezprostřední blízkosti strakonického hradu s příjemným posezením a bohatou nabídkou jídel.</p>
+                    <ul class="trip-highlights">
+                        <li>Přímo u strakonického hradu</li>
+                        <li>Stylový interiér i venkovní teráska</li>
+                        <li>Příjemná obsluha a výborné jídlo</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2590,13.9028" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 60. U Města Prahy Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="U Města Prahy Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Náměstí</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace U Města Prahy – Strakonice</h3>
+                    <p class="trip-description">Tradiční restaurace v centru Strakonic nabízející české i mezinárodní speciality a čepované pivo.</p>
+                    <ul class="trip-highlights">
+                        <li>V centru Strakonic</li>
+                        <li>Poctivé české minuty a hotovky</li>
+                        <li>Výborně ošetřené pivo</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2612,13.9022" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 61. Na Splávku Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Na Splávku Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / U řeky</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Restaurace Na Splávku – Strakonice</h3>
+                    <p class="trip-description">Oblíbená restaurace a pivnice u řeky Otavy ve Strakonicích s venkovní terasou a občerstvením.</p>
+                    <ul class="trip-highlights">
+                        <li>Krásné prostředí u řeky Otavy</li>
+                        <li>Venkovní terasa pro letní posezení</li>
+                        <li>Točené pivo a minutková kuchyně</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2630,13.8960" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 62. Pivovar Krabák Strakonice -->
+            <div class="trip-card" data-category="gastro">
+                <div class="trip-img-wrapper">
+                    <img src="/assets/img/breakfast.png" alt="Pivovar Krabák Strakonice" class="trip-img">
+                    <span class="trip-badge">22 km / Pivovar</span>
+                </div>
+                <div class="trip-content">
+                    <div class="trip-meta">
+                        <span><i data-lucide="map-pin"></i> 22 km</span>
+                        <span><i data-lucide="clock"></i> 20 min autem</span>
+                    </div>
+                    <h3 class="trip-title">Strakonický pivovar Nektar a Krabák</h3>
+                    <p class="trip-description">Tradiční strakonický měšťanský pivovar s více než 370 lety historie. Ochutnejte pivní speciály Dudák i Krabák a navštivte pivovarskou pivnici.</p>
+                    <ul class="trip-highlights">
+                        <li>Tradiční strakonické pivo Dudák a Krabák</li>
+                        <li>Více než 370 let tradice vaření piva</li>
+                        <li>Pivovarská prodejna a pivnice</li>
+                    </ul>
+                    <div class="trip-footer">
+                        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=49.2602,13.9015" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Navigovat
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="distance-section">
+        <div class="text-center">
+            <span class="section-tag">Dostupnost</span>
+            <h2 class="section-title">Vše podstatné nadosah ze Straňovic</h2>
+        </div>
+        <div class="distance-grid">
+            <div class="distance-item">
+                <span class="distance-val">1 - 2 km</span>
+                <span class="distance-label">Malenice a Fara</span>
+            </div>
+            <div class="distance-item">
+                <span class="distance-val">6 km</span>
+                <span class="distance-label">Volyně</span>
+            </div>
+            <div class="distance-item">
+                <span class="distance-val">12 km</span>
+                <span class="distance-label">Vimperk</span>
+            </div>
+            <div class="distance-item">
+                <span class="distance-val">22 km</span>
+                <span class="distance-label">Strakonice</span>
+            </div>
+            <div class="distance-item">
+                <span class="distance-val">25 km</span>
+                <span class="distance-label">Kašperk a NP Šumava</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map CTA -->
+<section class="section-padding text-center" style="padding-top: 0;">
+    <div class="container">
+        <div class="cta-box" style="background: var(--text-dark, #1a202c); color: white; padding: 4rem 2rem; border-radius: 24px;">
+            <h2 style="color: white; margin-bottom: 1.5rem;">Potřebujete osobní tip nebo tištěnou mapu?</h2>
+            <p style="margin-bottom: 2.5rem; opacity: 0.85; max-width: 650px; margin-inline: auto; font-size: 1.1rem; line-height: 1.6;">
+                Na recepci penzionu Straňovice Vám rádi zapůjčíme tištěné turistické a cyklistické mapy, doporučíme aktuální trasu nebo poradíme, kam zajít na nejlepší oběd.
+            </p>
+            <a href="index.php#contact" class="btn btn-primary">Kontaktujte nás</a>
+        </div>
+    </div>
+</section>
+
+<!-- JS Filtering Script -->
+<script>
+(function() {
+    function initFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const tripCards = document.querySelectorAll('#tripGrid .trip-card');
+        if (!filterBtns.length || !tripCards.length) return;
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const filterValue = this.getAttribute('data-filter');
+
+                tripCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    if (filterValue === 'all' || cardCategory === filterValue) {
+                        card.classList.remove('is-hidden');
+                        card.style.display = 'flex';
+                        card.style.opacity = '1';
+                    } else {
+                        card.classList.add('is-hidden');
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFilters);
+    } else {
+        initFilters();
+    }
+})();
+</script>
+
+<?php CMS::getFooter(); ?>
