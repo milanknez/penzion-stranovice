@@ -4,19 +4,27 @@
 */
 
 /* Fix GrapesJS Canvas Background and Colors to match website 1:1 */
-html, body, #wrapper, .gjs-dashed, [data-gjs-type="wrapper"] {
+html,
+body,
+#wrapper,
+.gjs-dashed,
+[data-gjs-type="wrapper"] {
     background-color: #FDF5E6 !important;
     color: #2C241E !important;
 }
 
 /* Override Tailwind CDN dark mode reset inside editor iframe */
-html.dark, body.dark, html.dark body, body.dark #wrapper {
+html.dark,
+body.dark,
+html.dark body,
+body.dark #wrapper {
     background-color: #FDF5E6 !important;
     color: #2C241E !important;
 }
 
 /* Sections background and text colors inside editor */
-section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
+section,
+div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     color: inherit;
 }
 
@@ -24,13 +32,69 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     padding: var(--section-pad, 100px) 0;
 }
 
-.bg-light, .section-padding.bg-light {
+.bg-light,
+.section-padding.bg-light {
     background-color: #F9F4EB !important;
 }
 
-.animal-card, .animal-body {
+.animal-showcase {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 2rem !important;
+    margin-top: 3rem !important;
+    width: 100% !important;
+}
+
+.animal-card {
+    background-color: #ffffff !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.animal-img-wrapper {
+    height: 220px !important;
+    max-height: 220px !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+.animal-img-wrapper img,
+.animal-card .animal-img-wrapper img {
+    width: 100% !important;
+    height: 220px !important;
+    max-height: 220px !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.animal-body {
+    padding: 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
     background-color: #ffffff !important;
     color: #2C241E !important;
+}
+
+.animal-name {
+    font-family: 'Libre Baskerville', serif !important;
+    font-size: 1.25rem !important;
+    color: var(--primary, #8B5E3C) !important;
+    margin-bottom: 0.8rem !important;
+    font-weight: 700 !important;
+}
+
+.animal-desc {
+    color: #6B5B4E !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
 }
 
 /* Trip Cards Fix inside GrapesJS Canvas Editor */
@@ -42,7 +106,8 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     width: 100% !important;
 }
 
-.trip-card, .trip-card.is-hidden {
+.trip-card,
+.trip-card.is-hidden {
     display: flex !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -72,7 +137,7 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     position: absolute !important;
     top: 1rem !important;
     right: 1rem !important;
-    background: var(--primary, #2d5a27) !important;
+    background: var(--primary, #8B5E3C) !important;
     color: #ffffff !important;
     padding: 0.4rem 1rem !important;
     border-radius: 50px !important;
@@ -81,26 +146,49 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     z-index: 10 !important;
 }
 
-.btn-primary, .btn-gmaps {
+.btn-gmaps {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background-color: var(--primary, #2d5a27) !important;
-    background: var(--primary, #2d5a27) !important;
+    background-color: var(--primary, #8B5E3C) !important;
+    background: var(--primary, #8B5E3C) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     padding: 0.75rem 1.25rem !important;
     border-radius: 12px !important;
     text-decoration: none !important;
+    box-shadow: 0 4px 12px rgba(139, 94, 60, 0.25) !important;
+}
+
+.trip-card .btn-gmaps {
     width: 100% !important;
-    box-shadow: 0 4px 12px rgba(45, 90, 39, 0.25) !important;
+}
+
+.service-icon {
+    width: 52px !important;
+    height: 52px !important;
+    background: rgba(139, 94, 60, 0.1) !important;
+    color: var(--primary, #8B5E3C) !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 1.2rem !important;
+}
+
+.service-icon i,
+.service-icon svg {
+    width: 26px !important;
+    height: 26px !important;
+    color: var(--primary, #8B5E3C) !important;
+    stroke: var(--primary, #8B5E3C) !important;
 }
 
 .filter-btn.active {
-    background-color: var(--primary, #2d5a27) !important;
-    background: var(--primary, #2d5a27) !important;
+    background-color: var(--primary, #8B5E3C) !important;
+    background: var(--primary, #8B5E3C) !important;
     color: #ffffff !important;
-    border-color: var(--primary, #2d5a27) !important;
+    border-color: var(--primary, #8B5E3C) !important;
 }
 
 .section-title {
@@ -108,14 +196,68 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     color: #2C241E !important;
 }
 
-.section-description, p {
+.section-description,
+p {
     color: #6B5B4E !important;
 }
 
+/* Info badges & Price badge styling inside editor */
+.info-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    background: rgba(139, 94, 60, 0.08) !important;
+    color: #2C241E !important;
+    padding: 0.45rem 0.95rem !important;
+    border-radius: 20px !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(139, 94, 60, 0.15) !important;
+}
+
+.info-badge * {
+    color: #2C241E !important;
+}
+
+.info-badge.price-badge {
+    background-color: var(--primary, #8B5E3C) !important;
+    background: var(--primary, #8B5E3C) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.info-badge.price-badge,
+.info-badge.price-badge *,
+.info-badge.price-badge i,
+.info-badge.price-badge svg {
+    color: #ffffff !important;
+    fill: none !important;
+    stroke: #ffffff !important;
+}
+
+/* Stats banner & machinery section styling inside editor */
+.stats-banner,
+.machinery-section {
+    background-color: var(--primary, #8B5E3C) !important;
+    background: var(--primary, #8B5E3C) !important;
+    color: #ffffff !important;
+}
+
+.stats-banner *,
+.stat-item,
+.stat-item h2,
+.stat-item p,
+.machinery-section *,
+.machinery-content,
+.machinery-content h2,
+.machinery-content p {
+    color: #ffffff !important;
+}
+
 /* Ensure all scroll/reveal animations are fully visible in editor */
-.reveal, 
-.reveal-up, 
-.reveal-left, 
+.reveal,
+.reveal-up,
+.reveal-left,
 .reveal-right,
 .fadeIn,
 .fadeInDelay,
@@ -155,10 +297,23 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
 }
 
 .hero-bg-slider {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
     z-index: 1 !important;
 }
 
 .hero-bg-slide {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: center !important;
     opacity: 0 !important;
 }
 
@@ -191,7 +346,8 @@ section, div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     color: #ffffff !important;
 }
 
-.hero-title, .hero-subtitle {
+.hero-title,
+.hero-subtitle {
     color: #ffffff !important;
 }
 

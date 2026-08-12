@@ -656,9 +656,57 @@ function ensureCanvasBaseTag() {
                 .bg-light, .section-padding.bg-light {
                     background-color: #F9F4EB !important;
                 }
-                .animal-card, .animal-body {
+                .animal-showcase {
+                    display: grid !important;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+                    gap: 2rem !important;
+                    margin-top: 3rem !important;
+                    width: 100% !important;
+                }
+                .animal-card {
+                    background-color: #ffffff !important;
+                    border-radius: 12px !important;
+                    overflow: hidden !important;
+                    box-shadow: var(--shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1)) !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    height: 100% !important;
+                }
+                .animal-img-wrapper {
+                    height: 220px !important;
+                    max-height: 220px !important;
+                    width: 100% !important;
+                    overflow: hidden !important;
+                    position: relative !important;
+                    flex-shrink: 0 !important;
+                }
+                .animal-img-wrapper img, .animal-card .animal-img-wrapper img {
+                    width: 100% !important;
+                    height: 220px !important;
+                    max-height: 220px !important;
+                    object-fit: cover !important;
+                    display: block !important;
+                }
+                .animal-body {
+                    padding: 1.5rem !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    flex-grow: 1 !important;
                     background-color: #ffffff !important;
                     color: #2C241E !important;
+                }
+                .animal-name {
+                    font-family: 'Libre Baskerville', serif !important;
+                    font-size: 1.25rem !important;
+                    color: var(--primary, #8B5E3C) !important;
+                    margin-bottom: 0.8rem !important;
+                    font-weight: 700 !important;
+                }
+                .animal-desc {
+                    color: #6B5B4E !important;
+                    font-size: 0.9rem !important;
+                    line-height: 1.5 !important;
+                    margin: 0 !important;
                 }
                 .trip-grid {
                     display: grid !important;
@@ -690,9 +738,9 @@ function ensureCanvasBaseTag() {
                     object-fit: cover !important;
                     display: block !important;
                 }
-                .btn-primary, .btn-gmaps {
-                    background-color: #2d5a27 !important;
-                    background: #2d5a27 !important;
+                .btn-gmaps {
+                    background-color: #8B5E3C !important;
+                    background: #8B5E3C !important;
                     color: #ffffff !important;
                     font-weight: 600 !important;
                     padding: 0.75rem 1.25rem !important;
@@ -703,10 +751,10 @@ function ensureCanvasBaseTag() {
                     text-decoration: none !important;
                 }
                 .filter-btn.active {
-                    background-color: #2d5a27 !important;
-                    background: #2d5a27 !important;
+                    background-color: #8B5E3C !important;
+                    background: #8B5E3C !important;
                     color: #ffffff !important;
-                    border-color: #2d5a27 !important;
+                    border-color: #8B5E3C !important;
                 }
                 .reveal, .reveal-up, .reveal-left, .reveal-right, .fadeIn, .fadeInDelay, .fadeInExtra, [class*="reveal"] {
                     opacity: 1 !important;
@@ -753,6 +801,67 @@ function ensureCanvasBaseTag() {
                 i[data-lucide] {
                     display: inline-block !important;
                     vertical-align: middle;
+                }
+                .service-icon {
+                    width: 52px !important;
+                    height: 52px !important;
+                    background: rgba(139, 94, 60, 0.1) !important;
+                    color: #8B5E3C !important;
+                    border-radius: 12px !important;
+                    display: inline-flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin-bottom: 1.2rem !important;
+                }
+                .service-icon i,
+                .service-icon svg {
+                    width: 26px !important;
+                    height: 26px !important;
+                    color: #8B5E3C !important;
+                    stroke: #8B5E3C !important;
+                }
+                .info-badge {
+                    display: inline-flex !important;
+                    align-items: center !important;
+                    gap: 0.4rem !important;
+                    background: rgba(139, 94, 60, 0.08) !important;
+                    color: #2C241E !important;
+                    padding: 0.45rem 0.95rem !important;
+                    border-radius: 20px !important;
+                    font-size: 0.88rem !important;
+                    font-weight: 600 !important;
+                    border: 1px solid rgba(139, 94, 60, 0.15) !important;
+                }
+                .info-badge * { color: #2C241E !important; }
+                .info-badge.price-badge {
+                    background-color: var(--primary, #8B5E3C) !important;
+                    background: var(--primary, #8B5E3C) !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                }
+                .info-badge.price-badge,
+                .info-badge.price-badge *,
+                .info-badge.price-badge i,
+                .info-badge.price-badge svg {
+                    color: #ffffff !important;
+                    fill: none !important;
+                    stroke: #ffffff !important;
+                }
+                .stats-banner,
+                .machinery-section {
+                    background-color: var(--primary, #8B5E3C) !important;
+                    background: var(--primary, #8B5E3C) !important;
+                    color: #ffffff !important;
+                }
+                .stats-banner *,
+                .stat-item,
+                .stat-item h2,
+                .stat-item p,
+                .machinery-section *,
+                .machinery-content,
+                .machinery-content h2,
+                .machinery-content p {
+                    color: #ffffff !important;
                 }
             `;
             iframeDoc.head.appendChild(styleEl);

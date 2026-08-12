@@ -19,9 +19,9 @@ CMS::getHeader();
     <!-- Hero Section -->
     <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
         <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('assets/img/babiccin/babiccin-apartman-222753.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin/babiccin-apartman-222749.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/babiccin/babiccin-apartman-222757.jpg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('/assets/img/babiccin/babiccin-apartman-222753.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/babiccin/babiccin-apartman-222749.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/babiccin/babiccin-apartman-222757.jpg');"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">

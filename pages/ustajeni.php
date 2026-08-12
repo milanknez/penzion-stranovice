@@ -32,7 +32,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg" style="background-image: url('assets/img/horse_hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/horse_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Pastevní péče</h2>
@@ -152,7 +152,7 @@ CMS::getHeader();
                         <li><i data-lucide="check"></i> Objemové krmení a pitná voda</li>
                         <li><i data-lucide="check"></i> Pestré terény v blízkosti NP Šumava</li>
                     </ul>
-                    <a href="<?= CMS::url('dovolena-s-vlastnim-konem.php') ?>" class="btn btn-outline" style="width: 100%;">Více informací</a>
+                    <a href="dovolena-s-vlastnim-konem" class="btn btn-outline" style="width: 100%;">Více informací</a>
                 </div>
             </div>
         </div>

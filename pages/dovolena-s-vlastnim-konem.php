@@ -75,7 +75,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg" style="background-image: url('assets/img/horse_hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/horse_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content text-center">
             <h2 class="hero-subtitle fadeIn">Dovolená v Pošumaví s koněm</h2>
@@ -154,8 +154,8 @@ CMS::getHeader();
                 Máte dotazy k ubytování koně nebo chcete prověřit dostupné termíny a kalkulaci? Neváhejte nás kontaktovat, rádi Vám připravíme pobyt na míru!
             </p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="<?= CMS::url('index.php') ?>#contact" class="btn btn-primary btn-lg">Nezávazně poptat pobyt</a>
-                <a href="<?= CMS::url('ustajeni.php') ?>" class="btn-outline">Více o ustájení koní</a>
+                <a href="/#contact" class="btn btn-primary btn-lg">Nezávazně poptat pobyt</a>
+                <a href="ustajeni-koni" class="btn-outline">Více o ustájení koní</a>
             </div>
         </div>
     </section>

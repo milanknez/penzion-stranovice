@@ -19,9 +19,9 @@ CMS::getHeader();
     <!-- Hero Section -->
     <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
         <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('assets/img/medovy_1.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/medovy_2.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('assets/img/medovy_3.jpg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('/assets/img/medovy_1.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_2.jpg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_3.jpg');"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -37,14 +37,14 @@ CMS::getHeader();
                 <div class="reveal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                     <div>
                         <div class="room-gallery-main" id="main-gallery-trigger">
-                            <img src="assets/img/medovy_1.jpg" alt="Medový apartmán - Interiér" id="main-gallery-img">
+                            <img src="/assets/img/medovy_1.jpg" alt="Medový apartmán - Interiér" id="main-gallery-img">
                         </div>
                         <div class="thumb-slider-container">
                             <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
                             <div class="thumb-scroll" id="thumb-scroll">
-                                <img src="assets/img/medovy_1.jpg" class="active">
-                                <img src="assets/img/medovy_2.jpg">
-                                <img src="assets/img/medovy_3.jpg">
+                                <img src="/assets/img/medovy_1.jpg" class="active">
+                                <img src="/assets/img/medovy_2.jpg">
+                                <img src="/assets/img/medovy_3.jpg">
                             </div>
                             <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
                         </div>

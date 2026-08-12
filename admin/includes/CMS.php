@@ -184,14 +184,18 @@ class CMS {
 
     public static function url($file) {
         $base = self::getBasePath();
+        $cleanFile = basename($file);
         
-        if ($file === 'index.php') return $base . '/';
+        if ($cleanFile === 'index.php') return $base . '/';
         
         $pages = self::getPagesConfig();
-        if (isset($pages[$file]) && !empty($pages[$file]['slug'])) {
-            return $base . '/' . $pages[$file]['slug'];
+        if (isset($pages[$cleanFile]) && !empty($pages[$cleanFile]['slug'])) {
+            return $base . '/' . ltrim($pages[$cleanFile]['slug'], '/');
         }
-        return $base . '/' . str_replace('.php', '', $file);
+        if (isset($pages[$file]) && !empty($pages[$file]['slug'])) {
+            return $base . '/' . ltrim($pages[$file]['slug'], '/');
+        }
+        return $base . '/' . str_replace('.php', '', $cleanFile);
     }
 
     public static function isUpdateAvailable() {

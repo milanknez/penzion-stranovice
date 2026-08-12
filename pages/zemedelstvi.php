@@ -8,16 +8,27 @@ CMS::getHeader();
     .service-card:hover { transform: translateY(-10px); }
     .service-img { width: 100%; height: 200px; object-fit: cover; }
     .service-content { padding: 2rem; }
-    .service-icon { color: var(--primary); margin-bottom: 1rem; }
+    .service-icon { 
+        width: 52px; 
+        height: 52px; 
+        background: rgba(139, 94, 60, 0.1); 
+        color: var(--primary); 
+        border-radius: 12px; 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin-bottom: 1.2rem; 
+    }
+    .service-icon i, .service-icon svg { width: 26px; height: 26px; }
     
     .machinery-section { background: var(--text-dark); color: white; border-radius: 12px; padding: 4rem; margin: 4rem 0; position: relative; overflow: hidden; }
-    .machinery-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('assets/img/tractor_hero.png') center/cover; opacity: 0.1; }
+    .machinery-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('/assets/img/tractor_hero.png') center/cover; opacity: 0.1; }
     .machinery-content { position: relative; z-index: 1; }
 </style>
 
     <!-- Hero Section -->
     <section class="hero" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg" style="background-image: url('assets/img/tractor_hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/tractor_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Moderní technika & tradice</h2>
@@ -61,7 +72,7 @@ CMS::getHeader();
                 <div class="service-card reveal">
                     <img src="assets/img/tractor_hero.png" class="service-img" alt="Orba a příprava">
                     <div class="service-content">
-                        <div class="service-icon"><i data-lucide="layers"></i></div>
+                        <div class="service-icon"><i data-lucide="shovel"></i></div>
                         <h3>Příprava půdy</h3>
                         <p>Provádíme kvalitní orbu, podmítku a předseťovou přípravu půdy moderními pluhy a kypřiči.</p>
                     </div>
@@ -70,7 +81,7 @@ CMS::getHeader();
                 <div class="service-card reveal-up">
                     <img src="assets/img/hay_bales.png" class="service-img" alt="Sklizeň sena">
                     <div class="service-content">
-                        <div class="service-icon"><i data-lucide="scissors"></i></div>
+                        <div class="service-icon"><i data-lucide="wheat"></i></div>
                         <h3>Sečení a sklizeň</h3>
                         <p>Kompletní sklizeň pícnin – sečení, obracení, shrnování a následný odvoz z pole.</p>
                     </div>
@@ -79,7 +90,7 @@ CMS::getHeader();
                 <div class="service-card reveal">
                     <img src="assets/img/hay_bales.png" class="service-img" alt="Lisování">
                     <div class="service-content">
-                        <div class="service-icon"><i data-lucide="circle-dot"></i></div>
+                        <div class="service-icon"><i data-lucide="package"></i></div>
                         <h3>Lisování balíků</h3>
                         <p>Lisování sena a slámy do pevných kulatých balíků s variabilní komorou a vázáním do sítě.</p>
                     </div>

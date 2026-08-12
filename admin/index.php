@@ -707,7 +707,7 @@ $_SESSION['current_page'] = $currentPage;
                 <button onclick="openPageSettings()" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="<?= $uiLang === 'cs' ? 'Nastavení stránky' : 'Page settings' ?>">
                     <i class="fa fa-cog text-indigo-400"></i>
                 </button>
-                <a href="../<?= urlencode($currentPage) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="<?= $uiLang === 'cs' ? 'Náhled na web (otevře v novém okně)' : 'Preview website (opens in new window)' ?>">
+                <a href="<?= CMS::url($currentPage) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-lg active:transform active:scale-95" title="<?= $uiLang === 'cs' ? 'Náhled na web (otevře v novém okně)' : 'Preview website (opens in new window)' ?>">
                     <i class="fa fa-external-link text-emerald-400"></i>
                 </a>
                 <?php if ($currentPage !== 'index.php'): ?>
@@ -825,7 +825,7 @@ $_SESSION['current_page'] = $currentPage;
                                                 <a href="index.php?lang=<?= $uiLang ?>&page=<?= urlencode($file) ?>&view=editor" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs inline-flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20">
                                                     <i class="fa fa-edit"></i> Upravit
                                                 </a>
-                                                <a href="../<?= urlencode($file) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center transition-all border border-white/5 hover:border-emerald-500/30" title="Zobrazit na webu">
+                                                <a href="<?= CMS::url($file) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center transition-all border border-white/5 hover:border-emerald-500/30" title="Zobrazit na webu">
                                                     <i class="fa fa-external-link"></i>
                                                 </a>
                                                 <?php if (!$isIndex): ?>

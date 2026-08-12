@@ -5,7 +5,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <div class="hero-bg" style="background-image: url('assets/img/hero_statek.jpg');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/hero_statek.jpg');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Vítejte v náruči přírody</h2>
@@ -29,7 +29,7 @@ CMS::getHeader();
         <div class="container">
             <div class="about-grid">
                 <div class="about-image reveal">
-                    <img src="assets/img/breakfast.png" alt="Naše snídaně na statku" class="main-img">
+                    <img src="/assets/img/breakfast.png" alt="Naše snídaně na statku" class="main-img">
                     <div class="img-badge">
                         <span class="years">15+</span>
                         <span class="badge-text">let tradice</span>
@@ -65,63 +65,63 @@ CMS::getHeader();
 
             <div class="rooms-grid">
                 <div class="room-card reveal-up">
-                    <a href="<?= CMS::url('kocici.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/kocici_1.jpg');">
+                    <a href="kocici-apartman" class="room-link">
+                        <div class="room-img" style="background-image: url('/assets/img/kocici_1.jpg');">
                             <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('kocici.php') ?>"><h3>Kočičí apartmán</h3></a>
+                        <a href="kocici-apartman"><h3>Kočičí apartmán</h3></a>
                         <p>Prostorný apartmán se dvěma ložnicemi pro 5 osob a vlastní kuchyní.</p>
-                        <a href="<?= CMS::url('kocici.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="kocici-apartman" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.1s;">
-                    <a href="<?= CMS::url('konsky.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/konsky_1.jpg');">
+                    <a href="konsky-apartman" class="room-link">
+                        <div class="room-img" style="background-image: url('/assets/img/konsky_1.jpg');">
                             <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('konsky.php') ?>"><h3>Koňský apartmán</h3></a>
+                        <a href="konsky-apartman"><h3>Koňský apartmán</h3></a>
                         <p>Prostorný apartmán pro 5 osob s plně vybavenou kuchyní a dvěma ložnicemi.</p>
-                        <a href="<?= CMS::url('konsky.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="konsky-apartman" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.2s;">
-                    <a href="<?= CMS::url('kvetinovy.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/kvetinovy/kvetinovy-apartman233610.jpeg');">
+                    <a href="kvetinovy-apartman" class="room-link">
+                        <div class="room-img" style="background-image: url('/assets/img/kvetinovy/kvetinovy-apartman233610.jpeg');">
                             <div class="room-price">1 500 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('kvetinovy.php') ?>"><h3>Květinový apartmán</h3></a>
+                        <a href="kvetinovy-apartman"><h3>Květinový apartmán</h3></a>
                         <p>Prostorný apartmán pro 3 osoby s ložnicí, velkou koupelnou se sprchou i vanou a malou lednicí.</p>
-                        <a href="<?= CMS::url('kvetinovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="kvetinovy-apartman" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.3s;">
-                    <a href="<?= CMS::url('babiccin.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/babiccin/babiccin-apartman-222753.jpg');">
+                    <a href="babiccin-apartman" class="room-link">
+                        <div class="room-img" style="background-image: url('/assets/img/babiccin/babiccin-apartman-222753.jpg');">
                             <div class="room-price">1 500 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('babiccin.php') ?>"><h3>Babiččin apartmán</h3></a>
+                        <a href="babiccin-apartman"><h3>Babiččin apartmán</h3></a>
                         <p>Prostorný apartmán pro 4 osoby s plně vybavenou kuchyní a koupelnou se sprchou.</p>
-                        <a href="<?= CMS::url('babiccin.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="babiccin-apartman" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.4s;">
-                    <a href="<?= CMS::url('medovy.php') ?>" class="room-link">
-                        <div class="room-img" style="background-image: url('assets/img/medovy_1.jpg');">
+                    <a href="medovy-apartman" class="room-link">
+                        <div class="room-img" style="background-image: url('/assets/img/medovy_1.jpg');">
                             <div class="room-price">2 000 Kč / noc</div>
                         </div>
                     </a>
                     <div class="room-info">
-                        <a href="<?= CMS::url('medovy.php') ?>"><h3>Medový apartmán</h3></a>
+                        <a href="medovy-apartman"><h3>Medový apartmán</h3></a>
                         <p>Ideální volba pro větší skupiny přátel. Prostorný apartmán pro 9 osob se třemi ložnicemi.</p>
-                        <a href="<?= CMS::url('medovy.php') ?>" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
+                        <a href="medovy-apartman" class="btn btn-link">Více o pokoji <i data-lucide="arrow-right"></i></a>
                     </div>
                 </div>
             </div>

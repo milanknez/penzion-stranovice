@@ -5,7 +5,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" style="height: 45vh; min-height: 350px;">
-        <div class="hero-bg" style="background-image: url('assets/img/hero_statek.jpg');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/hero_statek.jpg');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Právní informace</h2>

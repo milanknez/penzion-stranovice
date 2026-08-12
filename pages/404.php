@@ -15,7 +15,7 @@ CMS::getHeader();
                     Zkuste se vrátit zpět nebo přejít na úvod.
                 </p>
                 <div class="flex justify-center gap-4">
-                    <a href="<?= CMS::url('index.php') ?>" class="btn btn-primary px-8">ZPĚT NA ÚVOD</a>
+                    <a href="/" class="btn btn-primary px-8">ZPĚT NA ÚVOD</a>
                 </div>
             </div>
         </section>

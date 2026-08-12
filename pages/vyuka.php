@@ -67,7 +67,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" style="height: 60vh; min-height: 450px;">
-        <div class="hero-bg" style="background-image: url('assets/img/vyuka_hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/vyuka_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Učení prožitkem</h2>
@@ -107,7 +107,7 @@ CMS::getHeader();
                             <span class="info-badge price-badge"><i data-lucide="tag"></i> <strong>Cena:</strong> 100 Kč / osoba</span>
                             <span class="info-badge"><i data-lucide="users"></i> <strong>Minimální počet osob:</strong> 5</span>
                         </div>
-                        <a href="<?= CMS::url('index.php') ?>?program=Den+malého+farmáře#contact" class="btn btn-primary">Mám zájem o program</a>
+                        <a href="/?program=Den+malého+farmáře#contact" class="btn btn-primary">Mám zájem o program</a>
                     </div>
                 </div>
 
@@ -147,7 +147,7 @@ CMS::getHeader();
                             <strong>Doporučujeme:</strong> Pevnou uzavřenou obuv a pracovní oblečení, které se může ušpinit. Každá návštěva je jiná – program se přizpůsobuje počasí i aktuálním pracím na farmě (sklizeň sena, péče o telata, krmení).
                         </div>
 
-                        <a href="<?= CMS::url('index.php') ?>?program=Farmářem+na+zkoušku#contact" class="btn btn-primary">Mám zájem o program</a>
+                        <a href="/?program=Farmářem+na+zkoušku#contact" class="btn btn-primary">Mám zájem o program</a>
                     </div>
                 </div>
             </div>
@@ -187,7 +187,7 @@ CMS::getHeader();
             </p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="tel:+420123456789" class="btn btn-primary"><i data-lucide="phone"></i> Zavolejte nám</a>
-                <a href="<?= CMS::url('index.php') ?>?program=Program+na+míru#contact" class="btn btn-outline">Napište nám</a>
+                <a href="/?program=Program+na+míru#contact" class="btn btn-outline">Napište nám</a>
             </div>
         </div>
     </section>

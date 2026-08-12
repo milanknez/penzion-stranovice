@@ -20,7 +20,7 @@ CMS::getHeader();
 
     <!-- Hero Section -->
     <section class="hero" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg" style="background-image: url('assets/img/prodej_hero.png');"></div>
+        <div class="hero-bg" style="background-image: url('/assets/img/prodej_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Čerstvé &amp; Poctivé (Sezónně)</h2>

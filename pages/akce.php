@@ -12,7 +12,7 @@ CMS::getHeader();
     .amenity-item { text-align: center; padding: 2rem; border-radius: 8px; background: white; box-shadow: var(--shadow); }
     .amenity-icon { color: var(--primary); margin-bottom: 1rem; font-size: 1.5rem; }
     #hero-events { height: 70vh; min-height: 500px; }
-    #hero-bg-events { background-image: url("assets/img/wedding.png"); }
+    #hero-bg-events { background-image: url("/assets/img/wedding.png"); }
     @media (max-width: 992px) {
         .event-type-card { grid-template-columns: 1fr !important; }
         .event-type-img { height: 300px; min-height: auto; }
@@ -23,7 +23,7 @@ CMS::getHeader();
 </style>
     
     <section id="hero-events" class="hero">
-        <div id="hero-bg-events" class="hero-bg"></div>
+        <div id="hero-bg-events" class="hero-bg" style="background-image: url('/assets/img/wedding.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h2 class="hero-subtitle fadeIn">Nezapomenutelné okamžiky</h2>
