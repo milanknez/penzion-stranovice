@@ -2,217 +2,24 @@
 require_once __DIR__ . '/../admin/includes/CMS.php';
 CMS::getHeader();
 ?>
-<style>
-    .about-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; align-items: flex-start; }
-    @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
-    .room-gallery { width: 100%; min-width: 0; }
-    .room-description { width: 100%; min-width: 0; }
-    .room-gallery-main { border-radius: 4px; overflow: hidden; border: 8px solid white; box-shadow: 10px 10px 0px var(--border); margin-bottom: 2rem; cursor: zoom-in; aspect-ratio: 4 / 3; position: relative; max-height: 450px; z-index: 100; width: 100%; }
-    .room-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
-    .thumb-slider-container { position: relative; display: flex; align-items: center; margin-top: 1rem; gap: 10px; width: 100%; overflow: hidden; min-width: 0; }
-    .thumb-scroll { display: flex; gap: 10px; overflow-x: hidden; scroll-behavior: smooth; flex-grow: 1; padding: 5px 0; min-width: 0; }
-    .thumb-scroll img { flex: 0 0 100px; width: 100px; height: 75px; object-fit: cover; border-radius: 4px; border: 2px solid white; cursor: pointer; opacity: 0.7; transition: 0.2s; flex-shrink: 0; }
-    .thumb-scroll img.active { opacity: 1; border-color: var(--primary) !important; }
-    .slider-nav { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); color: var(--primary); flex-shrink: 0; }
-</style>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
-        <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('/assets/img/medovy_1.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_2.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_3.jpg');"></div>
-        </div>
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-            <h2 class="hero-subtitle fadeIn">Apartmán</h2>
-            <h1 class="hero-title fadeInDelay">Medový apartmán</h1>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <section class="section-padding bg-light">
-        <div class="container">
-            <div class="about-grid">
-                <div class="reveal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-                    <div>
-                        <div class="room-gallery-main" id="main-gallery-trigger">
-                            <img src="/assets/img/medovy_1.jpg" alt="Medový apartmán - Interiér" id="main-gallery-img">
-                        </div>
-                        <div class="thumb-slider-container">
-                            <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
-                            <div class="thumb-scroll" id="thumb-scroll">
-                                <img src="/assets/img/medovy_1.jpg" class="active">
-                                <img src="/assets/img/medovy_2.jpg">
-                                <img src="/assets/img/medovy_3.jpg">
-                            </div>
-                            <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="reveal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-                    <div>
-                        <span class="section-tag">Velkorysý prostor</span>
-                        <h2 class="section-title">Ideální pro rodiny a skupiny</h2>
-                        <p>Medový apartmán je ideální volbou pro větší skupiny přátel. Tento prostorný apartmá je pro 9 osob. Disponuje plně vybavenou kuchyní s varnou deskou, troubou, lednicí, koupelnou se sprchou a třemi ložnicemi. Jedna ložnice s manželskou postelí a jedním jednolůžkem, druhá ložnice taktéž s manželskou postelí a jedním jednolůžkem, třetí ložnice má tři jednolůžka. K dispozici je také TV s plochou obrazovkou a bezplatné Wi-Fi připojení. K ubytování je možnost objednat si snídani.</p>
-
-                        <ul class="features-list" style="margin-top: 2rem;">
-                            <li><i data-lucide="users"></i> Kapacita: 9 osob</li>
-                            <li><i data-lucide="bed"></i> 3x ložnice (2x manželská postel + jednolůžko, 1x 3 jednolůžka)</li>
-                            <li><i data-lucide="circle-parking"></i> Parkování zdarma</li>
-                        </ul>
-                    </div>
-
-                    <div style="margin-top: auto; padding-top: 1.5rem;">
-                        <div style="font-family: 'Libre Baskerville'; font-size: 1.8rem; color: var(--primary); margin-bottom: 0.2rem;">
+<style>* { box-sizing: border-box; } body {margin: 0;}.about-grid{display:grid;grid-template-columns:repeat(2, minmax(0px, 1fr));row-gap:3rem;column-gap:3rem;align-items:flex-start;}.room-gallery-main{border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:4px;border-bottom-left-radius:4px;overflow-x:hidden;overflow-y:hidden;border-top-width:8px;border-top-style:solid;border-top-color:white;border-right-width:8px;border-right-style:solid;border-right-color:white;border-bottom-width:8px;border-bottom-style:solid;border-bottom-color:white;border-left-width:8px;border-left-style:solid;border-left-color:white;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;box-shadow:10px 10px 0px var(--border);margin-bottom:2rem;cursor:zoom-in;aspect-ratio:4 / 3;position:relative;max-height:450px;z-index:100;width:100%;}.room-gallery-main img{width:100%;height:100%;object-fit:cover;display:block;transition-property:transform;transition-duration:0.5s;transition-timing-function:ease;transition-delay:0s;transition-behavior:normal;}.thumb-slider-container{position:relative;display:flex;align-items:center;margin-top:1rem;row-gap:10px;column-gap:10px;width:100%;overflow-x:hidden;overflow-y:hidden;min-width:0px;}.thumb-scroll{display:flex;row-gap:10px;column-gap:10px;overflow-x:hidden;scroll-behavior:smooth;flex-grow:1;padding-top:5px;padding-right:0px;padding-bottom:5px;padding-left:0px;min-width:0px;}.thumb-scroll img{flex-grow:0;flex-basis:100px;width:100px;height:75px;object-fit:cover;border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:4px;border-bottom-left-radius:4px;border-top-width:2px;border-top-style:solid;border-top-color:white;border-right-width:2px;border-right-style:solid;border-right-color:white;border-bottom-width:2px;border-bottom-style:solid;border-bottom-color:white;border-left-width:2px;border-left-style:solid;border-left-color:white;border-image-outset:0;border-image-repeat:stretch;border-image-slice:100%;border-image-source:none;border-image-width:1;cursor:pointer;opacity:0.7;transition-property:all;transition-duration:0.2s;transition-timing-function:ease;transition-delay:0s;transition-behavior:normal;flex-shrink:0;}.thumb-scroll img.active{opacity:1;border-top-color: !important;border-right-color: !important;border-bottom-color: !important;border-left-color: !important;}.slider-nav{background-color:white;background-position-x:0%;background-position-y:0%;background-repeat:repeat;background-attachment:scroll;background-image:none;background-size:auto;background-origin:padding-box;background-clip:border-box;border-top-left-radius:50%;border-top-right-radius:50%;border-bottom-right-radius:50%;border-bottom-left-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;box-shadow:rgba(0, 0, 0, 0.2) 0px 4px 10px;color:var(--primary);flex-shrink:0;}#if4j{background-image:url('/assets/img/medovy_1.jpg');}#i2hi{background-image:url('/assets/img/medovy_2.jpg');}#ifrj{background-image:url('/assets/img/medovy_3.jpg');}#home{height:60vh;min-height:400px;}#ixjfd{display:flex;flex-direction:column;justify-content:space-between;height:100%;}#i3gtj{margin-top:2rem;}#iu8ak{font-family:'Libre Baskerville';font-size:1.8rem;color:var(--primary);margin-bottom:0.2rem;}#ivrbi{font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem;font-style:italic;}#icd5x{width:20px;height:20px;color:var(--primary);}#ix109{display:inline-flex;align-items:center;justify-content:center;background:transparent !important;border:2px solid var(--primary);color:var(--primary);font-weight:600;padding:0.8rem;}#imki3{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}#ixebu{margin-top:auto;padding-top:1.5rem;}#i2l57{display:flex;flex-direction:column;justify-content:space-between;height:100%;}#i177l{font-family:'Libre Baskerville', serif;font-size:1.6rem;color:var(--primary);margin-bottom:2rem;display:flex;align-items:center;gap:0.8rem;border-bottom:2px solid var(--border);padding-bottom:1rem;}#ie9k1{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#irsh8{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#i6od1{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ipo0j{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#ic6xh{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#imuwu{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#i5dgq{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#igyqp{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#iizcq{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#iefog{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#i3v9g{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ib2xi{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#iecxy{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ix9rk{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#i0dtk{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#i5ba5{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#ir75n{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#i0ogl{display:flex;align-items:center;gap:1rem;color:var(--text-dark);font-weight:500;padding:0.2rem 0;}#iyxnd{list-style:none;display:flex;flex-direction:column;gap:1.2rem;}#iiexx{background:white;padding:3rem;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.04);border:1px solid var(--border);}#iykzqr{width:22px;height:22px;}#i8ddj{background:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,94,60,0.15);color:var(--primary);}#ibjw2{font-family:'Libre Baskerville', serif;font-size:1.6rem;color:var(--text-dark);margin-bottom:2rem;display:flex;align-items:center;gap:0.8rem;border-bottom:2px solid rgba(139, 94, 60, 0.15);padding-bottom:1rem;}#in0k3i{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ixoe5p{display:flex;align-items:center;gap:1rem;}#iq3ad6{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#iyjsqd{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#iawl4j{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ikv7dt{display:flex;align-items:center;gap:1rem;}#i17088{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#ix4v1i{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#ifu2xt{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ia5pok{display:flex;align-items:center;gap:1rem;}#ikfo0o{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#iykjcq{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#inm3q3{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#ilgl6n{display:flex;align-items:center;gap:1rem;}#i3c0bt{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#ikq8jx{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#it603k{flex-shrink:0;}#iaw41y{display:flex;align-items:center;gap:1rem;}#i5buay{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#ivbh9l{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#ihe4ch{color:var(--primary);width:22px;height:22px;flex-shrink:0;}#i68z26{display:flex;align-items:center;gap:1rem;}#itcq4v{background:var(--primary);color:white;padding:0.25rem 0.8rem;border-radius:20px;font-weight:700;font-size:0.85rem;box-shadow:0 2px 5px rgba(139,94,60,0.3);}#i3cnkw{display:flex;justify-content:space-between;align-items:center;color:var(--text-dark);font-weight:500;border-bottom:1px dotted rgba(139, 94, 60, 0.25);padding-bottom:0.8rem;}#ijwi08{list-style:none;display:flex;flex-direction:column;gap:1.2rem;}#iq4kz{background:linear-gradient(145deg, #FAF7F2, #F3EFE6);padding:3rem;border-radius:8px;box-shadow:0 15px 35px rgba(139, 94, 60, 0.12);border:1px solid rgba(139, 94, 60, 0.2);border-top:5px solid var(--primary);}#i0dm7{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:3rem;margin-top:4rem;}#i8hqnt{margin-top:2rem;}#irbkzp{margin-top:1rem;}@media (max-width: 992px){.about-grid{grid-template-columns:1fr;row-gap:2rem;column-gap:2rem;}}</style>
+<body class="bg-slate-950 text-slate-100 min-h-screen"><section id="home" class="hero"><div id="hero-bg-slider" class="hero-bg-slider"><div class="hero-bg-slide active" id="if4j"></div><div class="hero-bg-slide" id="i2hi"></div><div class="hero-bg-slide" id="ifrj"></div></div><div class="hero-overlay"></div><div class="container hero-content"><h2 class="hero-subtitle fadeIn">Apartmán</h2><h1 class="hero-title fadeInDelay">Medový apartmán</h1></div></section><!-- Main Content --><section class="section-padding bg-light"><div class="container"><div class="about-grid"><div class="reveal" id="ixjfd"><div><div id="main-gallery-trigger" class="room-gallery-main"><img src="assets/img/uploads/WhatsApp_Image_2026-07-30_at_22_21_00.jpeg" alt="Medový apartmán - Interiér" id="main-gallery-img"/></div><div class="thumb-slider-container"><button id="prev-thumb" class="slider-nav"><i data-lucide="chevron-left"></i></button><div id="thumb-scroll" class="thumb-scroll"><img src="assets/img/uploads/WhatsApp_Image_2026-07-30_at_22_21_00.jpeg" class="active"/><img src="/assets/img/uploads/WhatsApp_Image_2026-07-30_at_22_21_00_1_.jpeg" id="ix94e"/><img src="assets/img/uploads/WhatsApp_Image_2026-07-30_at_22_21_00_2_.jpeg" id="igebk"/></div><button id="next-thumb" class="slider-nav"><i data-lucide="chevron-right"></i></button></div></div></div><div class="reveal" id="i2l57"><div><span class="section-tag">Velkorysý prostor</span><h2 class="section-title">Ideální pro rodiny a skupiny</h2><p>Medový apartmán je ideální volbou pro větší skupiny přátel. Tento prostorný apartmá je pro 9 osob. Disponuje plně vybavenou kuchyní s varnou deskou, troubou, lednicí, koupelnou se sprchou a třemi ložnicemi. Jedna ložnice s manželskou postelí a jedním jednolůžkem, druhá ložnice taktéž s manželskou postelí a jedním jednolůžkem, třetí ložnice má tři jednolůžka. K dispozici je také TV s plochou obrazovkou a bezplatné Wi-Fi připojení. K ubytování je možnost objednat si snídani.</p><ul class="features-list" id="i3gtj"><li><i data-lucide="users"></i> Kapacita: 9 osob</li><li><i data-lucide="bed"></i> 3x ložnice (2x manželská postel + jednolůžko, 1x 3 jednolůžka)</li><li><i data-lucide="circle-parking"></i> Parkování zdarma</li></ul></div><div id="ixebu"><div id="iu8ak">
                             2 000 Kč / noc
-                        </div>
-                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic;">
+                        </div><div id="ivrbi">
                             * Při rezervaci pouze na 1 noc +1000 Kč servisní poplatek k ceně.
-                        </div>
-                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                            <a href="index.php#rooms" class="btn" title="Zpět na přehled apartmánů" aria-label="Zpět na přehled apartmánů" style="display: inline-flex; align-items: center; justify-content: center; background: transparent !important; border: 2px solid var(--primary); color: var(--primary); font-weight: 600; padding: 0.8rem;">
-                                <i data-lucide="arrow-left" style="width: 20px; height: 20px; color: var(--primary);"></i>
-                            </a>
-                            <a href="#poptat-termin" class="btn btn-primary">Rezervovat</a>
-                            <button type="button" class="btn btn-outline-primary open-room-calendar" data-room="medovy" data-room-name="Medový apartmán">
-                                <i data-lucide="calendar"></i> Obsazenost
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="details-grid reveal-up"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem;">
-                
-                <!-- Levý sloupec: Vybavení -->
-                <div class="detail-card"
-                    style="background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);">
-                    <h3
-                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem;">
-                        <i data-lucide="package-check"></i> Vybavení pokoje
-                    </h3>
-                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="utensils" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Plně vybavená kuchyň
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="bed" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> 3 samostatné ložnice
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="tv" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Televize a Wi-Fi
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="refrigerator" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Velká lednice s mrazákem
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="flame" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Varná deska
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="chef-hat" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Trouba
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="coffee" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Rychlovarná konvice
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="microwave" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Mikrovlnná trouba
-                        </li>
-                        <li style="display: flex; align-items: center; gap: 1rem; color: var(--text-dark); font-weight: 500; padding: 0.2rem 0;">
-                            <i data-lucide="wind" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Fén
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Pravý sloupec: Doplňkové služby -->
-                <div class="detail-card"
-                    style="background: linear-gradient(145deg, #FAF7F2, #F3EFE6); padding: 3rem; border-radius: 8px; box-shadow: 0 15px 35px rgba(139, 94, 60, 0.12); border: 1px solid rgba(139, 94, 60, 0.2); border-top: 5px solid var(--primary);">
-                    <h3
-                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--text-dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid rgba(139, 94, 60, 0.15); padding-bottom: 1rem;">
-                        <span style="background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(139,94,60,0.15); color: var(--primary);"><i data-lucide="concierge-bell" style="width: 22px; height: 22px;"></i></span> Doplňkové služby
-                    </h3>
-                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="coffee" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Snídaně</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">250 Kč</span>
-                        </li>
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="dog" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Příplatek za psa</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">400 Kč / noc</span>
-                        </li>
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="droplet" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Ručník</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">50 Kč</span>
-                        </li>
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="bike" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Půjčovna kol</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">300 Kč / den</span>
-                        </li>
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M4 17l2-7 4-6h5l2 3h3a2 2 0 0 1 2 2v2a3 3 0 0 1-3 3h-3l-2 5H7l-3-2z"/><circle cx="15" cy="8" r="1"/><path d="M10 4c2 1 3 3 3 5"/></svg> Jízda na koni</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">od 400 Kč</span>
-                        </li>
-                        <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><i data-lucide="baby" style="color: var(--primary); width: 22px; height: 22px; flex-shrink: 0;"></i> Dětská postýlka</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">100 Kč / noc</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Reservation Section -->
-    <section class="contact section-padding bg-white" id="poptat-termin">
-        <div class="container">
-            <div class="contact-grid">
-                <div class="contact-info reveal">
-                    <span class="section-tag">Rezervace</span>
-                    <h2 class="section-title">Poptat termín</h2>
-                    <p>Zaujal vás náš Medový apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p>
-                    <div class="info-item" style="margin-top: 2rem;">
-                        <i data-lucide="mail"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p>info@statekstranovice.cz</p>
-                        </div>
-                    </div>
-                    <div class="info-item" style="margin-top: 1rem;">
-                        <i data-lucide="phone"></i>
-                        <div>
-                            <h4>Telefon</h4>
-                            <p>+420 737 887 985</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="contact-form-wrapper reveal-up">
-                    <form class="contact-form">
-                        <input type="hidden" name="room" value="Medový apartmán">
-                        <div class="form-row">
-                            <div class="form-group"><label>Příjezd</label><input type="date" name="prijezd" required></div>
-                            <div class="form-group"><label>Odjezd</label><input type="date" name="odjezd" required></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Počet hostů</label>
-                                <select name="pocet_hostu">
-                                    <option>1-2 osoby</option>
-                                    <option>3-4 osoby</option>
-                                    <option>5-6 osob</option>
-                                    <option>7-9 osob</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Vaše jméno</label><input type="text" name="jmeno" placeholder="Jan Novák" required></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>E-mail</label><input type="email" name="email" placeholder="jan.novak@email.cz" required></div>
-                            <div class="form-group"><label>Telefon</label><input type="tel" name="telefon" placeholder="+420 123 456 789"></div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <?php CMS::getFooter(); ?>
+                        </div><div id="imki3"><a href="index.php#rooms" title="Zpět na přehled apartmánů" aria-label="Zpět na přehled apartmánů" class="btn" id="ix109"><i data-lucide="arrow-left" id="icd5x"></i></a><a href="#poptat-termin" class="btn btn-primary">Rezervovat</a><button type="button" data-room="medovy" data-room-name="Medový apartmán" class="btn btn-outline-primary open-room-calendar"><i data-lucide="calendar"></i> Obsazenost
+                            </button></div></div></div></div><div class="details-grid reveal-up" id="i0dm7"><!-- Levý sloupec: Vybavení --><div class="detail-card" id="iiexx"><h3 id="i177l"><i data-lucide="package-check"></i> Vybavení pokoje
+                    </h3><ul id="iyxnd"><li id="irsh8"><i data-lucide="utensils" id="ie9k1"></i> Plně vybavená kuchyň
+                        </li><li id="ipo0j"><i data-lucide="bed" id="i6od1"></i> 3 samostatné ložnice
+                        </li><li id="imuwu"><i data-lucide="tv" id="ic6xh"></i> Televize a Wi-Fi
+                        </li><li id="igyqp"><i data-lucide="refrigerator" id="i5dgq"></i> Velká lednice s mrazákem
+                        </li><li id="iefog"><i data-lucide="flame" id="iizcq"></i> Varná deska
+                        </li><li id="ib2xi"><i data-lucide="chef-hat" id="i3v9g"></i> Trouba
+                        </li><li id="ix9rk"><i data-lucide="coffee" id="iecxy"></i> Rychlovarná konvice
+                        </li><li id="i5ba5"><i data-lucide="microwave" id="i0dtk"></i> Mikrovlnná trouba
+                        </li><li id="i0ogl"><i data-lucide="wind" id="ir75n"></i> Fén
+                        </li></ul></div><!-- Pravý sloupec: Doplňkové služby --><div class="detail-card" id="iq4kz"><h3 id="ibjw2"><span id="i8ddj"><i data-lucide="concierge-bell" id="iykzqr"></i></span> Doplňkové služby
+                    </h3><ul id="ijwi08"><li id="iyjsqd"><span id="ixoe5p"><i data-lucide="coffee" id="in0k3i"></i> Snídaně</span><span id="iq3ad6">250 Kč</span></li><li id="ix4v1i"><span id="ikv7dt"><i data-lucide="dog" id="iawl4j"></i> Příplatek za psa</span><span id="i17088">400 Kč / noc</span></li><li id="iykjcq"><span id="ia5pok"><i data-lucide="droplet" id="ifu2xt"></i> Ručník</span><span id="ikfo0o">50 Kč</span></li><li id="ikq8jx"><span id="ilgl6n"><i data-lucide="bike" id="inm3q3"></i> Půjčovna kol</span><span id="i3c0bt">300 Kč / den</span></li><li id="ivbh9l"><span id="iaw41y"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="it603k"><path d="M4 17l2-7 4-6h5l2 3h3a2 2 0 0 1 2 2v2a3 3 0 0 1-3 3h-3l-2 5H7l-3-2z"></path><circle cx="15" cy="8" r="1"></circle><path d="M10 4c2 1 3 3 3 5"></path></svg> Jízda na koni</span><span id="i5buay">od 400 Kč</span></li><li id="i3cnkw"><span id="i68z26"><i data-lucide="baby" id="ihe4ch"></i> Dětská postýlka</span><span id="itcq4v">100 Kč / noc</span></li></ul></div></div></div></section><!-- Reservation Section --><section id="poptat-termin" class="contact section-padding bg-white"><div class="container"><div class="contact-grid"><div class="contact-info reveal"><span class="section-tag">Rezervace</span><h2 class="section-title">Poptat termín</h2><p>Zaujal vás náš Medový apartmán? Pošlete nám nezávaznou poptávku a my se vám ozveme s nejlepší cenou.</p><div class="info-item" id="i8hqnt"><i data-lucide="mail"></i><div><h4>Email</h4><p>info@statekstranovice.cz</p></div></div><div class="info-item" id="irbkzp"><i data-lucide="phone"></i><div><h4>Telefon</h4><p>+420 737 887 985</p></div></div></div><div class="contact-form-wrapper reveal-up"><form class="contact-form"><input type="hidden" name="room" value="Medový apartmán"/><div class="form-row"><div class="form-group"><label>Příjezd</label><input type="date" name="prijezd" required/></div><div class="form-group"><label>Odjezd</label><input type="date" name="odjezd" required/></div></div><div class="form-row"><div class="form-group"><label>Počet hostů</label><select name="pocet_hostu"><option>1-2 osoby</option><option>3-4 osoby</option><option>5-6 osob</option><option>7-9 osob</option></select></div><div class="form-group"><label>Vaše jméno</label><input type="text" name="jmeno" placeholder="Jan Novák" required/></div></div><div class="form-row"><div class="form-group"><label>E-mail</label><input type="email" name="email" placeholder="jan.novak@email.cz" required/></div><div class="form-group"><label>Telefon</label><input type="tel" name="telefon" placeholder="+420 123 456 789"/></div></div><button type="submit" class="btn btn-primary w-full">Odeslat poptávku</button></form></div></div></div></section><!--?php CMS::getFooter(); ?--></body>
+<?php
+CMS::getFooter();
+?>
