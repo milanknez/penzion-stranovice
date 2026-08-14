@@ -1,4 +1,4 @@
 <?php
 // Fida CMS Version
-define('APP_VERSION', '1.2.5');
-define('CMS_VERSION', '1.2.5');
+define('APP_VERSION', '1.2.6');
+define('CMS_VERSION', '1.2.6');
