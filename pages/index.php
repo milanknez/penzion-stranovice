@@ -66,7 +66,7 @@ CMS::getHeader();
             <div class="rooms-grid">
                 <div class="room-card reveal-up">
                     <a href="kocici-apartman" class="room-link">
-                        <div class="room-img" style="background-image: url('/assets/img/kocici_1.jpg');">
+                        <div class="room-img" style="background-image: url('/assets/img/kocici/kocici-apartman233334.jpeg');">
                             <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>
@@ -114,7 +114,7 @@ CMS::getHeader();
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.4s;">
                     <a href="medovy-apartman" class="room-link">
-                        <div class="room-img" style="background-image: url('/assets/img/medovy_1.jpg');">
+                        <div class="room-img" style="background-image: url('/assets/img/medovy/medovy-obyvaci-pokoj-01.jpeg');">
                             <div class="room-price">2 000 Kč / noc</div>
                         </div>
                     </a>
@@ -128,38 +128,83 @@ CMS::getHeader();
         </div>
     </section>
 
-    <!-- Activities Section -->
+    <!-- Activities & Surrounding Explorer Section (Option 1) -->
     <section class="activities section-padding bg-light" id="activities">
         <div class="container text-center">
-            <span class="section-tag">Zážitky u nás</span>
-            <h2 class="section-title">Co u nás zažijete?</h2>
-            <div class="activities-grid">
-                <div class="activity-card reveal-up">
-                    <div class="activity-icon">
-                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 7.5 10 9.5 10S15 11.5 15 13.62V16"></path><path d="M20 20v-2.38c0-2.12-3.5-3.62-5.5-3.62S9 15.5 9 17.62V20"></path><circle cx="9" cy="6" r="2"></circle><circle cx="15" cy="9" r="2"></circle></svg>
+            <span class="section-tag">Zážitky a okolí</span>
+            <h2 class="section-title">Objevte krásy kolem Statku Straňovice</h2>
+            <p style="max-width: 700px; margin: 0 auto 2.5rem; color: var(--text-muted); font-size: 1.05rem;">
+                Vyberte si kategorii a prozkoumejte nejkrásnější výlety, památky, koupání i skvělé restaurace v našem bezprostředním okolí i na Šumavě.
+            </p>
+
+            <!-- Map Filter Category Buttons -->
+            <div class="map-category-filters reveal-up">
+                <button type="button" class="map-filter-btn active" data-cat="all">
+                    <i data-lucide="map-pin"></i> Všechna místa
+                </button>
+                <button type="button" class="map-filter-btn" data-cat="vylety">
+                    <i data-lucide="footprints"></i> Pěší výlety a památky
+                </button>
+                <button type="button" class="map-filter-btn" data-cat="cyklo">
+                    <i data-lucide="bike"></i> Cyklotrasy a Šumava
+                </button>
+                <button type="button" class="map-filter-btn" data-cat="koupaliste">
+                    <i data-lucide="waves"></i> Koupání a relax
+                </button>
+                <button type="button" class="map-filter-btn" data-cat="jidlo">
+                    <i data-lucide="utensils"></i> Kam na jídlo
+                </button>
+            </div>
+
+            <!-- Big Interactive Map Frame -->
+            <div class="map-wrapper reveal-up">
+                <div class="map-frame" style="position: relative;">
+                    <div id="map" style="width: 100%; height: 560px; z-index: 1;"></div>
+                    
+                    <!-- Floating Quick Stats Bar -->
+                    <div class="map-floating-legend">
+                        <span class="legend-item"><span class="legend-dot dot-statek"></span> Statek Straňovice (Start)</span>
+                        <span class="legend-item"><span class="legend-dot dot-vylety"></span> Výlety & Památky</span>
+                        <span class="legend-item"><span class="legend-dot dot-cyklo"></span> Šumava & Rozhledny</span>
+                        <span class="legend-item"><span class="legend-dot dot-koupani"></span> Koupání</span>
+                        <span class="legend-item"><span class="legend-dot dot-jidlo"></span> Restaurace</span>
                     </div>
-                    <h3>Pěší výlety</h3>
-                    <p>Prozkoumejte okolí Malenic po značených turistických trasách.</p>
-                </div>
-                <div class="activity-card reveal-up" style="animation-delay: 0.1s;">
-                    <div class="activity-icon">
-                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"></circle><circle cx="18.5" cy="17.5" r="3.5"></circle><line x1="15" y1="6" x2="18.5" y2="17.5"></line><polyline points="12 17.5 15 6 10 6"></polyline><path d="M12 17.5l-4-9 3-2.5"></path></svg>
-                    </div>
-                    <h3>Cyklovýlety</h3>
-                    <p>Od rovinatých tras podél řeky až po náročné výjezdy po Šumavě.</p>
-                </div>
-                <div class="activity-card reveal-up" style="animation-delay: 0.2s;">
-                    <div class="activity-icon">
-                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H9c1.5 0 3 .5 4.5 1.5L16 8l3-1 2 2-2 3 3 2v3z"></path><circle cx="8" cy="10" r="1"></circle><path d="M6 19v2"></path><path d="M18 19v2"></path></svg>
-                    </div>
-                    <h3>Vyjížďky na koních</h3>
-                    <p>Zprostředkujeme vyjížďky na koních z nedaleké stáje.</p>
                 </div>
             </div>
 
-            <div class="map-wrapper reveal-up">
-                <div class="map-frame">
-                    <div id="map" style="width: 100%; height: 500px;"></div>
+            <!-- 4 Quick Highlight Cards Below Map -->
+            <div class="map-highlights-grid reveal-up">
+                <div class="map-highlight-card" onclick="window.location.href='vylety.php?cat=okoli'">
+                    <div class="highlight-icon"><i data-lucide="footprints"></i></div>
+                    <div class="highlight-info">
+                        <h4>Pěší výlety v Malenicích</h4>
+                        <p>Fara s kavárnou, rybník u Volyňky a památná místa.</p>
+                        <span class="highlight-action">Prohlédnout tipy &rarr;</span>
+                    </div>
+                </div>
+                <div class="map-highlight-card" onclick="window.location.href='vylety.php?cat=sumava'">
+                    <div class="highlight-icon"><i data-lucide="mountain"></i></div>
+                    <div class="highlight-info">
+                        <h4>Šumava a rozhledny</h4>
+                        <p>Hrad Helfenburk, Boubínský prales a Javorník.</p>
+                        <span class="highlight-action">Prohlédnout tipy &rarr;</span>
+                    </div>
+                </div>
+                <div class="map-highlight-card" onclick="window.location.href='dovolena-s-vlastnim-konem.php'">
+                    <div class="highlight-icon"><i data-lucide="sparkles"></i></div>
+                    <div class="highlight-info">
+                        <h4>Dovolená s koněm</h4>
+                        <p>Vyjížďky do přírody a bezpečné ustájení na statku.</p>
+                        <span class="highlight-action">Více o ustájení &rarr;</span>
+                    </div>
+                </div>
+                <div class="map-highlight-card" onclick="window.location.href='kam-na-jidlo.php'">
+                    <div class="highlight-icon"><i data-lucide="utensils"></i></div>
+                    <div class="highlight-info">
+                        <h4>Kam na dobré jídlo</h4>
+                        <p>Vyzkoušené restaurace, pivovary a kavárny v okolí.</p>
+                        <span class="highlight-action">Vybrat restauraci &rarr;</span>
+                    </div>
                 </div>
             </div>
         </div>

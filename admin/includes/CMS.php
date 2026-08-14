@@ -233,20 +233,22 @@ class CMS {
 
     public static function gitCommit($message) {
         $rootDir = realpath(__DIR__ . '/../../');
-        if (!file_exists($rootDir . '/admin/config.php')) {
+        if (!$rootDir || !file_exists($rootDir . '/admin/config.php')) {
             $rootDir = realpath(__DIR__ . '/../');
         }
-        require_once $rootDir . '/admin/config.php';
+        $adminDir = $rootDir . '/admin';
+        require_once $adminDir . '/config.php';
         
         if (defined('ENABLE_PROJECT_GIT') && ENABLE_PROJECT_GIT === false) {
             return "Git commit přeskočen (synchronizace projektu je v nastavení vypnuta).";
         }
 
-        if (!defined('REPO_URL') || !defined('GITHUB_TOKEN') || empty(GITHUB_TOKEN)) {
+        $targetRepoUrl = defined('PROJECT_REPO_URL') && !empty(PROJECT_REPO_URL) ? PROJECT_REPO_URL : (defined('REPO_URL') ? REPO_URL : '');
+        if (empty($targetRepoUrl) || !defined('GITHUB_TOKEN') || empty(GITHUB_TOKEN)) {
             return "Git commit přesnut/přeskočen: Není nastaven GITHUB_TOKEN pro tento projekt.";
         }
 
-        $repoClean = str_replace('.git', '', REPO_URL);
+        $repoClean = str_replace('.git', '', $targetRepoUrl);
         $repoParts = explode('github.com/', $repoClean);
         if (count($repoParts) < 2) return "ERROR: Neplatné REPO_URL.";
         
@@ -256,11 +258,16 @@ class CMS {
 
         $filesToPush = [];
 
-        if (isset($_SESSION['current_page'])) {
-            $page = $_SESSION['current_page'];
-            $pagePath = $rootDir . '/' . $page;
+        // Determine target page from session or commit message
+        $targetPage = $_SESSION['current_page'] ?? null;
+        if (!$targetPage && preg_match('/Auto-update:\s*([^\s]+)/', $message, $m)) {
+            $targetPage = trim($m[1]);
+        }
+
+        if ($targetPage) {
+            $pagePath = $rootDir . '/' . ltrim($targetPage, '/');
             if (file_exists($pagePath)) {
-                $filesToPush[$page] = file_get_contents($pagePath);
+                $filesToPush[ltrim($targetPage, '/')] = file_get_contents($pagePath);
             }
         }
         
@@ -272,6 +279,38 @@ class CMS {
         $siteJson = $rootDir . '/config/site.json';
         if (file_exists($siteJson)) {
             $filesToPush['config/site.json'] = file_get_contents($siteJson);
+        }
+
+        // Bump version in admin/version.php (patch increment e.g. 1.2.1 -> 1.2.2)
+        $versionFile = $adminDir . '/version.php';
+        if (file_exists($versionFile)) {
+            $verContent = file_get_contents($versionFile);
+            if (preg_match("/define\(\s*['\"]APP_VERSION['\"]\s*,\s*['\"]([^'\"]+)['\"]\s*\);/", $verContent, $matches)) {
+                $curVer = $matches[1];
+                $parts = explode('.', $curVer);
+                if (count($parts) >= 3) {
+                    $parts[count($parts) - 1] = (int)$parts[count($parts) - 1] + 1;
+                    $newVer = implode('.', $parts);
+                } else {
+                    $newVer = $curVer . '.1';
+                }
+                $verContent = preg_replace("/define\(\s*['\"]APP_VERSION['\"]\s*,\s*['\"].*?['\"]\s*\);/", "define('APP_VERSION', '$newVer');", $verContent);
+                $verContent = preg_replace("/define\(\s*['\"]CMS_VERSION['\"]\s*,\s*['\"].*?['\"]\s*\);/", "define('CMS_VERSION', '$newVer');", $verContent);
+                
+                @chmod($adminDir, 0777);
+                @chmod($versionFile, 0666);
+                $wRes = @file_put_contents($versionFile, $verContent);
+                if ($wRes === false) {
+                    $tmpV = $adminDir . '/version.tmp.' . time() . '.php';
+                    if (@file_put_contents($tmpV, $verContent) !== false) {
+                        @unlink($versionFile);
+                        @rename($tmpV, $versionFile);
+                    }
+                }
+                
+                $filesToPush['admin/version.php'] = $verContent;
+                $message .= " (v$newVer)";
+            }
         }
 
         if (empty($filesToPush)) return "Žádné změny k nahrání.";

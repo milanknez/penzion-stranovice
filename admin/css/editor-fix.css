@@ -28,6 +28,41 @@ div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     color: inherit;
 }
 
+/* Food Card Icon Pill Sizing and Selection Fix */
+.food-card-icon-pill {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+.food-card-icon-pill svg,
+.food-card-icon-pill i,
+.food-card-icon-pill .lucide {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    stroke-width: 2.2px !important;
+    display: block !important;
+    pointer-events: none !important;
+}
+
+
 .section-padding {
     padding: var(--section-pad, 100px) 0;
 }
@@ -184,11 +219,22 @@ div:not(.hero-bg):not(.hero-overlay):not(.hero-content) {
     stroke: var(--primary, #8B5E3C) !important;
 }
 
-.filter-btn.active {
+.filter-btn:hover,
+.filter-btn.active,
+.filter-btn.gjs-selected,
+.filter-btn.gjs-hovered {
     background-color: var(--primary, #8B5E3C) !important;
     background: var(--primary, #8B5E3C) !important;
     color: #ffffff !important;
     border-color: var(--primary, #8B5E3C) !important;
+}
+
+.filter-btn:hover *,
+.filter-btn.active *,
+.filter-btn.gjs-selected *,
+.filter-btn.gjs-hovered * {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 .section-title {

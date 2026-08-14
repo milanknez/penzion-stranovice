@@ -24,11 +24,33 @@ if ($action === 'save_project_repo') {
         } else {
             $content = str_replace("define('REPO_URL',", "define('PROJECT_REPO_URL', '" . addslashes($projectRepoUrl) . "');\ndefine('REPO_URL',", $content);
         }
+        
         if (preg_match("/define\('GITHUB_TOKEN',\s*'.*?'\);/", $content)) {
             $content = preg_replace("/define\('GITHUB_TOKEN',\s*'.*?'\);/", "define('GITHUB_TOKEN', '" . addslashes($githubToken) . "');", $content);
+        } else {
+            $content = str_replace("define('PROJECT_REPO_URL',", "define('GITHUB_TOKEN', '" . addslashes($githubToken) . "');\ndefine('PROJECT_REPO_URL',", $content);
         }
-        file_put_contents($configPath, $content);
-        echo json_encode(['status' => 'success', 'message' => 'Nastavení projektového repozitáře bylo uloženo.']);
+
+        @chmod(__DIR__, 0777);
+        @chmod($configPath, 0777);
+        
+        $res = file_put_contents($configPath, $content);
+        if ($res === false) {
+            // Attempt rename/unlink if file is owned by different user but directory is writable
+            $tmpFile = __DIR__ . '/config.tmp.' . time() . '.php';
+            if (file_put_contents($tmpFile, $content) !== false) {
+                @unlink($configPath);
+                @rename($tmpFile, $configPath);
+                $res = file_exists($configPath);
+            }
+        }
+        
+        if ($res !== false) {
+            @chmod($configPath, 0666);
+            echo json_encode(['status' => 'success', 'message' => 'Nastavení projektového repozitáře bylo uloženo.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Chyba při zápisu do config.php (oprávnění souboru).']);
+        }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Soubor config.php nebyl nalezen.']);
     }
@@ -46,8 +68,27 @@ if ($action === 'save_repo') {
         $content = file_get_contents($configPath);
         $content = preg_replace("/define\('REPO_URL',\s*'.*?'\);/", "define('REPO_URL', '" . addslashes($repoUrl) . "');", $content);
         $content = preg_replace("/define\('GITHUB_TOKEN',\s*'.*?'\);/", "define('GITHUB_TOKEN', '" . addslashes($githubToken) . "');", $content);
-        file_put_contents($configPath, $content);
-        echo json_encode(['status' => 'success', 'message' => 'Nastavení repozitáře bylo uloženo.']);
+        @chmod(__DIR__, 0777);
+        @chmod($configPath, 0666);
+        $res = @file_put_contents($configPath, $content);
+        if ($res === false) {
+            @chmod($configPath, 0777);
+            $res = @file_put_contents($configPath, $content);
+        }
+        if ($res === false) {
+            $tmpFile = __DIR__ . '/config.tmp.php';
+            if (@file_put_contents($tmpFile, $content) !== false) {
+                @copy($tmpFile, $configPath);
+                @unlink($tmpFile);
+                $res = true;
+            }
+        }
+        if ($res !== false) {
+            @chmod($configPath, 0666);
+            echo json_encode(['status' => 'success', 'message' => 'Nastavení repozitáře bylo uloženo.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Chyba při zápisu do config.php (oprávnění souboru).']);
+        }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Soubor config.php nebyl nalezen.']);
     }

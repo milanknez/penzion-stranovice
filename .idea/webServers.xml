@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="faccb487-42ce-4b69-ad7a-d884fa081117" name="Penzion">
+        <fileTransfer rootFolder="/var/www/w1.fidamedia.cz" accessType="SFTP" host="192.168.1.103" port="22" sshConfigId="ce7849d2-860a-48fd-989a-d9427c0aeb20" sshConfig="milan@192.168.1.103:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

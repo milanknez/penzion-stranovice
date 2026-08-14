@@ -19,9 +19,9 @@ CMS::getHeader();
     <!-- Hero Section -->
     <section class="hero" id="home" style="height: 60vh; min-height: 400px;">
         <div class="hero-bg-slider" id="hero-bg-slider">
-            <div class="hero-bg-slide active" style="background-image: url('/assets/img/medovy_1.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_2.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy_3.jpg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('/assets/img/medovy/medovy-obyvaci-pokoj-01.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy/medovy-kuchyn-01.jpeg');"></div>
+            <div class="hero-bg-slide" style="background-image: url('/assets/img/medovy/medovy-loznice-1.jpeg');"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -37,14 +37,21 @@ CMS::getHeader();
                 <div class="reveal" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                     <div>
                         <div class="room-gallery-main" id="main-gallery-trigger">
-                            <img src="/assets/img/medovy_1.jpg" alt="Medový apartmán - Interiér" id="main-gallery-img">
+                            <img src="assets/img/medovy/medovy-obyvaci-pokoj-01.jpeg" alt="Medový apartmán - Interiér" id="main-gallery-img">
                         </div>
                         <div class="thumb-slider-container">
                             <button class="slider-nav" id="prev-thumb"><i data-lucide="chevron-left"></i></button>
                             <div class="thumb-scroll" id="thumb-scroll">
-                                <img src="/assets/img/medovy_1.jpg" class="active">
-                                <img src="/assets/img/medovy_2.jpg">
-                                <img src="/assets/img/medovy_3.jpg">
+                                <img src="assets/img/medovy/medovy-obyvaci-pokoj-01.jpeg" class="active">
+                                <img src="assets/img/medovy/medovy-obyvaci-pokoj-02.jpeg">
+                                <img src="assets/img/medovy/medovy-kuchyn-01.jpeg">
+                                <img src="assets/img/medovy/medovy-kuchyn-jidelni-kout.jpeg">
+                                <img src="assets/img/medovy/medovy-loznice-1.jpeg">
+                                <img src="assets/img/medovy/medovy-loznice-2.jpeg">
+                                <img src="assets/img/medovy/medovy-loznice-3.jpeg">
+                                <img src="assets/img/medovy/medovy-loznice-4.jpeg">
+                                <img src="assets/img/medovy/medovy-koupelna-vana.jpeg">
+                                <img src="assets/img/medovy/medovy-chodba-schody.jpeg">
                             </div>
                             <button class="slider-nav" id="next-thumb"><i data-lucide="chevron-right"></i></button>
                         </div>
@@ -71,26 +78,19 @@ CMS::getHeader();
                             * Při rezervaci pouze na 1 noc +1000 Kč servisní poplatek k ceně.
                         </div>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                            <a href="index.php#rooms" class="btn" title="Zpět na přehled apartmánů" aria-label="Zpět na přehled apartmánů" style="display: inline-flex; align-items: center; justify-content: center; background: transparent !important; border: 2px solid var(--primary); color: var(--primary); font-weight: 600; padding: 0.8rem;">
-                                <i data-lucide="arrow-left" style="width: 20px; height: 20px; color: var(--primary);"></i>
-                            </a>
+                            <a href="index.php#rooms" class="btn" style="display: inline-flex; align-items: center; justify-content: center; background: transparent !important; border: 2px solid var(--primary); color: var(--primary); font-weight: 600; padding: 0.8rem;" title="Zpět na přehled apartmánů" aria-label="Zpět na přehled apartmánů"><i data-lucide="arrow-left" style="width: 20px; height: 20px; color: var(--primary);"></i></a>
                             <a href="#poptat-termin" class="btn btn-primary">Rezervovat</a>
-                            <button type="button" class="btn btn-outline-primary open-room-calendar" data-room="medovy" data-room-name="Medový apartmán">
-                                <i data-lucide="calendar"></i> Obsazenost
-                            </button>
+                            <button type="button" class="btn btn-outline-primary open-room-calendar" data-room="medovy" data-room-name="Medový apartmán"><i data-lucide="calendar"></i> Obsazenost</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="details-grid reveal-up"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem;">
-                
+            <!-- Detaily pokoje: Vybavení a Doplňkové služby ve 2 sloupcích -->
+            <div class="details-grid reveal-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem;">
                 <!-- Levý sloupec: Vybavení -->
-                <div class="detail-card"
-                    style="background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);">
-                    <h3
-                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem;">
+                <div class="detail-card" style="background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);">
+                    <h3 style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem;">
                         <i data-lucide="package-check"></i> Vybavení pokoje
                     </h3>
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
@@ -125,10 +125,8 @@ CMS::getHeader();
                 </div>
 
                 <!-- Pravý sloupec: Doplňkové služby -->
-                <div class="detail-card"
-                    style="background: linear-gradient(145deg, #FAF7F2, #F3EFE6); padding: 3rem; border-radius: 8px; box-shadow: 0 15px 35px rgba(139, 94, 60, 0.12); border: 1px solid rgba(139, 94, 60, 0.2); border-top: 5px solid var(--primary);">
-                    <h3
-                        style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--text-dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid rgba(139, 94, 60, 0.15); padding-bottom: 1rem;">
+                <div class="detail-card" style="background: linear-gradient(145deg, #FAF7F2, #F3EFE6); padding: 3rem; border-radius: 8px; box-shadow: 0 15px 35px rgba(139, 94, 60, 0.12); border: 1px solid rgba(139, 94, 60, 0.2); border-top: 5px solid var(--primary);">
+                    <h3 style="font-family: 'Libre Baskerville', serif; font-size: 1.6rem; color: var(--text-dark); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid rgba(139, 94, 60, 0.15); padding-bottom: 1rem;">
                         <span style="background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(139,94,60,0.15); color: var(--primary);"><i data-lucide="concierge-bell" style="width: 22px; height: 22px;"></i></span> Doplňkové služby
                     </h3>
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.2rem;">
@@ -149,7 +147,10 @@ CMS::getHeader();
                             <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">300 Kč / den</span>
                         </li>
                         <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">
-                            <span style="display: flex; align-items: center; gap: 1rem;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M4 17l2-7 4-6h5l2 3h3a2 2 0 0 1 2 2v2a3 3 0 0 1-3 3h-3l-2 5H7l-3-2z"/><circle cx="15" cy="8" r="1"/><path d="M10 4c2 1 3 3 3 5"/></svg> Jízda na koni</span>
+                            <span style="display: flex; align-items: center; gap: 1rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M4 17l2-7 4-6h5l2 3h3a2 2 0 0 1 2 2v2a3 3 0 0 1-3 3h-3l-2 5H7l-3-2z"></path><circle cx="15" cy="8" r="1"></circle><path d="M10 4c2 1 3 3 3 5"></path></svg>
+                                Jízda na koni
+                            </span>
                             <span style="background: var(--primary); color: white; padding: 0.25rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 2px 5px rgba(139,94,60,0.3);">od 400 Kč</span>
                         </li>
                         <li style="display: flex; justify-content: space-between; align-items: center; color: var(--text-dark); font-weight: 500; border-bottom: 1px dotted rgba(139, 94, 60, 0.25); padding-bottom: 0.8rem;">

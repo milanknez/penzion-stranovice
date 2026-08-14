@@ -1,13 +1,34 @@
 <!-- Shared Modals Component -->
 <div id="timeline-modal" class="modal">
-    <div class="modal-content" style="max-width: 900px;">
+    <div class="modal-content" style="max-width: 1050px; width: 95vw;">
         <span class="close-modal">&times;</span>
         <h2 style="margin-top: 0; color: var(--primary);">Harmonogram obsazenosti pokojů</h2>
-        <p style="color: #666; margin-bottom: 1.5rem;">Přehled volných a obsazených termínů pro nejbližší 2 týdny.</p>
-        <div id="timeline-app"></div>
-        <div style="margin-top: 1.5rem; display: flex; gap: 1.5rem; font-size: 0.9rem;">
-            <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 14px; height: 14px; background: #eaf5ea; border: 1px solid #4caf50; border-radius: 3px; display: inline-block;"></span> Volno</span>
-            <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 14px; height: 14px; background: #ffebee; border: 1px solid #f44336; border-radius: 3px; display: inline-block;"></span> Obsazeno</span>
+        <p style="color: #666; margin-bottom: 1.2rem;">Přehled volných a obsazených termínů pro vybraný měsíc a rok.</p>
+        
+        <div class="timeline-nav-wrapper">
+            <div class="timeline-nav-group">
+                <button type="button" class="timeline-nav-btn" id="timeline-prev-year" title="Předchozí rok">&laquo; Rok</button>
+                <button type="button" class="timeline-nav-btn" id="timeline-prev-month" title="Předchozí měsíc">&lsaquo; Měsíc</button>
+            </div>
+            
+            <div class="timeline-month-label" id="timeline-month-label">
+                <!-- Javascript will inject e.g. Srpen 2026 -->
+            </div>
+            
+            <div class="timeline-nav-group">
+                <button type="button" class="timeline-nav-btn" id="timeline-next-month" title="Další měsíc">Měsíc &rsaquo;</button>
+                <button type="button" class="timeline-nav-btn" id="timeline-next-year" title="Další rok">Rok &raquo;</button>
+            </div>
+        </div>
+
+        <div class="timeline-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 8px; max-height: 60vh;">
+            <div id="timeline-app"></div>
+        </div>
+
+        <div style="margin-top: 1.2rem; display: flex; gap: 1.5rem; font-size: 0.9rem; flex-wrap: wrap; align-items: center;">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 14px; height: 14px; background: #EAF0E0; border: 1px solid #4caf50; border-radius: 3px; display: inline-block;"></span> Volno</span>
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 14px; height: 14px; background: #FEEEEE; border: 1px solid #f44336; border-radius: 3px; display: inline-block;"></span> Obsazeno</span>
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 14px; height: 14px; background: #FAF3E3; border: 1px solid #dcd1ba; border-radius: 3px; display: inline-block;"></span> Dnes</span>
         </div>
     </div>
 </div>

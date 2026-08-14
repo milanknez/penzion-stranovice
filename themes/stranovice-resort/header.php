@@ -46,6 +46,7 @@ $meta = CMS::getPageMeta();
             <li>
                 <a href="<?= CMS::url('index.php') ?>#rooms" class="has-dropdown">Ubytování</a>
                 <ul class="dropdown">
+                    <li><a href="<?= CMS::url('index.php') ?>#rooms">Apartmány</a></li>
                     <li><a href="<?= CMS::url('dovolena-s-vlastnim-konem.php') ?>">Dovolená s vlastním koněm</a></li>
                 </ul>
             </li>
@@ -64,6 +65,7 @@ $meta = CMS::getPageMeta();
                     <li><a href="<?= CMS::url('akce.php') ?>">Svatby a akce</a></li>
                     <li><a href="<?= CMS::url('vyuka.php') ?>">Výukové programy</a></li>
                     <li><a href="<?= CMS::url('vylety.php') ?>">Tipy na výlety</a></li>
+                    <li><a href="<?= CMS::url('kam-na-jidlo.php') ?>">Kam na jídlo</a></li>
                 </ul>
             </li>
             <li><a href="<?= CMS::url('galerie.php') ?>">Fotogalerie</a></li>

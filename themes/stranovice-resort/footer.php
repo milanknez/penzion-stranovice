@@ -9,7 +9,15 @@ if (file_exists(__DIR__ . '/../../plugins/booking-sync/booking-sync.php')) {
 <footer class="footer" id="main-footer">
     <div class="container footer-grid">
         <div class="footer-brand">
-            <span class="logo-text">Statek Straňovice</span>
+            <a href="<?= CMS::url('index.php') ?>" class="logo-link" style="display: inline-flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem;">
+                <div class="logo-badge" style="width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid var(--accent, #c99e66);">
+                    <img src="assets/img/logo_final.png" alt="Statek Straňovice logo" class="logo-img" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="logo-text-group" style="display: flex; flex-direction: column;">
+                    <span class="logo-text" style="font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 1.3rem; color: #ffffff; line-height: 1.1;">Statek</span>
+                    <span class="logo-text" style="font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 1.3rem; color: var(--accent, #c99e66); line-height: 1.1;">Straňovice</span>
+                </div>
+            </a>
             <p>U Malenic. Místo, kde kvetou sny a voní sláma.</p>
             <div class="social-links">
                 <a href="#"><i data-lucide="facebook"></i></a>
@@ -49,7 +57,7 @@ if (file_exists(__DIR__ . '/../../plugins/booking-sync/booking-sync.php')) {
 </div>
 
 <script>
-    window.occupancyData = <?php echo class_exists('SyncBooking') ? json_encode(SyncBooking::getOccupancy()) : '{}'; ?>;
+    window.occupancyData = <?php echo class_exists('SyncBookingPlugin') ? json_encode(SyncBookingPlugin::getOccupancy()) : (class_exists('SyncBooking') ? json_encode(SyncBooking::getOccupancy()) : '{}'); ?>;
 </script>
 <!-- Flatpickr (beautiful date picker) -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

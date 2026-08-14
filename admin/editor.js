@@ -97,7 +97,16 @@ const editor = grapesjs.init({
         upload: 'files.php?action=upload',
         uploadName: 'files[]',
         uploadFile: function(e) {
-            const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+            const files = (e && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) 
+                ? e.dataTransfer.files 
+                : ((e && e.target && e.target.files) ? e.target.files : (Array.isArray(e) ? e : []));
+
+            if (!files || files.length === 0) return;
+
+            if (typeof window._setAssetUploadingState === 'function') {
+                window._setAssetUploadingState(true, files.length);
+            }
+
             const formData = new FormData();
             for (let i = 0; i < files.length; i++) {
                 formData.append('files[]', files[i]);
@@ -108,10 +117,13 @@ const editor = grapesjs.init({
             })
             .then(res => res.json())
             .then(res => {
+                if (typeof window._setAssetUploadingState === 'function') {
+                    window._setAssetUploadingState(false);
+                }
                 if (res.status === 'success') {
                     const addedAssets = (res.data || []).concat(
                         (res.uploaded || []).map(p => ({
-                            src: (p.startsWith('http') || p.startsWith('data:')) ? p : '../' + p,
+                            src: (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : '/' + p,
                             type: 'image'
                         }))
                     );
@@ -123,7 +135,13 @@ const editor = grapesjs.init({
                     alert(res.message || 'Chyba při nahrávání.');
                 }
             })
-            .catch(err => alert('Chyba při nahrávání souboru.'));
+            .catch(err => {
+                if (typeof window._setAssetUploadingState === 'function') {
+                    window._setAssetUploadingState(false);
+                }
+                console.error('Upload error:', err);
+                alert('Chyba při nahrávání souboru.');
+            });
         },
         assets: []
     },
@@ -900,10 +918,12 @@ if (window.INITIAL_CONTENT !== undefined) {
     });
 }
 
-// Add expand/fullscreen button to Code Modal (viewCode)
+// Add expand/fullscreen button to Code Modal (viewCode) and ensure Asset Manager Drag & Drop works
 editor.on('modal:open', () => {
     const modalHeader = document.querySelector('.gjs-mdl-header');
     const modalDialog = document.querySelector('.gjs-mdl-dialog');
+    const modalContainer = document.querySelector('.gjs-mdl-container');
+
     if (modalHeader && modalDialog && !document.getElementById('gjs-modal-expand-btn')) {
         const expandBtn = document.createElement('button');
         expandBtn.id = 'gjs-modal-expand-btn';
@@ -924,6 +944,76 @@ editor.on('modal:open', () => {
             modalHeader.appendChild(expandBtn);
         }
     }
+
+    // Fix Drag & Drop for Asset Manager Modal
+    if (modalContainer && !modalContainer._dndAttached) {
+        modalContainer._dndAttached = true;
+
+        const handleUploadFiles = (files) => {
+            if (!files || !files.length) return;
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files[]', files[i]);
+            }
+            fetch('files.php?action=upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    const addedAssets = (res.data || []).concat(
+                        (res.uploaded || []).map(p => ({
+                            src: (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : '/' + p,
+                            type: 'image'
+                        }))
+                    );
+                    if (editor && editor.AssetManager) {
+                        editor.AssetManager.add(addedAssets);
+                    }
+                    if (typeof showToast === 'function') {
+                        showToast(res.message || 'Obrázek nahrán!');
+                    }
+                } else {
+                    alert(res.message || 'Chyba při nahrávání.');
+                }
+            })
+            .catch(err => {
+                console.error('Drag and drop upload error:', err);
+                alert('Chyba při nahrávání souboru.');
+            });
+        };
+
+        const preventDefaults = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            modalContainer.addEventListener(eventName, preventDefaults, false);
+        });
+
+        modalContainer.addEventListener('dragover', (e) => {
+            const dropzone = modalContainer.querySelector('.gjs-am-file-uploader form, .gjs-am-file-uploader');
+            if (dropzone) dropzone.classList.add('gjs-am-hover');
+        }, false);
+
+        ['dragleave', 'dragend'].forEach(eventName => {
+            modalContainer.addEventListener(eventName, (e) => {
+                const dropzone = modalContainer.querySelector('.gjs-am-file-uploader form, .gjs-am-file-uploader');
+                if (dropzone) dropzone.classList.remove('gjs-am-hover');
+            }, false);
+        });
+
+        modalContainer.addEventListener('drop', (e) => {
+            const dropzone = modalContainer.querySelector('.gjs-am-file-uploader form, .gjs-am-file-uploader');
+            if (dropzone) dropzone.classList.remove('gjs-am-hover');
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length) {
+                handleUploadFiles(dt.files);
+            }
+        }, false);
+    }
 });
 
 window.editor = editor;
@@ -942,12 +1032,28 @@ function showSaveMessage(msgText) {
 const saveBtn = document.getElementById('save-btn');
 if (saveBtn) {
     saveBtn.addEventListener('click', () => {
+        const originalText = saveBtn.innerHTML;
+        const setSavingState = (isSaving) => {
+            if (isSaving) {
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                const loadingText = window.UI_LANG === 'en' ? 'Saving...' : 'Ukládám...';
+                saveBtn.innerHTML = `<i class="fa fa-spinner fa-spin mr-2"></i> ${loadingText}`;
+            } else {
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                saveBtn.innerHTML = originalText;
+            }
+        };
+
         let rawHtml = editor.getHtml();
         rawHtml = rawHtml
             .replace(/(https?:\/\/[^\/]+)?\/admin\/(images|assets|uploads)\//g, '$2/')
             .replace(/(https?:\/\/[^\/]+)?\.\.\/(images|assets|uploads)\//g, '$2/');
         const html = rawHtml;
         const css = editor.getCss();
+
+        setSavingState(true);
 
         if (window.EDIT_MODE === 'theme_header') {
             fetch('themes.php?action=save_header', {
@@ -957,13 +1063,17 @@ if (saveBtn) {
             })
             .then(res => res.json())
             .then(data => {
+                setSavingState(false);
                 if (data.status === 'success') {
                     showSaveMessage(window.UI_LANG === 'en' ? 'Header Saved!' : 'Hlavička uložena!');
                 } else {
                     alert('Chyba: ' + data.message);
                 }
             })
-            .catch(err => alert('Chyba při ukládání hlavičky.'));
+            .catch(err => {
+                setSavingState(false);
+                alert('Chyba při ukládání hlavičky.');
+            });
             return;
         }
 
@@ -975,13 +1085,17 @@ if (saveBtn) {
             })
             .then(res => res.json())
             .then(data => {
+                setSavingState(false);
                 if (data.status === 'success') {
                     showSaveMessage(window.UI_LANG === 'en' ? 'Footer Saved!' : 'Patička uložena!');
                 } else {
                     alert('Chyba: ' + data.message);
                 }
             })
-            .catch(err => alert('Chyba při ukládání patičky.'));
+            .catch(err => {
+                setSavingState(false);
+                alert('Chyba při ukládání patičky.');
+            });
             return;
         }
 
@@ -1006,22 +1120,827 @@ if (saveBtn) {
         })
         .then(res => res.json())
         .then(data => {
-            if (data.status === 'success' || data.status === 'warning') {
-                showSaveMessage(window.UI_LANG === 'en' ? 'Saved!' : 'Uloženo!');
-            } else {
-                alert('Error: ' + data.message);
+// Auto switch tab to styles when an element is selected on canvas and render native Icon Selector in sidebar
+const ICON_LIST = [
+    { id: 'beer', name: '🍺 Pivo / Hospůdka (beer)' },
+    { id: 'utensils', name: '🍽️ Restaurace / Obědy (utensils)' },
+    { id: 'coffee', name: '☕ Káva / Kavárna (coffee)' },
+    { id: 'pizza', name: '🍕 Pizza / Pizzerie (pizza)' },
+    { id: 'ice-cream', name: '🍦 Zmrzlina (ice-cream)' },
+    { id: 'cake', name: '🍰 Cukrárna / Zákusky (cake)' },
+    { id: 'wine', name: '🍷 Víno / Vinárna (wine)' },
+    { id: 'sandwich', name: '🥪 Bufet / Občerstvení (sandwich)' },
+    { id: 'cup-soda', name: '🥤 Kiosek / Nápoje (cup-soda)' },
+    { id: 'store', name: '🏪 Obchod / Potraviny (store)' },
+    { id: 'map-pin', name: '📍 Místo / Navigace (map-pin)' },
+    { id: 'compass', name: '🧭 Výlety / Turistika (compass)' },
+ // Universal Dynamic Traits Manager for ALL elements (Buttons, Links, Images, Cards, Icons, etc.)
+function renderUniversalTraits(component) {
+    const traitsContainer = document.getElementById('traits-container');
+    if (!traitsContainer) return;
+
+    if (!component) {
+        traitsContainer.innerHTML = `
+            <div style="padding: 24px 16px; color: #64748b; font-size: 12px; text-align: center;">
+                <i class="fa fa-mouse-pointer" style="font-size: 24px; color: #475569; margin-bottom: 10px; display: block;"></i>
+                Vyberte prvek na plátně pro zobrazení jeho nastavení.
+            </div>
+        `;
+        return;
+    }
+
+    const el = component.getEl();
+    const tag = (component.get('tagName') || (el ? el.tagName : 'div')).toUpperCase();
+    const classes = (component.getClasses() || []).join(' ');
+    const attrs = component.getAttributes() || {};
+
+    const isLink = tag === 'A' || el && (el.tagName === 'A' || el.closest('a'));
+    const linkEl = isLink ? (tag === 'A' ? component : (el ? editor.Components.get(el.closest('a')) : null)) : null;
+
+    const isBtn = tag === 'BUTTON' || component.hasClass('btn') || component.hasClass('filter-btn') || component.hasClass('btn-gmaps') || component.hasClass('btn-primary');
+    const isImg = tag === 'IMG' || el && el.tagName === 'IMG';
+    const isCard = component.hasClass('food-card') || (el && el.classList.contains('food-card'));
+    const isIconPill = component.hasClass('food-card-icon-pill') || (el && (el.classList.contains('food-card-icon-pill') || el.closest('.food-card-icon-pill') || el.hasAttribute('data-lucide')));
+
+    let fieldsHtml = '';
+
+    // 1. Icon Pill / Icon Settings
+    if (isIconPill) {
+        let pillComp = component.hasClass('food-card-icon-pill') ? component : null;
+        if (!pillComp && component.parent) {
+            let p = component;
+            while (p && !p.hasClass('food-card-icon-pill') && p !== editor.getWrapper()) {
+                p = p.parent();
             }
-        })
-        .catch(err => alert('Error saving page.'));
-    });
+            if (p && p.hasClass('food-card-icon-pill')) pillComp = p;
+        }
+        if (!pillComp) pillComp = component;
+
+        let currentIcon = '';
+        const inner = pillComp.find('i, svg')[0];
+        if (inner) {
+            currentIcon = inner.getAttributes()['data-lucide'] || '';
+            if (!currentIcon) {
+                (inner.getClasses() || []).forEach(c => {
+                    if (c.startsWith('lucide-')) currentIcon = c.replace('lucide-', '');
+                });
+            }
+        }
+        if (!currentIcon) currentIcon = 'beer';
+
+        fieldsHtml += `
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 3); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; margin-bottom: 6px;">
+                    <i class="fa fa-paint-brush"></i> Ikonka podniku
+                </label>
+                <select id="trait-field-icon" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; margin-bottom: 8px;">
+                    ${ICON_LIST.map(ic => `<option value="${ic.id}" ${ic.id === currentIcon ? 'selected' : ''}>${ic.name}</option>`).join('')}
+                </select>
+                <button type="button" onclick="editor.runCommand('open-icon-picker')" style="width: 100%; background: #10b981; color: #ffffff; border: none; padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i class="fa fa-th"></i> Otevřít vizuální galerii ikonek
+                </button>
+            </div>
+        `;
+    }
+
+    // 2. Link Settings (URL & Target)
+    if (isLink || isBtn) {
+        const targetLink = linkEl || component;
+        const currentHref = targetLink.getAttributes()['href'] || '';
+        const currentTarget = targetLink.getAttributes()['target'] || '';
+
+        fieldsHtml += `
+            <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <div style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa fa-link"></i> Nastavení odkazu / tlačítka
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">Cílový odkaz (URL / Adresa)</label>
+                    <input type="text" id="trait-field-href" value="${currentHref.replace(/"/g, '&quot;')}" placeholder="např. https://maps.google.com/... nebo /kontakt" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 7px 10px; font-size: 12px; outline: none;">
+                </div>
+                <div>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer;">
+                        <input type="checkbox" id="trait-field-target" ${currentTarget === '_blank' ? 'checked' : ''} style="width: 15px; height: 15px; accent-color: #38bdf8;">
+                        Otevřít v novém okně (_blank)
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+
+    // 3. Image Settings
+    if (isImg) {
+        const currentSrc = component.getAttributes()['src'] || '';
+        const currentAlt = component.getAttributes()['alt'] || '';
+
+        fieldsHtml += `
+            <div style="background: rgba(168, 85, 247, 0.06); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <div style="font-size: 11px; font-weight: 700; color: #c084fc; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa fa-image"></i> Nastavení obrázku
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">Cesta k obrázku (URL / Soubor)</label>
+                    <input type="text" id="trait-field-src" value="${currentSrc.replace(/"/g, '&quot;')}" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 7px 10px; font-size: 12px; outline: none; margin-bottom: 6px;">
+                    <button type="button" onclick="editor.runCommand('open-assets')" style="width: 100%; background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: #e9d5ff; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">
+                        <i class="fa fa-folder-open"></i> Vybrat ze správce souborů...
+                    </button>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">Popis obrázku (Alt)</label>
+                    <input type="text" id="trait-field-alt" value="${currentAlt.replace(/"/g, '&quot;')}" placeholder="Popis pro vyhledávače" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 7px 10px; font-size: 12px; outline: none;">
+                </div>
+            </div>
+        `;
+    }
+
+    // 4. Food Card Category or Filter Button Category
+    const currentCat = component.getAttributes()['data-category'] || component.getAttributes()['data-filter'] || '';
+    if (isCard || component.hasClass('filter-btn') || currentCat) {
+        const catOptions = [
+            { id: 'all', name: 'Všechny podniky (all)' },
+            { id: 'malenice', name: 'Malenice a okolí (malenice)' },
+            { id: 'volyne', name: 'Volyně (volyne)' },
+            { id: 'ckyne', name: 'Čkyně (ckyne)' },
+            { id: 'husinec', name: 'Husinec (husinec)' },
+            { id: 'vimperk', name: 'Vimperk (vimperk)' },
+            { id: 'prachatice', name: 'Prachatice (prachatice)' },
+            { id: 'strakonice', name: 'Strakonice (strakonice)' }
+        ];
+
+        fieldsHtml += `
+            <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <div style="font-size: 11px; font-weight: 700; color: #fbbf24; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa fa-map-marker"></i> Kategorie / Město
+                </div>
+                <select id="trait-field-category" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 7px 10px; font-size: 12.5px; font-weight: 600; outline: none; cursor: pointer;">
+                    <option value="">-- Vyberte kategorii --</option>
+                    ${catOptions.map(c => `<option value="${c.id}" ${c.id === currentCat ? 'selected' : ''}>${c.name}</option>`).join('')}
+                </select>
+            </div>
+        `;
+    }
+
+    // 5. Standard Attributes (ID, Title)
+    const currentId = component.getId ? component.getId() : (component.getAttributes()['id'] || '');
+    const currentTitle = component.getAttributes()['title'] || '';
+
+    fieldsHtml += `
+        <div style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <i class="fa fa-sliders"></i> Obecné atributy prvku
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">ID kotvy (id)</label>
+                <input type="text" id="trait-field-id" value="${currentId.replace(/"/g, '&quot;')}" placeholder="např. sekce-kontakt" style="width: 100%; background: #1e293b; color: #ffffff; border: 1px solid #475569; border-radius: 8px; padding: 7px 10px; font-size: 12px; outline: none;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">Titulek / Tooltip (title)</label>
+                <input type="text" id="trait-field-title" value="${currentTitle.replace(/"/g, '&quot;')}" placeholder="Doplňující popisek po najetí" style="width: 100%; background: #1e293b; color: #ffffff; border: 1px solid #475569; border-radius: 8px; padding: 7px 10px; font-size: 12px; outline: none;">
+            </div>
+        </div>
+    `;
+
+    // Element Info Box
+    fieldsHtml += `
+        <div style="padding: 10px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; font-size: 11px; color: #64748b;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span>Značka:</span>
+                <strong style="color: #cbd5e1; font-family: monospace;">&lt;${tag.toLowerCase()}&gt;</strong>
+            </div>
+            ${classes ? `
+                <div style="margin-top: 4px; line-height: 1.4; word-break: break-all;">
+                    <span>Třídy:</span>
+                    <span style="color: #38bdf8; font-family: monospace;">${classes}</span>
+                </div>
+            ` : ''}
+        </div>
+    `;
+
+    traitsContainer.innerHTML = `
+        <div style="padding: 14px; color: #f8fafc; overflow-y: auto; max-height: calc(100vh - 120px);">
+            ${fieldsHtml}
+        </div>
+    `;
+
+    // BIND INPUT EVENTS
+    const iconField = document.getElementById('trait-field-icon');
+    if (iconField) {
+        iconField.onchange = (e) => {
+            const newIcon = e.target.value;
+            let pillComp = component.hasClass('food-card-icon-pill') ? component : null;
+            if (!pillComp && component.parent) {
+                let p = component;
+                while (p && !p.hasClass('food-card-icon-pill') && p !== editor.getWrapper()) {
+                    p = p.parent();
+                }
+                if (p && p.hasClass('food-card-icon-pill')) pillComp = p;
+            }
+            if (!pillComp) pillComp = component;
+
+            pillComp.components(`<i data-lucide="${newIcon}"></i>`);
+            const iframe = document.querySelector('iframe.gjs-frame');
+            if (iframe && iframe.contentWindow && iframe.contentWindow.lucide) {
+                try { iframe.contentWindow.lucide.createIcons(); } catch(err) {}
+            }
+            const sel1 = document.getElementById('sidebar-icon-native-select');
+            if (sel1) sel1.value = newIcon;
+            if (typeof showSaveMessage === 'function') showSaveMessage(`Ikonka změněna na: ${newIcon}`, false);
+        };
+    }
+
+    const hrefField = document.getElementById('trait-field-href');
+    if (hrefField) {
+        hrefField.oninput = (e) => {
+            const targetLink = linkEl || component;
+            targetLink.addAttributes({ href: e.target.value });
+        };
+    }
+
+    const targetField = document.getElementById('trait-field-target');
+    if (targetField) {
+        targetField.onchange = (e) => {
+            const targetLink = linkEl || component;
+            if (e.target.checked) {
+                targetLink.addAttributes({ target: '_blank' });
+            } else {
+                const attrs = Object.assign({}, targetLink.getAttributes());
+                delete attrs.target;
+                targetLink.setAttributes(attrs);
+            }
+        };
+    }
+
+    const srcField = document.getElementById('trait-field-src');
+    if (srcField) {
+        srcField.oninput = (e) => component.addAttributes({ src: e.target.value });
+    }
+    const altField = document.getElementById('trait-field-alt');
+    if (altField) {
+        altField.oninput = (e) => component.addAttributes({ alt: e.target.value });
+    }
+
+    const catField = document.getElementById('trait-field-category');
+    if (catField) {
+        catField.onchange = (e) => {
+            const val = e.target.value;
+            if (component.hasClass('filter-btn')) {
+                component.addAttributes({ 'data-filter': val });
+            } else {
+                component.addAttributes({ 'data-category': val });
+            }
+            if (typeof showSaveMessage === 'function') showSaveMessage(`Kategorie změněna na: ${val}`, false);
+        };
+    }
+
+    const idField = document.getElementById('trait-field-id');
+    if (idField) {
+        idField.onchange = (e) => component.setId(e.target.value);
+    }
+
+    const titleField = document.getElementById('trait-field-title');
+    if (titleField) {
+        titleField.oninput = (e) => component.addAttributes({ title: e.target.value });
+    }
 }
 
-// Auto switch tab to styles when an element is selected on canvas
-editor.on('component:selected', () => {
-    if (typeof window.switchRightTab === 'function') {
-        const stylesBtn = document.getElementById('tab-btn-styles');
-        if (stylesBtn && !stylesBtn.classList.contains('active')) {
-            window.switchRightTab('styles');
+// Hook into editor selection
+editor.on('component:selected', (component) => {
+    if (!component) return;
+
+    renderUniversalTraits(component);
+
+    const el = component.getEl();
+    const tag = component.get('tagName') ? component.get('tagName').toUpperCase() : '';
+    const isIconPill = component.hasClass('food-card-icon-pill') ||
+        (el && (el.classList.contains('food-card-icon-pill') || el.closest('.food-card-icon-pill') || el.hasAttribute('data-lucide') || tag === 'SVG' || tag === 'I' || el.classList.contains('lucide')));
+
+    let iconWidget = document.getElementById('sidebar-icon-selector-box');
+    if (isIconPill) {
+        let pillComp = component.hasClass('food-card-icon-pill') ? component : null;
+        if (!pillComp && component.parent) {
+            let p = component;
+            while (p && !p.hasClass('food-card-icon-pill') && p !== editor.getWrapper()) {
+                p = p.parent();
+            }
+            if (p && p.hasClass('food-card-icon-pill')) pillComp = p;
         }
+        if (!pillComp) pillComp = component;
+
+        let currentIconName = '';
+        const innerIcon = pillComp.find('i, svg')[0];
+        if (innerIcon) {
+            currentIconName = innerIcon.getAttributes()['data-lucide'] || '';
+            if (!currentIconName) {
+                (innerIcon.getClasses() || []).forEach(c => {
+                    if (c.startsWith('lucide-')) currentIconName = c.replace('lucide-', '');
+                });
+            }
+        }
+        if (!currentIconName) currentIconName = 'beer';
+
+        if (!iconWidget) {
+            iconWidget = document.createElement('div');
+            iconWidget.id = 'sidebar-icon-selector-box';
+            iconWidget.style.cssText = 'margin: 12px 0 16px; padding: 12px; background: #1e293b; border: 1px solid #10b981; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);';
+            const stylesContainer = document.getElementById('styles-container');
+            if (stylesContainer) stylesContainer.insertBefore(iconWidget, stylesContainer.firstChild);
+        }
+
+        iconWidget.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa fa-tag"></i> Ikonka kartičky
+                </span>
+                <span style="font-size: 11px; font-family: monospace; color: #94a3b8; background: #0f172a; padding: 2px 6px; border-radius: 4px;">${currentIconName}</span>
+            </div>
+            <select id="sidebar-icon-native-select" style="width: 100%; background: #0f172a; color: #ffffff; border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer;">
+                ${ICON_LIST.map(ic => `<option value="${ic.id}" ${ic.id === currentIconName ? 'selected' : ''}>${ic.name}</option>`).join('')}
+            </select>
+            <div style="margin-top: 8px; font-size: 10.5px; color: #94a3b8; display: flex; align-items: center; justify-content: space-between;">
+                <span>Vyberte ze seznamu</span>
+                <button type="button" id="sidebar-open-picker-link" style="background: none; border: none; color: #34d399; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;">Otevřít vizuální galerii...</button>
+            </div>
+        `;
+        iconWidget.style.display = 'block';
+
+        const selectEl = document.getElementById('sidebar-icon-native-select');
+        if (selectEl) {
+            selectEl.onchange = (e) => {
+                const newIcon = e.target.value;
+                pillComp.components(`<i data-lucide="${newIcon}"></i>`);
+                const iframe = document.querySelector('iframe.gjs-frame');
+                if (iframe && iframe.contentWindow && iframe.contentWindow.lucide) {
+                    try { iframe.contentWindow.lucide.createIcons(); } catch(err) {}
+                }
+                const traitSel = document.getElementById('trait-field-icon');
+                if (traitSel) traitSel.value = newIcon;
+                if (typeof showSaveMessage === 'function') showSaveMessage(`Ikonka změněna na: ${newIcon}`, false);
+            };
+        }
+
+        const openPickerLink = document.getElementById('sidebar-open-picker-link');
+        if (openPickerLink) {
+            openPickerLink.onclick = () => editor.runCommand('open-icon-picker');
+        }
+    } else {
+        if (iconWidget) iconWidget.style.display = 'none';
     }
 });
+    { id: 'sparkles', name: '✨ Top Tip / Doporučujeme (sparkles)' },
+    { id: 'soup', name: '🥣 Polévky / Česká kuchyně (soup)' },
+    { id: 'fish', name: '🐟 Ryby / Pstruh (fish)' },
+    { id: 'mountain', name: '⛰️ Hory / Šumava (mountain)' },
+    { id: 'waves', name: '🏊 Koupání / Voda (waves)' },
+    { id: 'bike', name: '🚲 Cykloturistika (bike)' },
+    { id: 'castle', name: '🏰 Hrad / Zámek (castle)' },
+    { id: 'bed', name: '🛏️ Ubytování (bed)' }
+];
+
+editor.on('component:selected', (component) => {
+    if (!component) return;
+
+    const el = component.getEl();
+    const tag = component.get('tagName') ? component.get('tagName').toUpperCase() : '';
+    const isIconPill = component.hasClass('food-card-icon-pill') ||
+        (el && (el.classList.contains('food-card-icon-pill') || el.closest('.food-card-icon-pill') || el.hasAttribute('data-lucide') || tag === 'SVG' || tag === 'I' || el.classList.contains('lucide')));
+
+    let iconWidget = document.getElementById('sidebar-icon-selector-box');
+
+    if (isIconPill) {
+        // Determine the icon pill component
+        let pillComp = component.hasClass('food-card-icon-pill') ? component : null;
+        if (!pillComp && component.parent) {
+            let p = component;
+            while (p && !p.hasClass('food-card-icon-pill') && p !== editor.getWrapper()) {
+                p = p.parent();
+            }
+            if (p && p.hasClass('food-card-icon-pill')) pillComp = p;
+        }
+        if (!pillComp) pillComp = component;
+
+        // Current icon name detection from inner icon or classes
+        let currentIconName = '';
+        const innerIcon = pillComp.find('i, svg')[0];
+        if (innerIcon) {
+            currentIconName = innerIcon.getAttributes()['data-lucide'] || '';
+            if (!currentIconName) {
+                const innerClasses = innerIcon.getClasses();
+                innerClasses.forEach(c => {
+                    if (c.startsWith('lucide-')) currentIconName = c.replace('lucide-', '');
+                });
+            }
+        }
+        if (!currentIconName) currentIconName = 'utensils';
+
+        // Insert or update sidebar widget
+        if (!iconWidget) {
+            iconWidget = document.createElement('div');
+            iconWidget.id = 'sidebar-icon-selector-box';
+            iconWidget.style.cssText = `
+                margin: 12px 0 16px;
+                padding: 12px;
+                background: #1e293b;
+                border: 1px solid #10b981;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            `;
+            const stylesContainer = document.getElementById('styles-container');
+            if (stylesContainer) {
+                stylesContainer.insertBefore(iconWidget, stylesContainer.firstChild);
+            }
+        }
+
+        iconWidget.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa fa-tag"></i> Ikonka kartičky
+                </span>
+                <span style="font-size: 11px; font-family: monospace; color: #94a3b8; background: #0f172a; padding: 2px 6px; border-radius: 4px;">${currentIconName}</span>
+            </div>
+            <select id="sidebar-icon-native-select" style="
+                width: 100%;
+                background: #0f172a;
+                color: #ffffff;
+                border: 1px solid #334155;
+                border-radius: 8px;
+                padding: 8px 10px;
+                font-size: 13px;
+                font-weight: 600;
+                outline: none;
+                cursor: pointer;
+                box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+            ">
+                ${ICON_LIST.map(ic => `
+                    <option value="${ic.id}" ${ic.id === currentIconName ? 'selected' : ''}>${ic.name}</option>
+                `).join('')}
+            </select>
+            <div style="margin-top: 8px; font-size: 10.5px; color: #94a3b8; display: flex; align-items: center; justify-content: space-between;">
+                <span>Vyberte ze seznamu</span>
+                <button type="button" id="sidebar-open-picker-link" style="background: none; border: none; color: #34d399; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;">Otevřít vizuální galerii...</button>
+            </div>
+        `;
+        iconWidget.style.display = 'block';
+
+        // Apply icon change handler
+        const applyIcon = (newIcon) => {
+            pillComp.components(`<i data-lucide="${newIcon}"></i>`);
+            const iframe = document.querySelector('iframe.gjs-frame');
+            if (iframe && iframe.contentWindow && iframe.contentWindow.lucide) {
+                try { iframe.contentWindow.lucide.createIcons(); } catch(err) {}
+            }
+            if (typeof showSaveMessage === 'function') {
+                showSaveMessage(`Ikonka změněna na: ${newIcon}`, false);
+            }
+        };
+
+        // Bind dropdown change
+        const selectEl = document.getElementById('sidebar-icon-native-select');
+        if (selectEl) {
+            selectEl.onchange = (e) => {
+                applyIcon(e.target.value);
+            };
+        }
+
+        const openPickerLink = document.getElementById('sidebar-open-picker-link');
+        if (openPickerLink) {
+            openPickerLink.onclick = () => editor.runCommand('open-icon-picker');
+        }
+
+        // Expose in Trait Manager (Nastavení Prvku)
+        pillComp.set('traits', [
+            {
+                type: 'select',
+                name: 'icon-select',
+                label: 'Ikonka kartičky',
+                value: currentIconName,
+                options: ICON_LIST.map(ic => ({ id: ic.id, name: ic.name }))
+            }
+        ]);
+        pillComp.on('change:attributes:icon-select', () => {
+            const val = pillComp.getAttributes()['icon-select'];
+            if (val) {
+                applyIcon(val);
+                const sel = document.getElementById('sidebar-icon-native-select');
+                if (sel) sel.value = val;
+            }
+        });
+
+    } else {
+        if (iconWidget) iconWidget.style.display = 'none';
+    }
+});
+
+// Double-click on icon elements to trigger visual icon picker
+editor.on('component:dblclick', (component) => {
+    if (!component) return;
+    const el = component.getEl();
+    const tag = component.get('tagName') ? component.get('tagName').toUpperCase() : '';
+    const isIcon = component.hasClass('food-card-icon-pill') ||
+        (el && (el.classList.contains('food-card-icon-pill') || el.hasAttribute('data-lucide') || tag === 'I' || tag === 'SVG' || el.querySelector('[data-lucide]')));
+    
+    if (isIcon) {
+        editor.runCommand('open-icon-picker');
+    }
+});
+
+// Register Lucide Icon Picker Command & Modal
+(function() {
+    const AVAILABLE_ICONS = [
+        // Gastro & Nápoje
+        { name: 'utensils', label: 'Restaurace & Obědy', cat: 'gastro', keywords: 'restaurace jidlo obed vecere pribor' },
+        { name: 'beer', label: 'Pivo & Hospůdka', cat: 'gastro', keywords: 'pivo hospoda pivovar pivnice korbel vycep' },
+        { name: 'coffee', label: 'Káva & Kavárna', cat: 'gastro', keywords: 'kava kofein kavarna espresso latte' },
+        { name: 'pizza', label: 'Pizza & Bistro', cat: 'gastro', keywords: 'pizza pizzerie italie' },
+        { name: 'ice-cream', label: 'Zmrzlina', cat: 'gastro', keywords: 'zmrzlina letni sladke gelato pohar' },
+        { name: 'cake', label: 'Cukrárna & Zákusky', cat: 'gastro', keywords: 'dort zakusek kolac cukrarna sladkosti' },
+        { name: 'wine', label: 'Víno & Vinárna', cat: 'gastro', keywords: 'vino vinarna sklenka degusta' },
+        { name: 'sandwich', label: 'Bufet & Občerstvení', cat: 'gastro', keywords: 'sendvic toast bufet svacina rychle' },
+        { name: 'cup-soda', label: 'Kiosek & Nápoje', cat: 'gastro', keywords: 'limo napoj kiosek soda cola' },
+        { name: 'store', label: 'Obchod & Potraviny', cat: 'gastro', keywords: 'potraviny coop market obchod nakup' },
+        { name: 'soup', label: 'Polévky & Klasika', cat: 'gastro', keywords: 'polevka miska jidlo ceska kuchyne' },
+        { name: 'fish', label: 'Ryby & Rybářství', cat: 'gastro', keywords: 'ryba pstruh rybnik volynka' },
+        { name: 'apple', label: 'Ovoce & Bio farma', cat: 'gastro', keywords: 'jablko ovoce bio farma cerstve' },
+        { name: 'egg', label: 'Domácí vejce & Farma', cat: 'gastro', keywords: 'vejce snidane slepice farma' },
+        { name: 'salad', label: 'Saláty & Lehké jídlo', cat: 'gastro', keywords: 'salat zelenina zdrave' },
+        { name: 'chef-hat', label: 'Špičková gastronomie', cat: 'gastro', keywords: 'kuchar cepice gastronomie gurman jiskra' },
+        { name: 'glass-water', label: 'Čerstvé nápoje', cat: 'gastro', keywords: 'voda sklenice piti' },
+        
+        // Výlety, Památky & Příroda
+        { name: 'compass', label: 'Výlety & Okolí', cat: 'vylety', keywords: 'kompas vylet turistika smer trasa' },
+        { name: 'map-pin', label: 'Místo & Navigace', cat: 'vylety', keywords: 'lokalita navigace misto mapa gps' },
+        { name: 'map', label: 'Turistická mapa', cat: 'vylety', keywords: 'mapa pruvodce plan' },
+        { name: 'mountain', label: 'Hory & Šumava', cat: 'vylety', keywords: 'hory vrchol sumava kopec boubin' },
+        { name: 'trees', label: 'Lesy & Prales', cat: 'vylety', keywords: 'lesy stromy prales priroda' },
+        { name: 'tree-pine', label: 'Šumavský smrk', cat: 'vylety', keywords: 'strom smrk jehlicnan sumava' },
+        { name: 'waves', label: 'Koupání & Voda', cat: 'vylety', keywords: 'voda koupaliste bazen rybnik reka' },
+        { name: 'snowflake', label: 'Lyžování & Zima', cat: 'vylety', keywords: 'snih lyze bezky zima zadov' },
+        { name: 'bike', label: 'Cykloturistika', cat: 'vylety', keywords: 'kolo cyklo cyklostezka cyklista' },
+        { name: 'footprints', label: 'Pěší turistika', cat: 'vylety', keywords: 'stezka stopa chuze pesi prochazka' },
+        { name: 'landmark', label: 'Památka & Zámek', cat: 'vylety', keywords: 'pamatka zamek kratochvile muzeum' },
+        { name: 'castle', label: 'Hrad & Zřícenina', cat: 'vylety', keywords: 'hrad kasperk helfenburk zricenina' },
+        { name: 'church', label: 'Kostel & Kaplička', cat: 'vylety', keywords: 'kostel kaple fara malenice svaty jakub' },
+        { name: 'binoculars', label: 'Rozhledna & Vyhlídka', cat: 'vylety', keywords: 'dalekohled vyhlidka rozhledna javornik' },
+        { name: 'camera', label: 'Fotovýlet & Památky', cat: 'vylety', keywords: 'foto fotak zazitek' },
+        { name: 'sun', label: 'Slunce & Letní pohoda', cat: 'vylety', keywords: 'slunce leto pocasi teplo' },
+
+        // Penzion, Zázemí & Služby
+        { name: 'bed', label: 'Ubytování & Pokoje', cat: 'sluzby', keywords: 'pokoj luzko spanek penzion' },
+        { name: 'sparkles', label: 'Top Tip / Doporučujeme', cat: 'sluzby', keywords: 'hvezda specialita tip doporuceni' },
+        { name: 'star', label: 'Oblíbené místo', cat: 'sluzby', keywords: 'hvezda oblibene vyhlasene' },
+        { name: 'heart', label: 'Srdce & Romantika', cat: 'sluzby', keywords: 'srdce laska pohoda zazitek' },
+        { name: 'flame', label: 'Ohniště & Grilování', cat: 'sluzby', keywords: 'ohen ohniste gril opekani' },
+        { name: 'car', label: 'Parkování & Autem', cat: 'sluzby', keywords: 'auto dojezd parkoviste' },
+        { name: 'clock', label: 'Čas & Otevírací doba', cat: 'sluzby', keywords: 'cas hodiny dojezd doba' },
+        { name: 'phone', label: 'Telefon & Rezervace', cat: 'sluzby', keywords: 'telefon kontakt zavolat' },
+        { name: 'shield-check', label: 'Ověřená kvalita', cat: 'sluzby', keywords: 'overeno zaruka bezpeci kvalita' }
+    ];
+
+    editor.Commands.add('open-icon-picker', {
+        run(ed) {
+            let targetComp = ed.getSelected();
+            if (!targetComp) {
+                const wrapper = ed.getWrapper();
+                if (wrapper) {
+                    const firstPill = wrapper.find('.food-card-icon-pill, [data-lucide]')[0];
+                    if (firstPill) {
+                        ed.select(firstPill);
+                        targetComp = firstPill;
+                    }
+                }
+            }
+
+            if (!targetComp) return;
+
+            // Find component with data-lucide or icon element
+            let iconComp = null;
+            if (targetComp.getAttributes()['data-lucide']) {
+                iconComp = targetComp;
+            } else if (targetComp.get('tagName') && (targetComp.get('tagName').toUpperCase() === 'I' || targetComp.get('tagName').toUpperCase() === 'SVG')) {
+                iconComp = targetComp;
+            } else {
+                const findIcon = (c) => {
+                    if (!c) return null;
+                    if (c.getAttributes()['data-lucide']) return c;
+                    const comps = c.components();
+                    for (let i = 0; i < comps.length; i++) {
+                        const res = findIcon(comps.at(i));
+                        if (res) return res;
+                    }
+                    return null;
+                };
+                iconComp = findIcon(targetComp);
+            }
+
+            if (!iconComp) {
+                iconComp = targetComp;
+            }
+
+            const currentIcon = (iconComp && (iconComp.getAttributes()['data-lucide'] || '')) || 'utensils';
+
+            // Create Modal DOM
+            let modalEl = document.getElementById('lucide-icon-picker-modal');
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.id = 'lucide-icon-picker-modal';
+                modalEl.style.cssText = `
+                    position: fixed; inset: 0; z-index: 999999;
+                    background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px);
+                    display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+                    opacity: 0; transition: opacity 0.25s ease;
+                `;
+                document.body.appendChild(modalEl);
+            }
+
+            modalEl.innerHTML = `
+                <div style="background: #1e293b; color: #f8fafc; border-radius: 20px; width: 100%; max-width: 680px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); overflow: hidden;">
+                    <!-- Header -->
+                    <div style="padding: 1.5rem 1.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.3rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fa fa-paint-brush" style="color: #10b981;"></i> Výběr ikonky pro kartičku
+                            </h3>
+                            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: #94a3b8;">Klikněte na požadovanou ikonu pro okamžité vložení</p>
+                        </div>
+                        <button id="close-icon-picker-btn" style="background: rgba(255,255,255,0.08); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">&times;</button>
+                    </div>
+
+                    <!-- Search & Filter -->
+                    <div style="padding: 1rem 1.75rem 0.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                        <div style="position: relative; flex: 1; min-width: 200px;">
+                            <input id="icon-search-input" type="text" placeholder="Hledat ikonu (např. pivo, káva, restaurace, hrad)..." style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #ffffff; padding: 0.65rem 1rem 0.65rem 2.25rem; border-radius: 12px; font-size: 0.9rem; outline: none;">
+                            <i class="fa fa-search" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="cat-filter-btn active" data-cat="all" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Všechny</button>
+                            <button class="cat-filter-btn" data-cat="gastro" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Gastro</button>
+                            <button class="cat-filter-btn" data-cat="vylety" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Výlety</button>
+                            <button class="cat-filter-btn" data-cat="sluzby" style="background: rgba(255,255,255,0.06); color: #94a3b8; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Služby</button>
+                        </div>
+                    </div>
+
+                    <!-- Icons Grid -->
+                    <div id="icon-picker-grid" style="padding: 1rem 1.75rem 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; flex-grow: 1;">
+                        ${AVAILABLE_ICONS.map(ic => {
+                            const isCurrent = ic.name === currentIcon;
+                            return `
+                                <div class="icon-item-card ${isCurrent ? 'is-current' : ''}" data-icon="${ic.name}" data-cat="${ic.cat}" data-keywords="${ic.keywords}" style="
+                                    background: ${isCurrent ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)'};
+                                    border: 1px solid ${isCurrent ? '#10b981' : 'rgba(255, 255, 255, 0.08)'};
+                                    border-radius: 14px; padding: 1rem 0.5rem; text-align: center; cursor: pointer;
+                                    transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+                                ">
+                                    <div style="width: 42px; height: 42px; border-radius: 10px; background: ${isCurrent ? '#10b981' : 'rgba(255,255,255,0.08)'}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                        <i data-lucide="${ic.name}"></i>
+                                    </div>
+                                    <span style="font-size: 0.8rem; font-weight: 600; color: #f1f5f9; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ic.label}</span>
+                                    <span style="font-size: 0.7rem; color: #64748b; font-family: monospace;">${ic.name}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="padding: 1rem 1.75rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+                        <span style="font-size: 0.85rem; color: #94a3b8;">Aktuální ikona: <strong style="color: #10b981; font-family: monospace;">${currentIcon}</strong></span>
+                        <button id="cancel-icon-picker-btn" style="background: rgba(255,255,255,0.1); color: #ffffff; border: none; padding: 0.5rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">Zavřít</button>
+                    </div>
+                </div>
+            `;
+
+            // Initialize Lucide icons inside modal
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                try { window.lucide.createIcons({ root: modalEl }); } catch(e) {}
+            }
+
+            // Animate in
+            modalEl.style.display = 'flex';
+            setTimeout(() => { modalEl.style.opacity = '1'; }, 10);
+
+            // Close logic
+            const closeModal = () => {
+                modalEl.style.opacity = '0';
+                setTimeout(() => { modalEl.style.display = 'none'; }, 250);
+            };
+
+            document.getElementById('close-icon-picker-btn').onclick = closeModal;
+            document.getElementById('cancel-icon-picker-btn').onclick = closeModal;
+            modalEl.onclick = (e) => { if (e.target === modalEl) closeModal(); };
+
+            // Search logic
+            const searchInput = document.getElementById('icon-search-input');
+            const catBtns = modalEl.querySelectorAll('.cat-filter-btn');
+            const iconCards = modalEl.querySelectorAll('.icon-item-card');
+
+            let activeCat = 'all';
+
+            const filterIcons = () => {
+                const query = searchInput.value.toLowerCase().trim();
+                iconCards.forEach(card => {
+                    const cat = card.getAttribute('data-cat');
+                    const name = card.getAttribute('data-icon').toLowerCase();
+                    const keywords = card.getAttribute('data-keywords').toLowerCase();
+                    const matchesCat = (activeCat === 'all' || cat === activeCat);
+                    const matchesQuery = (!query || name.includes(query) || keywords.includes(query));
+
+                    card.style.display = (matchesCat && matchesQuery) ? 'flex' : 'none';
+                });
+            };
+
+            searchInput.oninput = filterIcons;
+            setTimeout(() => searchInput.focus(), 50);
+
+            catBtns.forEach(btn => {
+                btn.onclick = () => {
+                    catBtns.forEach(b => {
+                        b.style.background = 'rgba(255,255,255,0.06)';
+                        b.style.color = '#94a3b8';
+                        b.classList.remove('active');
+                    });
+                    btn.style.background = '#10b981';
+                    btn.style.color = '#ffffff';
+                    btn.classList.add('active');
+                    activeCat = btn.getAttribute('data-cat');
+                    filterIcons();
+                };
+            });
+
+            // Card click logic - Apply icon
+            iconCards.forEach(card => {
+                card.onmouseenter = () => {
+                    if (!card.classList.contains('is-current')) {
+                        card.style.background = 'rgba(16, 185, 129, 0.12)';
+                        card.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                        card.style.transform = 'translateY(-2px)';
+                    }
+                };
+                card.onmouseleave = () => {
+                    if (!card.classList.contains('is-current')) {
+                        card.style.background = 'rgba(255, 255, 255, 0.04)';
+                        card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                        card.style.transform = 'none';
+                    }
+                };
+
+                card.onclick = () => {
+                    const selectedIconName = card.getAttribute('data-icon');
+
+                    // Apply to component
+                    if (iconComp.get('tagName') && (iconComp.get('tagName').toUpperCase() === 'I' || iconComp.get('tagName').toUpperCase() === 'SVG')) {
+                        iconComp.set('tagName', 'i');
+                        iconComp.addAttributes({ 'data-lucide': selectedIconName });
+                        iconComp.components(''); // clear inside
+                    } else if (iconComp.hasClass('food-card-icon-pill')) {
+                        // Check if it has an inner child or replace inner
+                        const innerIcons = iconComp.find('i, svg');
+                        if (innerIcons && innerIcons.length) {
+                            const firstIcon = innerIcons[0];
+                            firstIcon.set('tagName', 'i');
+                            firstIcon.addAttributes({ 'data-lucide': selectedIconName });
+                            firstIcon.components('');
+                        } else {
+                            iconComp.components(`<i data-lucide="${selectedIconName}"></i>`);
+                        }
+                    } else {
+                        iconComp.addAttributes({ 'data-lucide': selectedIconName });
+                    }
+
+                    // Refresh Lucide in editor iframe canvas
+                    const iframe = document.querySelector('iframe.gjs-frame');
+                    if (iframe && iframe.contentWindow && iframe.contentWindow.lucide) {
+                        try {
+                            iframe.contentWindow.lucide.createIcons();
+                        } catch(e) {}
+                    }
+
+                    // Show confirmation toast
+                    if (typeof showSaveMessage === 'function') {
+                        showSaveMessage(`Ikonka změněna na: ${selectedIconName}`, false);
+                    }
+
+                    closeModal();
+                };
+            });
+        }
+    });
+})();
+
+// Canvas Iframe Direct Click Listener Hook
+function attachCanvasIconClickListeners() {
+    const iframeDoc = editor.Canvas ? editor.Canvas.getDocument() : null;
+    if (iframeDoc && !iframeDoc._iconPickerBound) {
+        iframeDoc._iconPickerBound = true;
+        iframeDoc.addEventListener('click', (e) => {
+            const iconPill = e.target.closest('.food-card-icon-pill, [data-lucide], svg.lucide, .food-card');
+            if (iconPill) {
+                const directIcon = e.target.closest('.food-card-icon-pill, [data-lucide], svg.lucide');
+                if (directIcon) {
+                    setTimeout(() => {
+                        editor.runCommand('open-icon-picker');
+                    }, 50);
+                }
+            }
+        });
+    }
+}
+editor.on('canvas:load', attachCanvasIconClickListeners);
+editor.on('load', () => setTimeout(attachCanvasIconClickListeners, 300));

@@ -149,9 +149,19 @@ class PageManager {
         if (!file_exists($configDir)) {
             @mkdir($configDir, 0777, true);
         }
+        @chmod($configDir, 0777);
+        if (file_exists($this->pagesJsonFile)) {
+            @chmod($this->pagesJsonFile, 0666);
+        }
 
         $json = json_encode($pages, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $res = file_put_contents($this->pagesJsonFile, $json);
+        $res = @file_put_contents($this->pagesJsonFile, $json);
+        if ($res === false) {
+            @chmod($this->pagesJsonFile, 0777);
+            @unlink($this->pagesJsonFile);
+            $res = @file_put_contents($this->pagesJsonFile, $json);
+        }
+
         if ($res !== false) {
             @chmod($this->pagesJsonFile, 0666);
             return true;

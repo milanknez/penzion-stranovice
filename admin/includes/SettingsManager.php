@@ -51,9 +51,23 @@ class SettingsManager {
         if (!file_exists($configDir)) {
             @mkdir($configDir, 0777, true);
         }
+        @chmod($configDir, 0777);
+        if (file_exists($this->siteJsonFile)) {
+            @chmod($this->siteJsonFile, 0666);
+        }
 
         $json = json_encode($site, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        if (file_put_contents($this->siteJsonFile, $json) !== false) {
+        $res = @file_put_contents($this->siteJsonFile, $json);
+        if ($res === false) {
+            $tmpFile = $configDir . '/site.tmp.' . time() . '.json';
+            if (@file_put_contents($tmpFile, $json) !== false) {
+                @unlink($this->siteJsonFile);
+                @rename($tmpFile, $this->siteJsonFile);
+                $res = file_exists($this->siteJsonFile);
+            }
+        }
+
+        if ($res !== false) {
             @chmod($this->siteJsonFile, 0666);
 
             CMS::generateCache();
@@ -189,7 +203,24 @@ class SettingsManager {
             return ['status' => 'error', 'message' => 'Definice ADMIN_PASSWORD nebyla v config.php nalezena.'];
         }
 
-        if (@file_put_contents($configFile, $newContent) !== false) {
+        @chmod(dirname($configFile), 0777);
+        @chmod($configFile, 0666);
+        $res = @file_put_contents($configFile, $newContent);
+        if ($res === false) {
+            @chmod($configFile, 0777);
+            $res = @file_put_contents($configFile, $newContent);
+        }
+        if ($res === false) {
+            $tmpFile = dirname($configFile) . '/config.tmp.php';
+            if (@file_put_contents($tmpFile, $newContent) !== false) {
+                @copy($tmpFile, $configFile);
+                @unlink($tmpFile);
+                $res = true;
+            }
+        }
+
+        if ($res !== false) {
+            @chmod($configFile, 0666);
             return ['status' => 'success', 'message' => 'Heslo pro administraci bylo úspěšně změněno.'];
         }
 

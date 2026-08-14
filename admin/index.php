@@ -374,6 +374,16 @@ $_SESSION['current_page'] = $currentPage;
         .gjs-am-asset:hover { border-color: var(--accent) !important; transform: translateY(-2px); }
         .gjs-am-asset-image { height: 95px !important; background-size: cover !important; background-position: center !important; }
         .gjs-am-meta { padding: 4px 6px !important; font-size: 10px !important; color: #cbd5e1 !important; text-align: center !important; text-overflow: ellipsis !important; white-space: nowrap !important; overflow: hidden !important; }
+        
+        /* Drag & Drop Visual Indicator for Asset Manager */
+        .gjs-mdl-container.drag-over-active .gjs-mdl-dialog {
+            border: 2px dashed #6366f1 !important;
+            box-shadow: 0 0 35px rgba(99, 102, 241, 0.45) !important;
+        }
+        .gjs-am-file-uploader form.gjs-am-hover {
+            border-color: #6366f1 !important;
+            background: rgba(99, 102, 241, 0.15) !important;
+        }
     </style>
 </head>
 <body class="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
@@ -1451,6 +1461,10 @@ $_SESSION['current_page'] = $currentPage;
                 if (btn) btn.classList.toggle('active', t === tabName);
                 if (content) content.classList.toggle('active', t === tabName);
             });
+
+            if (tabName === 'traits' && typeof renderUniversalTraits === 'function' && typeof editor !== 'undefined') {
+                renderUniversalTraits(editor.getSelected());
+            }
         }
 
         function showToast(message, type = 'success') {
@@ -3769,7 +3783,7 @@ if ($sent) {
         </div>
     </div>
 
-    <script src="js/editor.js"></script>
+    <script src="js/editor.js?v=<?= time() ?>"></script>
 
     <!-- Trip Image Gallery Picker Modal -->
     <div id="trip-gallery-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[10000] hidden items-center justify-center p-4">

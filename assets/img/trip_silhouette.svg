@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e8f3e8"/>
+      <stop offset="60%" stop-color="#cfebd2"/>
+      <stop offset="100%" stop-color="#b6e0bc"/>
+    </linearGradient>
+    <linearGradient id="mountainFar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7da878"/>
+      <stop offset="100%" stop-color="#5a8b54"/>
+    </linearGradient>
+    <linearGradient id="mountainMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#467840"/>
+      <stop offset="100%" stop-color="#32602c"/>
+    </linearGradient>
+    <linearGradient id="mountainClose" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2d5a27"/>
+      <stop offset="100%" stop-color="#1b3b17"/>
+    </linearGradient>
+    <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8e7" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#f5e6be" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Sky Background -->
+  <rect width="800" height="500" fill="url(#skyGrad)"/>
+
+  <!-- Warm Sun / Glow -->
+  <circle cx="580" cy="160" r="110" fill="url(#sunGrad)"/>
+  <circle cx="580" cy="160" r="60" fill="#fffdf7" opacity="0.85"/>
+
+  <!-- Far Mountain Range (Šumava Hills) -->
+  <path d="M-50,340 Q120,220 280,280 T600,240 Q710,210 850,290 L850,500 L-50,500 Z" fill="url(#mountainFar)" opacity="0.6"/>
+
+  <!-- Mid Mountain Range -->
+  <path d="M-50,380 Q100,280 250,320 T550,300 Q680,260 850,340 L850,500 L-50,500 Z" fill="url(#mountainMid)" opacity="0.8"/>
+
+  <!-- Pine Trees - Distant silhouettes -->
+  <g fill="#3b6835" opacity="0.75">
+    <polygon points="120,320 112,345 128,345"/>
+    <polygon points="120,310 114,330 126,330"/>
+    <polygon points="135,325 128,350 142,350"/>
+    <polygon points="150,315 143,340 157,340"/>
+    <polygon points="210,325 203,350 217,350"/>
+    <polygon points="225,315 218,340 232,340"/>
+    <polygon points="460,310 453,335 467,335"/>
+    <polygon points="475,300 468,328 482,328"/>
+    <polygon points="490,315 483,340 497,340"/>
+  </g>
+
+  <!-- Foreground Ridge -->
+  <path d="M-50,430 Q160,340 380,410 Q580,370 850,420 L850,500 L-50,500 Z" fill="url(#mountainClose)"/>
+
+  <!-- Foreground Pine Trees (Left) -->
+  <g fill="#163113">
+    <!-- Tree 1 -->
+    <polygon points="70,330 45,395 95,395"/>
+    <polygon points="70,305 50,365 90,365"/>
+    <polygon points="70,280 55,335 85,335"/>
+    <polygon points="70,255 60,305 80,305"/>
+    <rect x="67" y="395" width="6" height="40"/>
+
+    <!-- Tree 2 -->
+    <polygon points="120,360 100,415 140,415"/>
+    <polygon points="120,340 105,390 135,390"/>
+    <polygon points="120,320 110,365 130,365"/>
+    <rect x="118" y="415" width="5" height="25"/>
+  </g>
+
+  <!-- Hikers Silhouette (Right on the hill) -->
+  <g fill="#163113">
+    <!-- Trail Path subtle highlight -->
+    <path d="M260,435 Q350,415 460,410 Q580,395 690,410" stroke="#467840" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.4"/>
+
+    <!-- Hiker 1 (with backpack and walking pole) -->
+    <!-- Head -->
+    <circle cx="515" cy="342" r="7"/>
+    <!-- Hat / Cap -->
+    <path d="M508,340 Q515,335 526,341 Z"/>
+    <!-- Body / Jacket with backpack -->
+    <path d="M508,350 L520,349 L523,375 L506,375 Z"/>
+    <!-- Backpack -->
+    <rect x="502" y="352" width="8" height="18" rx="3"/>
+    <!-- Legs in walking pose -->
+    <path d="M510,375 L505,404 L510,405 L516,382 L522,403 L527,402 L519,375 Z"/>
+    <!-- Arm with hiking stick -->
+    <path d="M517,355 L527,372 L528,405" stroke="#163113" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Hiker 2 (companion slightly behind) -->
+    <!-- Head -->
+    <circle cx="488" cy="347" r="6"/>
+    <!-- Body -->
+    <path d="M482,354 L493,353 L495,377 L481,377 Z"/>
+    <!-- Backpack -->
+    <rect x="477" y="356" width="7" height="15" rx="2"/>
+    <!-- Legs -->
+    <path d="M484,377 L480,405 L485,406 L490,385 L495,404 L500,403 L492,377 Z"/>
+    <!-- Hiking Stick -->
+    <line x1="494" y1="360" x2="499" y2="405" stroke="#163113" stroke-width="2.2" stroke-linecap="round"/>
+
+    <!-- Dog silhouette trotting ahead -->
+    <path d="M545,392 Q550,388 554,391 L558,388 L559,392 L556,394 L556,403 L553,403 L553,396 L546,397 L545,403 L542,403 L543,394 Q540,391 539,388 Z"/>
+  </g>
+
+  <!-- Subtle vignette / branding border touch -->
+  <rect x="0" y="0" width="800" height="500" fill="none" stroke="#2d5a27" stroke-width="2" opacity="0.1"/>
+</svg>
