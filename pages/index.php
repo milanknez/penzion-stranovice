@@ -78,7 +78,7 @@ CMS::getHeader();
                 </div>
                 <div class="room-card reveal-up" style="animation-delay: 0.1s;">
                     <a href="konsky-apartman" class="room-link">
-                        <div class="room-img" style="background-image: url('/assets/img/konsky_1.jpg');">
+                        <div class="room-img" style="background-image: url('/assets/img/konsky/konsky-apartman225322.jpeg');">
                             <div class="room-price">od 2 000 Kč / noc</div>
                         </div>
                     </a>

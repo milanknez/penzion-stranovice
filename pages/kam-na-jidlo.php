@@ -313,7 +313,7 @@ CMS::getHeader();
     <div class="hero-bg" style="background-image: url(/assets/img/breakfast.png);"></div>
     <div class="hero-overlay"></div>
     <div class="container hero-content">
-        <h2 class="hero-subtitle fadeIn">Kam se dobře najíst, dát si kávu nebo posedět</h2>
+        <h2 class="hero-subtitle fadeIn">Poctivá chuť Pošumaví</h2>
         <h1 class="hero-title fadeInDelay">Kam na jídlo</h1>
     </div>
 </section>
@@ -331,28 +331,28 @@ CMS::getHeader();
             <!-- Filter Buttons -->
             <div class="food-filters-wrapper">
                 <button class="filter-btn active" data-filter="all">
-                    <i data-lucide="grid"></i> Všechny podniky <span class="filter-count">30</span>
+                    <i data-lucide="grid"></i> Všechny podniky <span class="filter-count">38</span>
                 </button>
                 <button class="filter-btn" data-filter="malenice">
-                    <i data-lucide="map-pin"></i> Malenice <span class="filter-count">3</span>
+                    <i data-lucide="map-pin"></i> Malenice <span class="filter-count">4</span>
                 </button>
                 <button class="filter-btn" data-filter="volyne">
-                    <i data-lucide="map-pin"></i> Volyně <span class="filter-count">6</span>
+                    <i data-lucide="map-pin"></i> Volyně <span class="filter-count">8</span>
                 </button>
                 <button class="filter-btn" data-filter="ckyne">
-                    <i data-lucide="map-pin"></i> Čkyně <span class="filter-count">3</span>
+                    <i data-lucide="map-pin"></i> Čkyně <span class="filter-count">4</span>
                 </button>
                 <button class="filter-btn" data-filter="husinec">
                     <i data-lucide="map-pin"></i> Husinec <span class="filter-count">1</span>
                 </button>
                 <button class="filter-btn" data-filter="vimperk">
-                    <i data-lucide="map-pin"></i> Vimperk <span class="filter-count">5</span>
+                    <i data-lucide="map-pin"></i> Vimperk <span class="filter-count">6</span>
                 </button>
                 <button class="filter-btn" data-filter="prachatice">
                     <i data-lucide="map-pin"></i> Prachatice <span class="filter-count">4</span>
                 </button>
                 <button class="filter-btn" data-filter="strakonice">
-                    <i data-lucide="map-pin"></i> Strakonice <span class="filter-count">8</span>
+                    <i data-lucide="map-pin"></i> Strakonice <span class="filter-count">11</span>
                 </button>
             </div>
 
@@ -453,6 +453,35 @@ CMS::getHeader();
                 </div>
             </div>
 
+            <!-- 4. MALENICE: Prodejna potravin COOP Malenice 24/7 -->
+            <div class="food-card" data-category="malenice">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="shopping-bag"></i>
+                    </div>
+                    <span class="food-badge">Otevřeno 24/7 • 4 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Potraviny 24/7 (automatická prodejna)</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 2 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 4 min</span>
+                    </div>
+                    <h3 class="food-title">Potraviny COOP 24/7 (Jednota) – Malenice</h3>
+                    <p class="food-description">Moderní prodejna potravin přímo na návsi v Malenicích s nepřetržitým provozem 24/7 (přes den s obsluhou, mimo otevírací dobu automatický bezobslužný vstup). Kdykoliv nakoupíte čerstvé pečivo, nápoje, uzeniny i základní potraviny.</p>
+                    <ul class="food-highlights">
+                        <li>Automatický bezobslužný nákup kdykoliv 24/7</li>
+                        <li>Čerstvé pečivo, mléčné výrobky, uzeniny i nápoje</li>
+                        <li>Přímo na návsi v Malenicích (pouze 2 km od penzionu)</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=COOP+Jednota+Malenice" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- 4. VOLYNĚ: Restaurace U Radnice -->
             <div class="food-card" data-category="volyne">
                 <div class="food-card-header">
@@ -511,7 +540,36 @@ CMS::getHeader();
                 </div>
             </div>
 
-            <!-- 6. VOLYNĚ: Bufet Volyňka -->
+            <!-- 6. VOLYNĚ: Penzion a restaurace U Pošů -->
+            <div class="food-card" data-category="volyne">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="utensils"></i>
+                    </div>
+                    <span class="food-badge">Volyně • 10 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Restaurace &amp; Tradiční kuchyně</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 8 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 8–10 min</span>
+                    </div>
+                    <h3 class="food-title">Restaurace U Pošů</h3>
+                    <p class="food-description">Oblíbená tradiční restaurace s příjemným posezením, poctivou kuchyní a možností pořádání rodinných i společenských akcí.</p>
+                    <ul class="food-highlights">
+                        <li>Tradiční kuchyně a přátelská obsluha</li>
+                        <li>Prostorná restaurace s možností posezení i salónkem</li>
+                        <li>Pohodlné parkování přímo u podniku ve Volyni</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Restaurace+U+Po%C5%A1%C5%AF+Volyn%C4%9B" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. VOLYNĚ: Bufet Volyňka -->
             <div class="food-card" data-category="volyne">
                 <div class="food-card-header">
                     <div class="food-card-icon-pill">
@@ -627,6 +685,35 @@ CMS::getHeader();
                 </div>
             </div>
 
+            <!-- 10. VOLYNĚ: Prodejna potravin COOP TIP / TUTY Volyně -->
+            <div class="food-card" data-category="volyne">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="shopping-bag"></i>
+                    </div>
+                    <span class="food-badge">Volyně • 8–10 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Supermarket &amp; Potraviny</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 8 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 8–10 min</span>
+                    </div>
+                    <h3 class="food-title">Supermarket COOP TIP (Jednota) – Volyně</h3>
+                    <p class="food-description">Velká a dobře zásobená prodejna potravin a smíšeného zboží na náměstí Hrdinů ve Volyni (sídlo Jednoty Volyně). Široký výběr potravin, čerstvého pečiva, regionálních produktů i nápojů.</p>
+                    <ul class="food-highlights">
+                        <li>Kompletní sortiment potravin a čerstvého zboží</li>
+                        <li>Prodejna přímo na náměstí Hrdinů ve Volyni</li>
+                        <li>Možnost velkého nákupu na celý pobyt</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=COOP+TIP+Volyn%C4%9B+n%C3%A1m%C4%9Bst%C3%AD+Hrdin%C5%AF" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- 10. ČKYNĚ: Restaurace Ve Votáčce -->
             <div class="food-card" data-category="ckyne">
                 <div class="food-card-header">
@@ -708,6 +795,35 @@ CMS::getHeader();
                     </ul>
                     <div class="food-footer">
                         <a href="https://www.google.com/maps/search/?api=1&query=Kav%C3%A1rna+Lucie+%C4%8Ckyn%C4%9B" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 13. ČKYNĚ: Hospoda Na Hřišti Čkyně -->
+            <div class="food-card" data-category="ckyne">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="beer"></i>
+                    </div>
+                    <span class="food-badge">Čkyně • 8 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Hospoda &amp; Posezení u hřiště</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 5 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 6–8 min</span>
+                    </div>
+                    <h3 class="food-title">Hospoda Na Hřišti – Čkyně</h3>
+                    <p class="food-description">Oblíbená sportovní hospůdka u fotbalového hřiště ve Čkyni. Příjemné neformální posezení u točeného piva, občerstvení a letní venkovní terasa.</p>
+                    <ul class="food-highlights">
+                        <li>Příjemné neformální posezení u sportovního areálu</li>
+                        <li>Točené pivo, rychlé občerstvení a venkovní terasa</li>
+                        <li>Oblíbené místo místních i cyklistů (pouze 5 km od penzionu)</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Hospoda+Na+H%C5%99i%C5%A1ti+%C4%8Ckyn%C4%9B" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
                             <i data-lucide="navigation"></i> Otevřít v mapách
                         </a>
                     </div>
@@ -801,7 +917,36 @@ CMS::getHeader();
                 </div>
             </div>
 
-            <!-- 16. VIMPERK: HD Burgers -->
+            <!-- 16. VIMPERK: Šumavský pivovar Vimperk -->
+            <div class="food-card" data-category="vimperk">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="beer"></i>
+                    </div>
+                    <span class="food-badge">Vimperk • 15 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Řemeslný minipivovar &amp; Pivnice</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 13 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 15 min</span>
+                    </div>
+                    <h3 class="food-title">Šumavský pivovar Vimperk</h3>
+                    <p class="food-description">Řemeslný rodinný minipivovar a stylová pivnice v historickém domě v centru Vimperka. Nabízí nefiltrovaná a nepasterizovaná piva i širokou nabídku pivních speciálů.</p>
+                    <ul class="food-highlights">
+                        <li>Vlastní poctivá nefiltrovaná piva a pestré speciály</li>
+                        <li>Příjemné posezení v historické pivnici</li>
+                        <li>Možnost nákupu lahvového piva s sebou a degustační prohlídky</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=%C5%A0umavsk%C3%BD+pivovar+Vimperk" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 17. VIMPERK: HD Burgers -->
             <div class="food-card" data-category="vimperk">
                 <div class="food-card-header">
                     <div class="food-card-icon-pill">
@@ -1004,7 +1149,65 @@ CMS::getHeader();
                 </div>
             </div>
 
-            <!-- 23. STRAKONICE: Lovecká bašta -->
+            <!-- 23. STRAKONICE: Sůl a řepa -->
+            <div class="food-card" data-category="strakonice">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <span class="food-badge">Strakonice • 25 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Zážitková gastronomie &amp; Lokální suroviny</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 20 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 25 min</span>
+                    </div>
+                    <h3 class="food-title">Sůl a řepa</h3>
+                    <p class="food-description">Vyhlášená a oceňovaná restaurace (včetně průvodce Michelin), která staví na lokálních jihočeských surovinách, sezónnosti, kvašení a moderních kulinářských postupech.</p>
+                    <ul class="food-highlights">
+                        <li>Výjimečný gastronomický zážitek a špičková úroveň</li>
+                        <li>Suroviny od místních pěstitelů a farmářů</li>
+                        <li>Vynikající výběr vín a osobitá atmosféra v centru Strakonic</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=S%C5%AFl+a+%C5%99epa+Strakonice" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 24. STRAKONICE / KBELNICE: Zájezdní hostinec U Jiskrů -->
+            <div class="food-card" data-category="strakonice">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="utensils"></i>
+                    </div>
+                    <span class="food-badge">Kbelnice u Strakonic • 25–28 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Tradiční česká kuchyně &amp; Czech Specials</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 26 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 25–28 min</span>
+                    </div>
+                    <h3 class="food-title">Zájezdní hostinec U Jiskrů (Kbelnice)</h3>
+                    <p class="food-description">Renomovaný hostinec šéfkuchaře Martina Jiskry v Kbelnici u Strakonic. Poctivá tradiční česká i středoevropská kuchyně v moderním a mistrném provedení v historickém stavení.</p>
+                    <ul class="food-highlights">
+                        <li>Špičková tradiční česká kuchyně od mistra kuchaře</li>
+                        <li>Ocenění Nositel tradic české kuchyně a Czech Specials</li>
+                        <li>Krásně zrekonstruovaný historický zájezdní hostinec (doporučujeme rezervaci)</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Z%C3%A1jezdn%C3%AD+hostinec+U+Jiskr%C5%AF+Kbelnice" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 25. STRAKONICE: Lovecká bašta -->
             <div class="food-card" data-category="strakonice">
                 <div class="food-card-header">
                     <div class="food-card-icon-pill">
@@ -1033,7 +1236,7 @@ CMS::getHeader();
                 </div>
             </div>
 
-            <!-- 24. STRAKONICE: Restaurace U Dudáka -->
+            <!-- 26. STRAKONICE: Restaurace U Dudáka -->
             <div class="food-card" data-category="strakonice">
                 <div class="food-card-header">
                     <div class="food-card-icon-pill">
@@ -1056,6 +1259,35 @@ CMS::getHeader();
                     </ul>
                     <div class="food-footer">
                         <a href="https://www.google.com/maps/search/?api=1&query=Restaurace+U+Dud%C3%A1ka+Strakonice" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
+                            <i data-lucide="navigation"></i> Otevřít v mapách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 27. STRAKONICE: Minipivovar Haďák (Pivnice U Hada) -->
+            <div class="food-card" data-category="strakonice">
+                <div class="food-card-header">
+                    <div class="food-card-icon-pill">
+                        <i data-lucide="beer"></i>
+                    </div>
+                    <span class="food-badge">Strakonice • 25 min</span>
+                </div>
+                <div class="food-content">
+                    <div class="food-meta">
+                        <span class="food-type-pill">Řemeslný minipivovar &amp; Pivnice</span>
+                        <span class="food-meta-item"><i data-lucide="map-pin"></i> 20 km</span>
+                        <span class="food-meta-item"><i data-lucide="clock"></i> 25 min</span>
+                    </div>
+                    <h3 class="food-title">Minipivovar Haďák (Pivnice U Hada)</h3>
+                    <p class="food-description">Komorní řemeslný minipivovar a pivnice na Palackého náměstí ve Strakonicích. Nabízí vlastní nefiltrovaná piva, točeného Dudáka i prodej piva s sebou.</p>
+                    <ul class="food-highlights">
+                        <li>Vlastní řemeslná piva čepovaná přímo v pivnici U Hada</li>
+                        <li>Příjemná atmosféra na Palackého náměstí</li>
+                        <li>Možnost nákupu piva s sebou</li>
+                    </ul>
+                    <div class="food-footer">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Minipivovar+Ha%C4%8F%C3%A1k+Pivnice+U+Hada+Strakonice" target="_blank" rel="noopener noreferrer" class="btn-gmaps">
                             <i data-lucide="navigation"></i> Otevřít v mapách
                         </a>
                     </div>

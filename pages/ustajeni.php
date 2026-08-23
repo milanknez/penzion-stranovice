@@ -35,7 +35,7 @@ CMS::getHeader();
         <div class="hero-bg" style="background-image: url('/assets/img/horse_hero.png');"></div>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h2 class="hero-subtitle fadeIn">Pastevní péče</h2>
+            <h2 class="hero-subtitle fadeIn">Klid a prostor pro koně</h2>
             <h1 class="hero-title fadeInDelay">Ustájení koní</h1>
         </div>
     </section>
@@ -51,11 +51,11 @@ CMS::getHeader();
                         Na našem statku na Straňovicích nabízíme pastevní ustájení pro Vaše koně. Naším cílem je vytvořit pro koně co nejpřirozenější prostředí s důrazem na jejich pohodu a zdraví. 
                     </p>
                     <p>
-                        Klademe důraz na individuální přístup ke každému koni. K dispozici jsou členité pastviny. Koně mají k dispozici celodenní pobyt venku v bezpečných stádech.
+                        Klademe důraz na individuální přístup ke každému koni. K dispozici jsou členité pastviny s přístřešky. Koně mají k dispozici celodenní pobyt venku v bezpečných stádech.
                     </p>
                     <div class="horse-gallery">
-                        <img src="assets/img/horse_pasture.png" alt="Pastviny pro koně">
-                        <img src="assets/img/hay_bales.png" alt="Pastviny a louky">
+                        <img src="/assets/img/horse_pasture.png" alt="Pastviny pro koně">
+                        <img src="/assets/img/horse_stable.png" alt="Zázemí a sedlovna">
                     </div>
                 </div>
                 <div class="reveal" style="position: relative;">
