@@ -872,20 +872,42 @@ $trips = [
         font-weight: 700;
         transition: all 0.3s ease;
     }
+    .filter-btn i,
+    .filter-btn svg {
+        color: inherit;
+        stroke: currentColor;
+    }
     .filter-btn:hover {
-        border-color: var(--primary, #2d5a27);
-        color: var(--primary, #2d5a27);
+        background: var(--primary, #8B5E3C) !important;
+        border-color: var(--primary, #8B5E3C) !important;
+        color: #ffffff !important;
         transform: translateY(-2px);
     }
+    .filter-btn:hover *,
+    .filter-btn:hover .filter-count,
+    .filter-btn:hover i,
+    .filter-btn:hover svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+    }
+    .filter-btn:hover .filter-count {
+        background: rgba(255, 255, 255, 0.25) !important;
+    }
     .filter-btn.active {
-        background: var(--primary, #2d5a27);
-        color: #ffffff;
-        border-color: var(--primary, #2d5a27);
-        box-shadow: 0 4px 12px rgba(45, 90, 39, 0.25);
+        background: var(--primary, #8B5E3C) !important;
+        color: #ffffff !important;
+        border-color: var(--primary, #8B5E3C) !important;
+        box-shadow: 0 4px 12px rgba(139, 94, 60, 0.35);
+    }
+    .filter-btn.active *,
+    .filter-btn.active .filter-count,
+    .filter-btn.active i,
+    .filter-btn.active svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
     }
     .filter-btn.active .filter-count {
-        background: rgba(255, 255, 255, 0.25);
-        color: #ffffff;
+        background: rgba(255, 255, 255, 0.25) !important;
     }
     
     .trip-grid {

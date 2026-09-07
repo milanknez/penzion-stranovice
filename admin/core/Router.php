@@ -38,6 +38,9 @@ class CMSRouter {
             $rawSlug = 'index.php';
         }
 
+        // Load active plugins & universal cron tasks
+        CMS::loadActivePlugins();
+
         // Clean slug without extension
         $cleanSlug = str_replace('.php', '', $rawSlug);
 

@@ -4,6 +4,8 @@ Plugin Name: Synchronizace Obsazenosti (Booking & MegaUbytko)
 Version: 1.0.0
 Description: Automatická synchronizace kalendářů obsazenosti s Booking.com a MegaUbytko.cz.
 Author: Statek Straňovice
+Settings Modal: openBookingSyncModal()
+Settings Button: Synchronizace rezervací
 */
 
 if (!class_exists('SyncBookingPlugin')) {
@@ -61,10 +63,37 @@ if (!class_exists('SyncBookingPlugin')) {
             $dir = dirname($outputPath);
             if (!file_exists($dir)) {
                 @mkdir($dir, 0777, true);
+                @chmod($dir, 0777);
             }
 
             $json = json_encode($occupancy, JSON_PRETTY_PRINT);
             @file_put_contents($outputPath, $json);
+            @chmod($outputPath, 0666);
+
+            $totalDays = 0;
+            foreach ($occupancy as $dates) {
+                $totalDays += count($dates);
+            }
+
+            $now = time();
+            $dt = new DateTime('now', new DateTimeZone('Europe/Prague'));
+            $statusData = [
+                'timestamp' => $now,
+                'last_sync' => $dt->format('d.m.Y H:i:s'),
+                'total_days' => $totalDays,
+                'status' => 'success'
+            ];
+            $statusFile = $dir . '/sync_status.json';
+            $lockFile = $dir . '/cron.last';
+            @file_put_contents($statusFile, json_encode($statusData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            @chmod($statusFile, 0666);
+            @file_put_contents($lockFile, (string)$now);
+            @chmod($lockFile, 0666);
+            @touch($outputPath, $now);
+            clearstatcache(true, $outputPath);
+            clearstatcache(true, $statusFile);
+            clearstatcache(true, $lockFile);
+
             return true;
         }
 
@@ -74,9 +103,9 @@ if (!class_exists('SyncBookingPlugin')) {
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+                curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4);
+                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
                 $result = curl_exec($ch);
@@ -85,7 +114,7 @@ if (!class_exists('SyncBookingPlugin')) {
                     return $result;
                 }
             }
-            $context = stream_context_create(['http' => ['timeout' => 3]]);
+            $context = stream_context_create(['http' => ['timeout' => 8]]);
             return @file_get_contents($url, false, $context);
         }
 
@@ -133,6 +162,91 @@ if (!class_exists('SyncBookingPlugin')) {
             $data = @file_get_contents($outputPath);
             if (empty($data) || $data === '{}' || strlen(trim($data)) < 10) return true;
             return (time() - filemtime($outputPath)) > 1800;
+        }
+
+        public static function getStatusInfo() {
+            $outputPath = self::getOccupancyPath();
+            $configPath = self::getRoomsConfigPath();
+            $rooms = file_exists($configPath) ? json_decode(@file_get_contents($configPath), true) : [];
+            $occupancy = file_exists($outputPath) ? json_decode(@file_get_contents($outputPath), true) : [];
+            
+            $totalDays = 0;
+            if (is_array($occupancy)) {
+                foreach ($occupancy as $dates) {
+                    $totalDays += count($dates);
+                }
+            }
+
+            $statusFile = dirname($outputPath) . '/sync_status.json';
+            $lastSync = 0;
+            $lastSyncStr = 'Zatím neproběhla';
+
+            if (file_exists($statusFile)) {
+                $statusJson = @json_decode(@file_get_contents($statusFile), true);
+                if (!empty($statusJson['last_sync'])) {
+                    $lastSyncStr = $statusJson['last_sync'];
+                    $lastSync = $statusJson['timestamp'] ?? 0;
+                    if (isset($statusJson['total_days'])) {
+                        $totalDays = (int)$statusJson['total_days'];
+                    }
+                }
+            }
+
+            if ($lastSync === 0 && file_exists($outputPath)) {
+                clearstatcache(true, $outputPath);
+                $lastSync = filemtime($outputPath);
+                if ($lastSync > 0) {
+                    try {
+                        $dt = new DateTime('@' . $lastSync);
+                        $dt->setTimezone(new DateTimeZone('Europe/Prague'));
+                        $lastSyncStr = $dt->format('d.m.Y H:i:s');
+                    } catch (\Throwable $e) {
+                        $lastSyncStr = date('d.m.Y H:i:s', $lastSync);
+                    }
+                }
+            }
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'] ?? 'statekstranovice.cz';
+
+            return [
+                'status' => 'success',
+                'last_sync' => $lastSyncStr,
+                'last_sync_timestamp' => $lastSync,
+                'rooms' => is_array($rooms) ? $rooms : [],
+                'rooms_count' => is_array($rooms) ? count($rooms) : 0,
+                'total_days' => $totalDays,
+                'cron_url' => $scheme . '://' . $host . '/plugins/booking-sync/cron.php',
+                'cron_cli' => 'php ' . realpath(__DIR__ . '/cron.php')
+            ];
+        }
+
+        public static function handleAjax($action) {
+            switch ($action) {
+                case 'booking_sync_get_info':
+                    return self::getStatusInfo();
+
+                case 'booking_sync_trigger':
+                    $start = microtime(true);
+                    $success = self::sync();
+                    $duration = round(microtime(true) - $start, 2);
+                    $info = self::getStatusInfo();
+                    $info['message'] = $success 
+                        ? "Synchronizace dokončena ({$duration}s). Obsazených termínů: {$info['total_days']}."
+                        : "Chyba při synchronizaci kalendářů.";
+                    $info['sync_status'] = $success ? 'success' : 'error';
+                    return $info;
+
+                case 'booking_sync_save_rooms':
+                    $raw = file_get_contents('php://input');
+                    $data = json_decode($raw, true);
+                    if (isset($data['rooms']) && is_array($data['rooms'])) {
+                        @file_put_contents(self::getRoomsConfigPath(), json_encode($data['rooms'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                        self::sync();
+                        return ['status' => 'success', 'message' => 'Nastavení apartmánů bylo uloženo a synchronizováno.'];
+                    }
+                    return ['status' => 'error', 'message' => 'Neplatná data.'];
+            }
+            return null;
         }
     }
 

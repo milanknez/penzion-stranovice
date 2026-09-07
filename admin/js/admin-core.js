@@ -2,7 +2,7 @@
  * Fida CMS Core UI & Navigation Manager
  */
 
-(function() {
+(function () {
     window.switchView = function switchView(view) {
         const editorBtn = document.getElementById('menu-btn-editor');
         const settingsBtn = document.getElementById('menu-btn-settings');
@@ -17,14 +17,23 @@
         const filesPage = document.getElementById('files-page-wrapper');
         const pluginsPage = document.getElementById('plugins-page-wrapper');
         const themesPage = document.getElementById('themes-page-wrapper');
+        const editorHeader = document.getElementById('editor-header') || document.querySelector('header');
         const headerPageControls = document.querySelector('header .flex.items-center.gap-4');
         const headerPageSettingsBtn = document.querySelector('header button[onclick="openPageSettings()"]');
         const headerSaveBtn = document.getElementById('save-btn');
         const headerStatusMsg = document.getElementById('status-msg');
-        
+
         const pagesBtn = document.getElementById('menu-btn-pages');
         const pagesPage = document.getElementById('pages-page-wrapper');
-        
+
+        if (editorHeader) {
+            if (view === 'editor') {
+                editorHeader.classList.remove('hidden');
+            } else {
+                editorHeader.classList.add('hidden');
+            }
+        }
+
         [pagesBtn, editorBtn, settingsBtn, filesBtn, pluginsBtn, contractsBtn, themesBtn].forEach(btn => {
             if (!btn) return;
             btn.className = "w-full flex items-center gap-3 px-3 py-2.5 text-xs text-slate-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors text-left";
@@ -44,7 +53,7 @@
                 const i = pagesBtn.querySelector('i');
                 if (i) i.className = "fa fa-files-o w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (settingsPage) settingsPage.classList.add('hidden');
@@ -53,7 +62,7 @@
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
             if (pagesPage) pagesPage.classList.remove('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
@@ -67,7 +76,7 @@
                 const i = editorBtn.querySelector('i');
                 if (i) i.className = "fa fa-files-o w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.remove('hidden');
             if (rightPanel) rightPanel.classList.remove('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -76,13 +85,13 @@
             if (pluginsPage) pluginsPage.classList.add('hidden');
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.remove('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.remove('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.remove('hidden');
-            
+
             if (window.editor && typeof window.editor.refresh === 'function') {
-                setTimeout(function() {
+                setTimeout(function () {
                     window.editor.refresh();
                 }, 50);
             }
@@ -92,7 +101,7 @@
                 const i = settingsBtn.querySelector('i');
                 if (i) i.className = "fa fa-globe w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -101,12 +110,12 @@
             if (pluginsPage) pluginsPage.classList.add('hidden');
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
             if (headerStatusMsg) headerStatusMsg.style.opacity = '0';
-            
+
             const cfg = window.SITE_CONFIG || {};
             const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
             setVal('site-name', cfg.site_name);
@@ -135,7 +144,7 @@
             setVal('site-redirect-www', cfg.redirect_www || 'none');
             const siteCacheEl = document.getElementById('site-enable-cache');
             if (siteCacheEl) siteCacheEl.checked = cfg.enable_cache || false;
-            
+
             if (typeof window.switchSettingsTab === 'function') {
                 window.switchSettingsTab('general');
             }
@@ -145,7 +154,7 @@
                 const i = filesBtn.querySelector('i');
                 if (i) i.className = "fa fa-folder-open w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -154,12 +163,12 @@
             if (pluginsPage) pluginsPage.classList.add('hidden');
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
             if (headerStatusMsg) headerStatusMsg.style.opacity = '0';
-            
+
             if (typeof window.loadFileManagerFiles === 'function') window.loadFileManagerFiles();
         } else if (view === 'plugins') {
             if (pluginsBtn) {
@@ -167,7 +176,7 @@
                 const i = pluginsBtn.querySelector('i');
                 if (i) i.className = "fa fa-plug w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -176,12 +185,12 @@
             if (pluginsPage) pluginsPage.classList.remove('hidden');
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
             if (headerStatusMsg) headerStatusMsg.style.opacity = '0';
-            
+
             if (typeof window.loadPlugins === 'function') window.loadPlugins();
         } else if (view === 'contracts') {
             if (contractsBtn) {
@@ -189,7 +198,7 @@
                 const i = contractsBtn.querySelector('i');
                 if (i) i.className = "fa fa-file-text-o w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -198,12 +207,12 @@
             if (pluginsPage) pluginsPage.classList.add('hidden');
             if (themesPage) themesPage.classList.add('hidden');
             if (contractsPage) contractsPage.classList.remove('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
             if (headerStatusMsg) headerStatusMsg.style.opacity = '0';
-            
+
             if (typeof window.loadContracts === 'function') window.loadContracts();
         } else if (view === 'themes') {
             if (themesBtn) {
@@ -211,7 +220,7 @@
                 const i = themesBtn.querySelector('i');
                 if (i) i.className = "fa fa-paint-brush w-4 text-center text-white";
             }
-            
+
             if (gjsContainer) gjsContainer.classList.add('hidden');
             if (rightPanel) rightPanel.classList.add('hidden');
             if (pagesPage) pagesPage.classList.add('hidden');
@@ -220,12 +229,12 @@
             if (pluginsPage) pluginsPage.classList.add('hidden');
             if (themesPage) themesPage.classList.remove('hidden');
             if (contractsPage) contractsPage.classList.add('hidden');
-            
+
             if (headerPageControls) headerPageControls.classList.add('invisible');
             if (headerPageSettingsBtn) headerPageSettingsBtn.classList.add('hidden');
             if (headerSaveBtn) headerSaveBtn.classList.add('hidden');
             if (headerStatusMsg) headerStatusMsg.style.opacity = '0';
-            
+
             if (typeof window.loadThemes === 'function') window.loadThemes();
         }
     };
@@ -235,16 +244,16 @@
             const el = document.getElementById('content-tab-' + id);
             if (el) el.classList.add('hidden');
         });
-        
+
         const targetTab = document.getElementById('content-tab-' + tabId);
         if (targetTab) targetTab.classList.remove('hidden');
-        
+
         const tabButtons = document.querySelectorAll('.settings-tab-btn');
         tabButtons.forEach(btn => {
             btn.classList.remove('border-indigo-500', 'text-white');
             btn.classList.add('border-transparent', 'text-slate-400');
         });
-        
+
         const activeBtn = document.getElementById('btn-tab-' + tabId);
         if (activeBtn) {
             activeBtn.classList.remove('border-transparent', 'text-slate-400');

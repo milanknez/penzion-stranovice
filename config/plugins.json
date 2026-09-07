@@ -1,6 +1,6 @@
 {
     "active_plugins": [
-        "booking-sync/booking-sync.php",
-        "smtp-mailer/smtp-mailer.php"
+        "smtp-mailer\/smtp-mailer.php",
+        "booking-sync\/booking-sync.php"
     ]
 }

@@ -152,7 +152,7 @@ class PluginManager {
     }
 
     /**
-     * Include all active plugin files into CMS context.
+     * Include all active plugin files into CMS context and run plugin cron scripts.
      */
     public function loadActivePlugins(): void {
         $active = $this->getActivePlugins();
@@ -162,6 +162,60 @@ class PluginManager {
             $filePath = $this->pluginsDir . ltrim($pluginFile, '/');
             if (file_exists($filePath)) {
                 include_once $filePath;
+            }
+        }
+
+        $this->runCron();
+    }
+
+    /**
+     * Universal Cron Runner:
+     * Discovers and executes cron.php for each active plugin.
+     * Each plugin's cron.php decides whether its interval (e.g. 30 min) has passed.
+     */
+    public function runCron(): void {
+        static $cronExecuted = false;
+        if ($cronExecuted) return;
+        $cronExecuted = true;
+
+        $active = $this->getActivePlugins();
+        if (empty($active)) return;
+
+        foreach ($active as $pluginFile) {
+            $cleanPath = ltrim($pluginFile, '/');
+            $pluginFolder = dirname($cleanPath);
+            if ($pluginFolder === '.' || empty($pluginFolder)) {
+                $pluginFolder = pathinfo($cleanPath, PATHINFO_FILENAME);
+            }
+
+            $cronFile = $this->pluginsDir . $pluginFolder . '/cron.php';
+            if (file_exists($cronFile)) {
+                try {
+                    include_once $cronFile;
+                } catch (\Throwable $e) {
+                    // Fail silently to never interrupt web page rendering
+                }
+            }
+        }
+    }
+
+    /**
+     * Render modals for all active plugins if modal.php exists in their directory.
+     */
+    public function renderPluginModals(): void {
+        $active = $this->getActivePlugins();
+        if (empty($active)) return;
+
+        foreach ($active as $pluginFile) {
+            $cleanPath = ltrim($pluginFile, '/');
+            $pluginFolder = dirname($cleanPath);
+            if ($pluginFolder === '.' || empty($pluginFolder)) {
+                $pluginFolder = pathinfo($cleanPath, PATHINFO_FILENAME);
+            }
+
+            $modalFile = $this->pluginsDir . $pluginFolder . '/modal.php';
+            if (file_exists($modalFile)) {
+                include $modalFile;
             }
         }
     }

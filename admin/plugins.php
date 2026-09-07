@@ -14,7 +14,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit;
 }
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 $pluginManager = new PluginManager();
 $action = $_GET['action'] ?? $_POST['action'] ?? 'list';

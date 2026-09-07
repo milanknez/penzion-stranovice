@@ -140,7 +140,7 @@ $_SESSION['current_page'] = $currentPage;
         
         body, html { height: 100%; margin: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-        .editor-row { display: flex; height: calc(100vh - 64px); background: #f8fafc; }
+        .editor-row { display: flex; flex: 1; min-height: 0; background: #f8fafc; }
         .editor-canvas { flex-grow: 1; height: 100%; overflow: hidden; position: relative; }
         .panel-right { width: 310px; background: var(--panel-bg); color: #cbd5e1; display: flex; flex-direction: column; z-index: 10; border-left: 1px solid rgba(0,0,0,0.3); }
 
@@ -367,22 +367,257 @@ $_SESSION['current_page'] = $currentPage;
             line-height: 1.6 !important;
         }
 
-        /* GrapesJS Asset Manager UI */
-        .gjs-am-assets-header { background: #020617 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding: 12px !important; }
-        .gjs-am-assets { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important; gap: 12px !important; padding: 12px !important; }
-        .gjs-am-asset { width: 100% !important; height: 125px !important; border-radius: 12px !important; background: #020617 !important; border: 1px solid rgba(255,255,255,0.1) !important; overflow: hidden !important; transition: all 0.2s !important; margin: 0 !important; }
-        .gjs-am-asset:hover { border-color: var(--accent) !important; transform: translateY(-2px); }
-        .gjs-am-asset-image { height: 95px !important; background-size: cover !important; background-position: center !important; }
-        .gjs-am-meta { padding: 4px 6px !important; font-size: 10px !important; color: #cbd5e1 !important; text-align: center !important; text-overflow: ellipsis !important; white-space: nowrap !important; overflow: hidden !important; }
+        /* Modern GrapesJS Asset Manager UI */
+        .gjs-mdl-dialog:has(.gjs-am-assets-cont) {
+            max-width: 1040px !important;
+            width: 92vw !important;
+            max-height: 90vh !important;
+        }
+        .gjs-mdl-content:has(.gjs-am-assets-cont) {
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 18px !important;
+            gap: 14px !important;
+            overflow: hidden !important;
+        }
+        .gjs-am-file-uploader {
+            width: 100% !important;
+            float: none !important;
+            clear: both !important;
+            margin-bottom: 0 !important;
+        }
+        .gjs-am-file-uploader > form {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 2px dashed rgba(99, 102, 241, 0.35) !important;
+            border-radius: 12px !important;
+            padding: 16px 20px !important;
+            margin-bottom: 0 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 64px !important;
+            position: relative !important;
+        }
+        .gjs-am-file-uploader > form:hover,
+        .gjs-am-file-uploader > form.gjs-am-hover {
+            border-color: #818cf8 !important;
+            background: rgba(99, 102, 241, 0.12) !important;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15) !important;
+        }
+        .gjs-am-file-uploader #gjs-am-title {
+            position: relative !important;
+            padding: 0 !important;
+            color: #cbd5e1 !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            pointer-events: none !important;
+        }
+        .gjs-am-file-uploader #gjs-am-title::before {
+            content: "\f0ee" !important;
+            font-family: FontAwesome !important;
+            font-size: 22px !important;
+            color: #818cf8 !important;
+        }
+        .gjs-am-file-uploader > form #gjs-am-uploadFile {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            opacity: 0 !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+        }
+
+        .gjs-am-assets-cont {
+            width: 100% !important;
+            float: none !important;
+            clear: both !important;
+            height: auto !important;
+            max-height: none !important;
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 !important;
+            background: transparent !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        .gjs-am-assets-header {
+            background: #020617 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            margin-bottom: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 12px !important;
+            flex-wrap: wrap !important;
+        }
+        .gjs-am-search-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            flex: 1 !important;
+            min-width: 220px !important;
+        }
+        .gjs-am-add-asset {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex: 1 !important;
+            min-width: 260px !important;
+        }
+        .gjs-am-add-asset .gjs-am-add-field {
+            flex: 1 !important;
+            width: auto !important;
+            float: none !important;
+        }
+        .gjs-am-add-asset .gjs-am-add-field input {
+            width: 100% !important;
+            background: #0f172a !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            color: #f1f5f9 !important;
+            font-size: 12px !important;
+            outline: none !important;
+            transition: border-color 0.15s !important;
+        }
+        .gjs-am-add-asset .gjs-am-add-field input:focus {
+            border-color: #6366f1 !important;
+        }
+        .gjs-am-add-asset button {
+            width: auto !important;
+            float: none !important;
+            background: #4f46e5 !important;
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            border: none !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
+            transition: all 0.15s ease !important;
+        }
+        .gjs-am-add-asset button:hover {
+            background: #4338ca !important;
+        }
+
+        .gjs-am-assets {
+            flex: 1 !important;
+            height: 380px !important;
+            max-height: 48vh !important;
+            overflow-y: auto !important;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)) !important;
+            gap: 12px !important;
+            padding: 4px !important;
+            background: transparent !important;
+        }
+        .gjs-am-asset {
+            width: 100% !important;
+            height: 145px !important;
+            border-radius: 10px !important;
+            background: #0b1120 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            position: relative !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+        }
+        .gjs-am-asset:hover {
+            border-color: #6366f1 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px #6366f1 !important;
+        }
+        .gjs-am-preview-cont {
+            width: 100% !important;
+            height: 100px !important;
+            float: none !important;
+            position: relative !important;
+            background: #020617 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+            overflow: hidden !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .gjs-am-preview {
+            width: 100% !important;
+            height: 100% !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            transition: transform 0.25s ease !important;
+        }
+        .gjs-am-asset:hover .gjs-am-preview {
+            transform: scale(1.08) !important;
+        }
+        .gjs-am-meta {
+            width: 100% !important;
+            float: none !important;
+            padding: 6px 8px !important;
+            background: #0f172a !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            flex: 1 !important;
+            box-sizing: border-box !important;
+        }
+        .gjs-am-name {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #f1f5f9 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            margin-bottom: 1px !important;
+        }
+        .gjs-am-dimensions {
+            font-size: 10px !important;
+            color: #64748b !important;
+            font-family: monospace !important;
+        }
+        .gjs-am-close {
+            position: absolute !important;
+            top: 5px !important;
+            right: 5px !important;
+            width: 22px !important;
+            height: 22px !important;
+            border-radius: 6px !important;
+            background: rgba(225, 29, 72, 0.9) !important;
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 12px !important;
+            opacity: 0 !important;
+            transition: all 0.15s ease !important;
+            z-index: 10 !important;
+        }
+        .gjs-am-asset:hover .gjs-am-close {
+            opacity: 1 !important;
+        }
+        .gjs-am-close:hover {
+            background: #e11d48 !important;
+            transform: scale(1.1) !important;
+        }
         
         /* Drag & Drop Visual Indicator for Asset Manager */
         .gjs-mdl-container.drag-over-active .gjs-mdl-dialog {
             border: 2px dashed #6366f1 !important;
             box-shadow: 0 0 35px rgba(99, 102, 241, 0.45) !important;
-        }
-        .gjs-am-file-uploader form.gjs-am-hover {
-            border-color: #6366f1 !important;
-            background: rgba(99, 102, 241, 0.15) !important;
         }
     </style>
 </head>
@@ -498,6 +733,9 @@ $_SESSION['current_page'] = $currentPage;
             </div>
         </div>
     </div>
+
+    <!-- Dynamic Plugin Modals (rendered from active plugins' modal.php) -->
+    <?php $pluginMgr->renderPluginModals(); ?>
 
     <!-- Plugin Help Modal -->
     <div id="plugin-help-modal" class="hidden fixed inset-0 bg-black/75 z-[120] flex items-center justify-center p-4 backdrop-blur-sm">
@@ -698,13 +936,13 @@ $_SESSION['current_page'] = $currentPage;
     <!-- Right Workspace Area -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         
-        <header class="h-[64px] bg-[var(--dark-header)] text-white px-8 flex justify-between items-center shadow-lg z-40 shrink-0">
+        <header id="editor-header" class="<?= $initialView === 'editor' ? '' : 'hidden' ?> h-[64px] bg-[var(--dark-header)] text-white px-8 flex justify-between items-center shadow-lg z-40 shrink-0">
             <div class="flex items-center gap-3">
                 <button onclick="switchView('pages')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-2 transition-all mr-1 shadow" title="Zpět na seznam stránek">
                     <i class="fa fa-arrow-left text-indigo-400"></i>
                     <span class="hidden sm:inline">Seznam stránek</span>
                 </button>
-                <select class="page-selector" title="<?= $uiLang === 'cs' ? 'Vybrat stránku ke úpravě' : 'Select page to edit' ?>" onchange="window.location.href='index.php?lang=<?= $uiLang ?>&page=' + this.value">
+                <select class="page-selector" title="<?= $uiLang === 'cs' ? 'Vybrat stránku ke úpravě' : 'Select page to edit' ?>" onchange="window.location.href='index.php?lang=<?= $uiLang ?>&page=' + this.value + '&view=editor'">
                     <?php foreach ($editableFiles as $file): ?>
                         <option value="<?= $file ?>" <?= $file === $currentPage ? 'selected' : '' ?>>
                             <?= $file ?> | <?= htmlspecialchars($pageTitles[$file]) ?>
@@ -739,7 +977,7 @@ $_SESSION['current_page'] = $currentPage;
             </div>
         </header>
 
-        <div class="editor-row flex flex-1 h-[calc(100vh-64px)] overflow-hidden relative">
+        <div class="editor-row flex flex-1 min-h-0 overflow-hidden relative">
             <div class="editor-canvas">
                 <div id="gjs"></div>
             </div>
@@ -807,12 +1045,12 @@ $_SESSION['current_page'] = $currentPage;
                                             <?php endif; ?>
                                         </td>
                                         <td class="py-4 px-6 font-semibold text-white">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 text-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                            <a href="index.php?lang=<?= $uiLang ?>&page=<?= urlencode($file) ?>&view=editor" class="inline-flex items-center gap-3 group/link hover:opacity-95 transition-all" title="Upravit stránku: <?= htmlspecialchars($pTitle) ?>">
+                                                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 text-sm group-hover/link:bg-indigo-600 group-hover/link:text-white transition-all">
                                                     <i class="fa <?= $isIndex ? 'fa-home' : 'fa-file-text-o' ?>"></i>
                                                 </div>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="group-hover:text-indigo-300 transition-colors font-bold text-slate-100">
+                                                    <span class="font-bold text-slate-100 group-hover/link:text-indigo-400 transition-colors">
                                                         <?= htmlspecialchars($pTitle) ?>
                                                     </span>
                                                     <?php if ($isIndex): ?>
@@ -821,7 +1059,7 @@ $_SESSION['current_page'] = $currentPage;
                                                     </span>
                                                     <?php endif; ?>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </td>
                                         <td class="py-4 px-6 text-xs">
                                             <span class="font-mono text-slate-300 block"><?= htmlspecialchars($file) ?></span>
@@ -832,14 +1070,18 @@ $_SESSION['current_page'] = $currentPage;
                                         </td>
                                         <td class="py-4 px-6 text-right whitespace-nowrap">
                                             <div class="flex items-center justify-end gap-2">
-                                                <a href="index.php?lang=<?= $uiLang ?>&page=<?= urlencode($file) ?>&view=editor" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs inline-flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20">
-                                                    <i class="fa fa-edit"></i> Upravit
+                                                <a href="index.php?lang=<?= $uiLang ?>&page=<?= urlencode($file) ?>&view=editor" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center justify-center transition-all shadow-md shadow-indigo-600/20" title="Upravit stránku">
+                                                    <i class="fa fa-edit"></i>
                                                 </a>
-                                                <a href="<?= CMS::url($file) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center transition-all border border-white/5 hover:border-emerald-500/30" title="Zobrazit na webu">
+                                                <a href="<?= CMS::url($file) ?>" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center justify-center transition-all border border-white/5 hover:border-emerald-500/30" title="Zobrazit na webu">
                                                     <i class="fa fa-external-link"></i>
                                                 </a>
                                                 <?php if (!$isIndex): ?>
-                                                <button onclick="deletePage('<?= htmlspecialchars($file) ?>')" class="bg-red-950/30 hover:bg-red-600 text-red-300 hover:text-white font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center transition-all border border-red-500/20" title="Smazat stránku">
+                                                <button onclick="deletePage('<?= htmlspecialchars($file) ?>')" class="bg-red-950/30 hover:bg-red-600 text-red-300 hover:text-white font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center justify-center transition-all border border-red-500/20" title="Smazat stránku">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                                <?php else: ?>
+                                                <button disabled class="opacity-25 cursor-not-allowed bg-slate-800 text-slate-500 font-bold p-1.5 px-2.5 rounded-lg text-xs inline-flex items-center justify-center border border-white/5" title="Hlavní stránku (homepage) nelze smazat">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                                 <?php endif; ?>
@@ -1206,8 +1448,8 @@ $_SESSION['current_page'] = $currentPage;
             </div>
 
             <!-- File Preview Modal -->
-            <div id="fm-preview-modal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-4 backdrop-blur-sm">
-                <div class="bg-slate-900 w-full max-w-3xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col max-h-[90vh]">
+            <div id="fm-preview-modal" onclick="if (event.target === this) closeFmPreviewModal();" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-4 backdrop-blur-sm cursor-pointer">
+                <div class="bg-slate-900 w-full max-w-3xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden flex flex-col max-h-[90vh] cursor-default" onclick="event.stopPropagation();">
                     <div class="p-4 border-b border-white/10 flex justify-between items-center bg-slate-950/50">
                         <h3 id="fm-preview-title" class="font-bold text-white text-sm truncate pr-4">Náhled souboru</h3>
                         <button onclick="closeFmPreviewModal()" class="text-slate-400 hover:text-white w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5 transition-all"><i class="fa fa-times"></i></button>
@@ -1611,10 +1853,19 @@ $_SESSION['current_page'] = $currentPage;
             const filesPage = document.getElementById('files-page-wrapper');
             const pluginsPage = document.getElementById('plugins-page-wrapper');
             const themesPage = document.getElementById('themes-page-wrapper');
+            const editorHeader = document.getElementById('editor-header') || document.querySelector('header');
             const headerPageControls = document.querySelector('header .flex.items-center.gap-4');
             const headerPageSettingsBtn = document.querySelector('header button[onclick="openPageSettings()"]');
             const headerSaveBtn = document.getElementById('save-btn');
             const headerStatusMsg = document.getElementById('status-msg');
+            
+            if (editorHeader) {
+                if (view === 'editor') {
+                    editorHeader.classList.remove('hidden');
+                } else {
+                    editorHeader.classList.add('hidden');
+                }
+            }
             
             [pagesBtn, editorBtn, settingsBtn, filesBtn, pluginsBtn, contractsBtn, themesBtn].forEach(btn => {
                 if (!btn) return;
@@ -2957,6 +3208,8 @@ if ($sent) {
         function closeFmPreviewModal() {
             document.getElementById('fm-preview-modal')?.classList.add('hidden');
         }
+        window.closeFmPreviewModal = closeFmPreviewModal;
+        window.openFmPreviewModal = openFmPreviewModal;
 
         window.switchSettingsTab = function switchSettingsTab(tabId) {
             ['general', 'contacts', 'addresses', 'domain', 'cache', 'updates'].forEach(id => {
@@ -3873,12 +4126,55 @@ if ($sent) {
             showToast('Obrázek vybrán z galerie.', 'success');
         }
 
-        // Close gallery on Escape
+        // Universal Escape key modal closer
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                const fmModal = document.getElementById('fm-preview-modal');
+                if (fmModal && !fmModal.classList.contains('hidden')) {
+                    closeFmPreviewModal();
+                    return;
+                }
                 const gallery = document.getElementById('trip-gallery-modal');
                 if (gallery && !gallery.classList.contains('hidden')) {
                     closeTripImageGallery();
+                    return;
+                }
+                const tripModal = document.getElementById('trip-tip-modal');
+                if (tripModal && !tripModal.classList.contains('hidden')) {
+                    closeTripTipModal();
+                    return;
+                }
+                const confirmModal = document.getElementById('confirm-modal');
+                if (confirmModal && !confirmModal.classList.contains('hidden')) {
+                    closeConfirmModal();
+                    return;
+                }
+                const settingsModal = document.getElementById('settings-modal');
+                if (settingsModal && !settingsModal.classList.contains('hidden')) {
+                    closePageSettings();
+                    return;
+                }
+                const newPageModal = document.getElementById('new-page-modal');
+                if (newPageModal && !newPageModal.classList.contains('hidden')) {
+                    closeNewPageModal();
+                    return;
+                }
+                const contractModal = document.getElementById('contract-modal');
+                if (contractModal && !contractModal.classList.contains('hidden')) {
+                    closeContractModal();
+                    return;
+                }
+                const pluginHelp = document.getElementById('plugin-help-modal');
+                if (pluginHelp && !pluginHelp.classList.contains('hidden')) {
+                    pluginHelp.classList.add('hidden');
+                    return;
+                }
+                if (typeof closeBookingSyncModal === 'function') {
+                    const bsModal = document.getElementById('booking-sync-modal');
+                    if (bsModal && !bsModal.classList.contains('hidden')) {
+                        closeBookingSyncModal();
+                        return;
+                    }
                 }
             }
         });

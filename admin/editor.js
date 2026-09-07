@@ -28,6 +28,13 @@ const editor = grapesjs.init({
         detectLocale: false,
         messages: {
             cs: {
+                assetManager: {
+                    addButton: 'Přidat z URL',
+                    inputPlh: 'Zadejte URL adresu obrázku...',
+                    modalTitle: 'Výběr a nahrání obrázku',
+                    uploadTitle: 'Přetáhněte soubory sem nebo klikněte pro nahrání z počítače',
+                    deleteTitle: 'Smazat obrázek'
+                },
                 blockManager: {
                     labels: { 'Sekce': 'Sekce a Rozvržení', 'Obsah': 'Základní prvky' },
                     categories: { 'Sekce': 'Sekce', 'Prvky': 'Základní prvky' }
@@ -1013,6 +1020,53 @@ editor.on('modal:open', () => {
                 handleUploadFiles(dt.files);
             }
         }, false);
+    }
+
+    // Asset Manager Enhancements: Czech Labels & Live Search Filter
+    const amAssetsCont = modalContainer ? modalContainer.querySelector('.gjs-am-assets-cont') : null;
+    if (amAssetsCont) {
+        const modalTitle = modalHeader ? modalHeader.querySelector('.gjs-mdl-title') : null;
+        if (modalTitle && (modalTitle.innerText.includes('SELECT IMAGE') || modalTitle.innerText.includes('Select Image') || modalTitle.innerText.includes('Vybrat obrázek'))) {
+            modalTitle.innerHTML = '<i class="fa fa-picture-o text-indigo-400 mr-2"></i> Výběr a nahrání obrázku';
+        }
+
+        const amTitle = modalContainer.querySelector('#gjs-am-title');
+        if (amTitle && (amTitle.innerText.includes('Drop files') || amTitle.innerText.includes('click to upload'))) {
+            amTitle.innerText = 'Přetáhněte obrázky sem nebo klikněte pro nahrání z počítače';
+        }
+
+        const urlInput = modalContainer.querySelector('.gjs-am-add-field input');
+        if (urlInput && (!urlInput.placeholder || urlInput.placeholder.includes('http://path'))) {
+            urlInput.placeholder = 'Zadejte URL adresu obrázku...';
+        }
+        const addBtn = modalContainer.querySelector('.gjs-am-add-asset button');
+        if (addBtn && (addBtn.innerText === 'Add image' || addBtn.innerText === 'Add Image')) {
+            addBtn.innerHTML = '<i class="fa fa-link mr-1"></i> Přidat z URL';
+        }
+
+        const headerCont = modalContainer.querySelector('.gjs-am-assets-header');
+        if (headerCont && !modalContainer.querySelector('#gjs-am-search-input')) {
+            const searchWrap = document.createElement('div');
+            searchWrap.className = 'gjs-am-search-wrapper';
+            searchWrap.innerHTML = `
+                <div style="position: relative; width: 100%;">
+                    <i class="fa fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 11px; pointer-events: none;"></i>
+                    <input type="text" id="gjs-am-search-input" placeholder="Hledat v knihovně obrázků..." 
+                        style="width: 100%; background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 7px 12px 7px 28px; color: #f1f5f9; font-size: 12px; outline: none;">
+                </div>
+            `;
+            headerCont.insertBefore(searchWrap, headerCont.firstChild);
+
+            const searchInput = searchWrap.querySelector('#gjs-am-search-input');
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                const cards = modalContainer.querySelectorAll('.gjs-am-asset');
+                cards.forEach(card => {
+                    const text = (card.querySelector('.gjs-am-name')?.innerText || card.innerText || '').toLowerCase();
+                    card.style.display = (!query || text.includes(query)) ? '' : 'none';
+                });
+            });
+        }
     }
 });
 
