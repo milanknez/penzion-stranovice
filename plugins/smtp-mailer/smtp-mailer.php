@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: SMTP Mailer & Override
+ * Plugin Name: SMTP Mailer
  * Description: Odesílá e-maily spolehlivě přes váš vlastní SMTP server (Seznam, Gmail, Webglobe atd.) místo nefunkční nativní mail() funkce.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Fida Software
  * Settings Modal: openSMTPModal()
- * Settings Button: Nastavení SMTP
+ * Settings Button: Nastavení a historie
  */
 
 if (!defined('ROOT_DIR')) {
@@ -75,6 +75,93 @@ class FidaSMTPMailer {
         @chmod($logFile, 0666);
     }
 
+    public static function recordEmailLog(string $to, string $subject, string $status, string $message): void {
+        $dataDir = __DIR__ . '/data';
+        if (!file_exists($dataDir)) {
+            @mkdir($dataDir, 0777, true);
+        }
+        $logFile = $dataDir . '/emails.json';
+        $list = [];
+        if (file_exists($logFile)) {
+            $json = @json_decode(@file_get_contents($logFile), true);
+            if (is_array($json)) {
+                $list = $json;
+            }
+        }
+
+        $newEntry = [
+            'id' => uniqid('mail_', true),
+            'datetime' => date('d.m.Y H:i:s'),
+            'timestamp' => time(),
+            'to' => $to,
+            'subject' => $subject,
+            'status' => $status, // 'success', 'error', 'native'
+            'message' => $message
+        ];
+
+        array_unshift($list, $newEntry);
+        $list = array_slice($list, 0, 100);
+
+        @file_put_contents($logFile, json_encode($list, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+        @chmod($logFile, 0666);
+    }
+
+    public static function getEmailHistory(int $limit = 50): array {
+        $logFile = __DIR__ . '/data/emails.json';
+        $items = [];
+        if (file_exists($logFile)) {
+            $json = @json_decode(@file_get_contents($logFile), true);
+            if (is_array($json)) {
+                $items = $json;
+            }
+        }
+
+        // Parse legacy smtp.log lines if emails.json is empty
+        if (empty($items)) {
+            $txtFile = __DIR__ . '/smtp.log';
+            if (file_exists($txtFile)) {
+                $lines = @file($txtFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                if ($lines) {
+                    foreach (array_reverse($lines) as $line) {
+                        if (preg_match('/^\[(.*?)\]\s+\[(.*?)\]\s+(.*)$/u', $line, $m)) {
+                            $dt = date('d.m.Y H:i:s', strtotime($m[1]) ?: time());
+                            $lvl = strtolower($m[2]);
+                            $text = $m[3];
+                            $to = '';
+                            $subject = '';
+                            if (preg_match('/odeslán na <(.*?)> \(Předmět:\s*(.*?)\)/u', $text, $subm)) {
+                                $to = $subm[1];
+                                $subject = $subm[2];
+                            } elseif (preg_match('/<([^>]+)>/u', $text, $subm)) {
+                                $to = $subm[1];
+                                $subject = 'Testovací e-mail';
+                            }
+                            $items[] = [
+                                'id' => md5($line),
+                                'datetime' => $dt,
+                                'timestamp' => strtotime($m[1]) ?: time(),
+                                'to' => $to ?: 'Nespecifikováno',
+                                'subject' => $subject ?: 'Zpráva',
+                                'status' => ($lvl === 'success' ? 'success' : ($lvl === 'warning' ? 'native' : 'error')),
+                                'message' => $text
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_slice($items, 0, $limit);
+    }
+
+    public static function clearEmailHistory(): bool {
+        $jsonFile = __DIR__ . '/data/emails.json';
+        if (file_exists($jsonFile)) @unlink($jsonFile);
+        $logFile = __DIR__ . '/smtp.log';
+        if (file_exists($logFile)) @file_put_contents($logFile, '');
+        return true;
+    }
+
     public static function getLogs(int $maxLines = 50): string {
         $logFile = __DIR__ . '/smtp.log';
         if (!file_exists($logFile)) {
@@ -90,7 +177,9 @@ class FidaSMTPMailer {
         $config = self::getSMTPConfig();
         if (empty($config['host'])) {
             self::log("SMTP Host není nastaven, používá se nativní mail()", "WARNING");
-            return @mail($to, $subject, $body, $headers);
+            $sent = @mail($to, $subject, $body, $headers);
+            self::recordEmailLog($to, $subject, $sent ? 'native' : 'error', $sent ? 'Odesláno přes nativní funkci mail()' : 'Nativní mail() selhal');
+            return $sent;
         }
 
         $host = trim($config['host']);
@@ -113,7 +202,9 @@ class FidaSMTPMailer {
 
         $socket = @stream_socket_client($socketHost . ':' . $port, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $context);
         if (!$socket) {
-            self::log("Spojení k {$socketHost}:{$port} selhalo: {$errstr} ({$errno})", "ERROR");
+            $msg = "Spojení k {$socketHost}:{$port} selhalo: {$errstr} ({$errno})";
+            self::log($msg, "ERROR");
+            self::recordEmailLog($to, $subject, 'error', $msg);
             return false;
         }
 
@@ -147,7 +238,9 @@ class FidaSMTPMailer {
             $authResp = $read();
             if (substr($authResp, 0, 3) != '235') {
                 @fclose($socket);
-                self::log("Autentizace pro uživatele {$username} selhala: " . trim($authResp), "ERROR");
+                $msg = "Autentizace pro uživatele {$username} selhala: " . trim($authResp);
+                self::log($msg, "ERROR");
+                self::recordEmailLog($to, $subject, 'error', $msg);
                 return false;
             }
         }
@@ -176,9 +269,12 @@ class FidaSMTPMailer {
 
         $success = (substr($res, 0, 3) == '250');
         if ($success) {
-            self::log("E-mail úspešně odeslán na <{$to}> (Předmět: {$subject})", "SUCCESS");
+            self::log("E-mail úspěšně odeslán na <{$to}> (Předmět: {$subject})", "SUCCESS");
+            self::recordEmailLog($to, $subject, 'success', trim($res) ?: '250 OK');
         } else {
-            self::log("Odeslání e-mailu na <{$to}> selhalo. Odpověď serveru: " . trim($res), "ERROR");
+            $msg = "Odeslání e-mailu na <{$to}> selhalo. Odpověď serveru: " . trim($res);
+            self::log($msg, "ERROR");
+            self::recordEmailLog($to, $subject, 'error', trim($res) ?: 'Chyba při odesílání');
         }
 
         return $success;
@@ -309,6 +405,23 @@ class FidaSMTPMailer {
             case 'get_smtp_config':
                 return ['status' => 'success', 'config' => self::getSMTPConfig()];
 
+            case 'get_smtp_log':
+                return ['status' => 'success', 'log' => self::getLogs(60)];
+
+            case 'get_email_history':
+                $history = self::getEmailHistory(50);
+                return [
+                    'status' => 'success',
+                    'emails' => $history,
+                    'total' => count($history),
+                    'success_count' => count(array_filter($history, fn($e) => ($e['status'] ?? '') === 'success')),
+                    'error_count' => count(array_filter($history, fn($e) => ($e['status'] ?? '') === 'error'))
+                ];
+
+            case 'clear_smtp_log':
+                self::clearEmailHistory();
+                return ['status' => 'success', 'message' => 'Historie e-mailů a log byly úspěšně promazány.'];
+
             case 'save_smtp_config':
                 $raw = file_get_contents('php://input');
                 $data = json_decode($raw, true);
@@ -344,5 +457,18 @@ class FidaSMTPMailer {
         }
 
         return null;
+    }
+}
+
+// Global convenience wrappers provided by SMTP Mailer plugin
+if (!function_exists('fida_mail')) {
+    function fida_mail(string $to, string $subject, string $body, $headers = ''): bool {
+        return FidaSMTPMailer::sendMail($to, $subject, $body, $headers);
+    }
+}
+
+if (!function_exists('sendMail')) {
+    function sendMail(string $to, string $subject, string $body, $headers = ''): bool {
+        return FidaSMTPMailer::sendMail($to, $subject, $body, $headers);
     }
 }

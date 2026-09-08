@@ -1,0 +1,11 @@
+[
+    {
+        "id": "mail_6aa06d234929f7.53777508",
+        "datetime": "08.09.2026 20:16:35",
+        "timestamp": 1788898595,
+        "to": "test@example.com",
+        "subject": "Ověření rezervačního systému",
+        "status": "success",
+        "message": "250 2.0.0 Ok: queued as 4X8sdf90"
+    }
+]

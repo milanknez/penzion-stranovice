@@ -75,69 +75,6 @@ class PluginManager {
         }
     }
 
-    private function handleGetSMTPConfig(): array {
-        $pluginFile = $this->pluginsDir . 'smtp-mailer/smtp-mailer.php';
-        if (file_exists($pluginFile)) {
-            require_once $pluginFile;
-            if (class_exists('FidaSMTPMailer')) {
-                return ['status' => 'success', 'config' => FidaSMTPMailer::getSMTPConfig()];
-            }
-        }
-        return ['status' => 'error', 'message' => 'Plugin SMTP Mailer není k dispozici.'];
-    }
-
-    private function handleSaveSMTPConfig(): array {
-        $pluginFile = $this->pluginsDir . 'smtp-mailer/smtp-mailer.php';
-        if (!file_exists($pluginFile)) {
-            return ['status' => 'error', 'message' => 'Plugin SMTP Mailer není k dispozici.'];
-        }
-        require_once $pluginFile;
-        $raw = file_get_contents('php://input');
-        $data = json_decode($raw, true);
-
-        if (!$data || !is_array($data)) {
-            return ['status' => 'error', 'message' => 'Neplatná data.'];
-        }
-
-        if (class_exists('FidaSMTPMailer')) {
-            FidaSMTPMailer::saveSMTPConfig($data);
-            CMS::gitCommit("Update SMTP configuration");
-            return ['status' => 'success', 'message' => 'Nastavení SMTP bylo úspěšně uloženo.'];
-        }
-
-        return ['status' => 'error', 'message' => 'Chyba při ukládání nastavení SMTP.'];
-    }
-
-    private function handleTestSMTP(): array {
-        $pluginFile = $this->pluginsDir . 'smtp-mailer/smtp-mailer.php';
-        if (!file_exists($pluginFile)) {
-            return ['status' => 'error', 'message' => 'Plugin SMTP Mailer není nainstalován.'];
-        }
-        require_once $pluginFile;
-        $raw = file_get_contents('php://input');
-        $data = json_decode($raw, true);
-        $testEmail = $data['test_email'] ?? '';
-
-        if (empty($testEmail)) {
-            $siteConfig = CMS::getSiteConfig();
-            $testEmail = $siteConfig['email'] ?? 'test@example.com';
-        }
-
-        if (class_exists('FidaSMTPMailer')) {
-            $subject = "Testovací e-mail SMTP | " . date('d.m.Y H:i:s');
-            $body = "Dobrý den,\n\ntoto je testovací e-mail pro ověření funkčnosti vášho SMTP serveru ve Fida CMS.\n\nSpojení přes SMTP proběhlo úspěšně!\n\nDatum: " . date('d.m.Y H:i:s');
-            $sent = FidaSMTPMailer::sendMail($testEmail, $subject, $body);
-
-            if ($sent) {
-                return ['status' => 'success', 'message' => "Testovací e-mail byl úspěšně odeslán na adresu $testEmail."];
-            } else {
-                return ['status' => 'error', 'message' => "Nepodařilo se odeslat testovací e-mail přes SMTP. Zkontrolujte přihlašovací údaje, port a šifrování."];
-            }
-        }
-
-        return ['status' => 'error', 'message' => 'SMTP Mailer není dostupný.'];
-    }
-
     /**
      * Get list of active plugin IDs from config.
      */

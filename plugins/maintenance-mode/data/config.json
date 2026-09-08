@@ -1,0 +1,20 @@
+{
+    "is_enabled": false,
+    "http_status": 503,
+    "badge_text": "Plánovaná odstávka",
+    "page_title": "Statek Straňovice – Údržba",
+    "heading": "Vylepšujeme pro vás Statek Straňovice",
+    "description": "Právě provádíme plánované technické úpravy a přípravu nových funkcí rezervačního systému. Již velmi brzy budeme zpět. Děkujeme za vaši trpělivost!",
+    "show_countdown": false,
+    "target_datetime": "2026-09-12T20:00",
+    "auto_disable": false,
+    "whitelist_ips": [],
+    "bypass_token": "tajny_klic_123",
+    "show_phone": true,
+    "phone": "+420 737 887 985",
+    "show_email": false,
+    "email": "info@statekstranovice.cz",
+    "show_address": true,
+    "address": "Straňovice 1, 387 01 Malenice",
+    "custom_css": ""
+}
