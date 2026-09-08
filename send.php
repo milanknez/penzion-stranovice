@@ -1,68 +1,119 @@
 <?php
 /**
  * Frontend Contact & Reservation Form Handler
- * Protected by Spam filter plugin
+ * Object-Oriented implementation protected by Spam filter plugin
  */
 
-header('Content-Type: application/json; charset=utf-8');
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Povoleny jsou pouze POST požadavky.']);
-    exit;
-}
-
 require_once __DIR__ . '/admin/includes/CMS.php';
-CMS::loadActivePlugins();
 
-// 1. Antispam verification (if Spam filter plugin is active)
-if (class_exists('SpamFilterPlugin')) {
-    $verifyResult = SpamFilterPlugin::verifySubmission($_POST);
-    if (empty($verifyResult['success'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => $verifyResult['message'] ?? 'Bezpečnostní ověření formuláře selhalo.'
-        ]);
-        exit;
+class ContactFormHandler {
+    private array $data;
+    private array $siteConfig;
+    private string $siteName;
+    private string $recipient;
+
+    public function __construct(?array $postData = null) {
+        $this->data = $postData ?? $_POST;
+        CMS::loadActivePlugins();
+        $this->siteConfig = CMS::getSiteConfig();
+        $this->siteName = $this->siteConfig['site_name'] ?? 'Statek Straňovice';
+        $this->recipient = $this->resolveRecipient();
     }
-}
 
-// 2. Validate required fields
-$name = trim($_POST['jmeno'] ?? $_POST['name'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$phone = trim($_POST['telefon'] ?? $_POST['phone'] ?? '');
-$room = trim($_POST['room'] ?? '');
-$arrival = trim($_POST['prijezd'] ?? '');
-$departure = trim($_POST['odjezd'] ?? '');
-$guests = trim($_POST['pocet_hostu'] ?? '');
-$message = trim($_POST['zprava'] ?? $_POST['message'] ?? '');
+    /**
+     * Main execution pipeline.
+     */
+    public function handle(): void {
+        $this->setHeaders();
+        $this->validateRequestMethod();
+        $this->verifyAntispam();
+        $this->validateInput();
+        $this->dispatchEmail();
+    }
 
-if (empty($name)) {
-    echo json_encode(['success' => false, 'message' => 'Prosím vyplňte vaše jméno a příjmení.']);
-    exit;
-}
+    /**
+     * Set JSON response header.
+     */
+    private function setHeaders(): void {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+    }
 
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Prosím zadejte platnou e-mailovou adresu.']);
-    exit;
-}
+    /**
+     * Ensure only POST requests are processed.
+     */
+    private function validateRequestMethod(): void {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+            $this->respond(false, 'Povoleny jsou pouze POST požadavky.', 405);
+        }
+    }
 
-// 3. Resolve recipient email from site configuration
-$siteConfig = CMS::getSiteConfig();
-$recipient = $siteConfig['contact_form_recipient'] ?? $siteConfig['email'] ?? 'info@statekstranovice.cz';
-if (empty($recipient)) {
-    $recipient = 'info@statekstranovice.cz';
-}
+    /**
+     * Verify Spam filter protection if plugin is installed and active.
+     */
+    private function verifyAntispam(): void {
+        if (class_exists('SpamFilterPlugin')) {
+            $verifyResult = SpamFilterPlugin::verifySubmission($this->data);
+            if (empty($verifyResult['success'])) {
+                $this->respond(false, $verifyResult['message'] ?? 'Bezpečnostní ověření formuláře selhalo.', 400);
+            }
+        }
+    }
 
-$siteName = $siteConfig['site_name'] ?? 'Statek Straňovice';
+    /**
+     * Validate mandatory user fields.
+     */
+    private function validateInput(): void {
+        $name = trim($this->data['jmeno'] ?? $this->data['name'] ?? '');
+        $email = trim($this->data['email'] ?? '');
 
-// 4. Construct email subject and content
-$isReservation = !empty($room) || !empty($arrival);
-$subject = $isReservation 
-    ? "Nová rezervace: " . ($room ? $room : "Penzion") . " – " . $name
-    : "Nová zpráva z webu " . $siteName . " – " . $name;
+        if (empty($name)) {
+            $this->respond(false, 'Prosím vyplňte vaše jméno a příjmení.', 422);
+        }
 
-$htmlContent = '
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->respond(false, 'Prosím zadejte platnou e-mailovou adresu.', 422);
+        }
+    }
+
+    /**
+     * Resolve target recipient email from site configuration.
+     */
+    private function resolveRecipient(): string {
+        $rec = $this->siteConfig['contact_form_recipient'] ?? $this->siteConfig['email'] ?? 'info@statekstranovice.cz';
+        return !empty($rec) ? $rec : 'info@statekstranovice.cz';
+    }
+
+    /**
+     * Build appropriate subject line based on inquiry type.
+     */
+    private function buildSubject(): string {
+        $name = trim($this->data['jmeno'] ?? $this->data['name'] ?? '');
+        $room = trim($this->data['room'] ?? '');
+        $arrival = trim($this->data['prijezd'] ?? '');
+
+        $isReservation = !empty($room) || !empty($arrival);
+        return $isReservation 
+            ? "Nová rezervace: " . ($room ?: "Penzion") . " – " . $name
+            : "Nová zpráva z webu " . $this->siteName . " – " . $name;
+    }
+
+    /**
+     * Build responsive HTML email template.
+     */
+    private function buildHtmlContent(string $subject): string {
+        $name = trim($this->data['jmeno'] ?? $this->data['name'] ?? '');
+        $email = trim($this->data['email'] ?? '');
+        $phone = trim($this->data['telefon'] ?? $this->data['phone'] ?? '');
+        $room = trim($this->data['room'] ?? '');
+        $arrival = trim($this->data['prijezd'] ?? '');
+        $departure = trim($this->data['odjezd'] ?? '');
+        $guests = trim($this->data['pocet_hostu'] ?? '');
+        $message = trim($this->data['zprava'] ?? $this->data['message'] ?? '');
+        $isReservation = !empty($room) || !empty($arrival);
+
+        $html = '
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,7 +123,7 @@ $htmlContent = '
 <body style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; background-color: #f8fafc; color: #1e293b; padding: 24px 12px; margin: 0;">
     <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <div style="background: #1e293b; padding: 24px; text-align: center; border-bottom: 3px solid #c99e66;">
-            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-family: \'Libre Baskerville\', Georgia, serif;">' . htmlspecialchars($siteName) . '</h1>
+            <h1 style="color: #ffffff; font-size: 20px; margin: 0; font-family: \'Libre Baskerville\', Georgia, serif;">' . htmlspecialchars($this->siteName) . '</h1>
             <p style="color: #c99e66; font-size: 13px; margin: 6px 0 0 0; font-weight: 600;">' . ($isReservation ? 'Nová poptávka rezervace apartmánu' : 'Nová zpráva z kontaktního formuláře') . '</p>
         </div>
         <div style="padding: 24px;">
@@ -86,47 +137,47 @@ $htmlContent = '
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a;"><a href="mailto:' . htmlspecialchars($email) . '" style="color: #2563eb; text-decoration: none;">' . htmlspecialchars($email) . '</a></td>
                 </tr>';
 
-if (!empty($phone)) {
-    $htmlContent .= '
+        if (!empty($phone)) {
+            $html .= '
                 <tr>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;"><strong>Telefon:</strong></td>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a;"><a href="tel:' . htmlspecialchars($phone) . '" style="color: #2563eb; text-decoration: none;">' . htmlspecialchars($phone) . '</a></td>
                 </tr>';
-}
+        }
 
-if (!empty($room)) {
-    $htmlContent .= '
+        if (!empty($room)) {
+            $html .= '
                 <tr>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;"><strong>Apartmán:</strong></td>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #b45309; font-weight: 700;">' . htmlspecialchars($room) . '</td>
                 </tr>';
-}
+        }
 
-if (!empty($arrival) || !empty($departure)) {
-    $htmlContent .= '
+        if (!empty($arrival) || !empty($departure)) {
+            $html .= '
                 <tr>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;"><strong>Termín pobytu:</strong></td>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a;">' . htmlspecialchars($arrival) . ' &rarr; ' . htmlspecialchars($departure) . '</td>
                 </tr>';
-}
+        }
 
-if (!empty($guests)) {
-    $htmlContent .= '
+        if (!empty($guests)) {
+            $html .= '
                 <tr>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #64748b;"><strong>Počet hostů:</strong></td>
                     <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #0f172a;">' . htmlspecialchars($guests) . '</td>
                 </tr>';
-}
+        }
 
-if (!empty($message)) {
-    $htmlContent .= '
+        if (!empty($message)) {
+            $html .= '
                 <tr>
                     <td style="padding: 12px 0 6px 0; color: #64748b; vertical-align: top;"><strong>Zpráva / poznámka:</strong></td>
                     <td style="padding: 12px 0 6px 0; color: #0f172a; white-space: pre-line; line-height: 1.5;">' . nl2br(htmlspecialchars($message)) . '</td>
                 </tr>';
-}
+        }
 
-$htmlContent .= '
+        $html .= '
             </table>
         </div>
         <div style="background: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between;">
@@ -137,26 +188,58 @@ $htmlContent .= '
 </body>
 </html>';
 
-$headers = [
-    'MIME-Version: 1.0',
-    'Content-Type: text/html; charset=UTF-8',
-    'From: ' . $siteName . ' <' . ($siteConfig['email'] ?? 'noreply@statekstranovice.cz') . '>',
-    'Reply-To: ' . $name . ' <' . $email . '>',
-    'X-Mailer: Statek Stranovice CMS'
-];
+        return $html;
+    }
 
-// 5. Send mail via CMS
-$sent = CMS::sendMail($recipient, $subject, $htmlContent, implode("\r\n", $headers));
+    /**
+     * Build standard email headers.
+     */
+    private function buildHeaders(): array {
+        $name = trim($this->data['jmeno'] ?? $this->data['name'] ?? '');
+        $email = trim($this->data['email'] ?? '');
+        $fromEmail = $this->siteConfig['email'] ?? 'noreply@statekstranovice.cz';
 
-if ($sent) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Děkujeme! Vaše poptávka byla v pořádku odeslána. Brzy se vám ozveme.'
-    ]);
-} else {
-    // If sending failed, provide informative response
-    echo json_encode([
-        'success' => false,
-        'message' => 'Zprávu se nepodařilo odeslat. Zkontrolujte prosím konfiguraci e-mailového serveru nebo nás kontaktujte telefonicky.'
-    ]);
+        return [
+            'MIME-Version: 1.0',
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . $this->siteName . ' <' . $fromEmail . '>',
+            'Reply-To: ' . $name . ' <' . $email . '>',
+            'X-Mailer: Statek Stranovice CMS (OOP FormHandler)'
+        ];
+    }
+
+    /**
+     * Send email via CMS mailer abstraction.
+     */
+    private function dispatchEmail(): void {
+        $subject = $this->buildSubject();
+        $html = $this->buildHtmlContent($subject);
+        $headers = $this->buildHeaders();
+
+        $sent = CMS::sendMail($this->recipient, $subject, $html, implode("\r\n", $headers));
+
+        if ($sent) {
+            $this->respond(true, 'Děkujeme! Vaše poptávka byla v pořádku odeslána. Brzy se vám ozveme.');
+        } else {
+            $this->respond(false, 'Zprávu se nepodařilo odeslat. Zkontrolujte prosím konfiguraci e-mailového serveru nebo nás kontaktujte telefonicky.', 500);
+        }
+    }
+
+    /**
+     * Emit standardized JSON response.
+     */
+    private function respond(bool $success, string $message, int $statusCode = 200): void {
+        if (!headers_sent()) {
+            http_response_code($statusCode);
+        }
+        echo json_encode([
+            'success' => $success,
+            'message' => $message
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }
+
+// Instantiate and handle incoming request
+$formHandler = new ContactFormHandler();
+$formHandler->handle();
