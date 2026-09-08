@@ -151,9 +151,9 @@ if (!class_exists('SpamFilterPlugin')) {
                         return $matches[0];
                     }
 
-                    // Ensure form targets send.php via POST
+                    // Ensure form targets api/send.php via POST
                     if (stripos($formOpen, 'action=') === false) {
-                        $formOpen = preg_replace('/>$/', ' action="send.php" method="POST">', $formOpen);
+                        $formOpen = preg_replace('/>$/', ' action="api/send.php" method="POST">', $formOpen);
                     }
 
                     // Insert captcha right before submit button
@@ -436,7 +436,7 @@ if (!class_exists('SpamFilterPlugin')) {
 
         /**
          * Main submission verifier.
-         * Call this from send.php before processing an email.
+         * Call this from api/send.php before processing an email.
          *
          * @param array $post Submitted $_POST data
          * @return array ['success' => bool, 'message' => string]

@@ -372,7 +372,7 @@ class FidaSMTPMailer {
                 <h4 class="text-sm font-bold text-indigo-300 mb-1 flex items-center gap-2">
                     <i class="fa fa-rocket"></i> 1. Odesílání e-mailů přes CMS::sendMail
                 </h4>
-                <p class="text-slate-300 mb-2">V jakémkoliv PHP skriptu webu (např. ve formuláři <code class="text-indigo-300 font-mono">send.php</code>) jednoduše zavolejte statickou metodu CMS:</p>
+                <p class="text-slate-300 mb-2">V jakémkoliv PHP skriptu webu (např. ve formuláři <code class="text-indigo-300 font-mono">api/send.php</code>) jednoduše zavolejte statickou metodu CMS:</p>
                 <pre class="bg-slate-950 p-3 rounded-lg border border-white/10 font-mono text-[11px] text-emerald-400 overflow-x-auto">CMS::sendMail($to, $subject, $body, $headers);</pre>
                 <p class="text-[11px] text-slate-400 mt-2">Pokud je plugin SMTP Mailer <strong>aktivní</strong>, e-mail proběhne přes nastavený SMTP server. Není třeba načítat PHPMailer ani nastavovat přihlašovací údaje přímo v kódu formuláře.</p>
             </div>

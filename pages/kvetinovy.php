@@ -180,7 +180,7 @@ CMS::getHeader();
                     </div>
                 </div>
                 <div class="contact-form-wrapper reveal-up">
-                    <form class="contact-form" action="send.php" method="POST">
+                    <form class="contact-form" action="api/send.php" method="POST">
                         <input type="hidden" name="room" value="Květinový apartmán">
                         <div class="form-row">
                             <div class="form-group"><label>Příjezd</label><input type="date" name="prijezd" required></div>

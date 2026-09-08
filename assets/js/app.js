@@ -1320,7 +1320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(form);
 
-            fetch('send.php', {
+            fetch('api/send.php', {
                 method: 'POST',
                 body: formData
             })

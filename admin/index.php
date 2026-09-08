@@ -97,8 +97,14 @@ if (empty($initialBodyClass) || $initialBodyClass === 'bg-slate-900 text-slate-1
     $initialBodyClass = $activeThemeBodyClass;
 }
 
+// Extract any <style> tags outside body (e.g. saved GrapesJS CSS rules)
+$savedStyles = '';
+if (preg_match_all('/<style[^>]*>[\s\S]*?<\/style>/i', $content, $styleMatches)) {
+    $savedStyles = implode("\n", $styleMatches[0]) . "\n";
+}
+
 if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $content, $bodyMatches)) {
-    $content = $bodyMatches[1];
+    $content = $savedStyles . $bodyMatches[1];
 } else {
     $content = preg_replace('/^[\s\S]*?<head>[\s\S]*?<\/head>/i', '', $content);
     $content = preg_replace('/<!DOCTYPE[^>]*>/i', '', $content);
@@ -1018,25 +1024,43 @@ $_SESSION['current_page'] = $currentPage;
             </div>
 
             <!-- Settings Page -->
-            <div id="settings-page-wrapper" class="hidden flex-1 h-full bg-slate-950 overflow-y-auto p-12 text-slate-200">
-                <div class="max-w-4xl mx-auto">
-                    <div class="mb-8">
+            <div id="settings-page-wrapper" class="hidden flex-1 h-full bg-slate-950 overflow-y-auto p-8 lg:p-12 text-slate-200">
+                <div class="max-w-6xl mx-auto">
+                    <div class="mb-8 border-b border-white/5 pb-6">
                         <h1 class="text-3xl font-black text-white uppercase tracking-tight">Globální nastavení webu</h1>
                         <p class="text-slate-400 text-sm mt-1">Upravte kontaktní údaje, měřicí kódy a chybové stránky pro celý web.</p>
                     </div>
 
-                    <div class="flex gap-2 border-b border-white/5 mb-8 pb-px">
-                        <button onclick="switchSettingsTab('general')" id="btn-tab-general" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-500 text-white transition-all">Obecné</button>
-                        <button onclick="switchSettingsTab('contacts')" id="btn-tab-contacts" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Kontakty</button>
-                        <button onclick="switchSettingsTab('addresses')" id="btn-tab-addresses" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Adresy</button>
-                        <button onclick="switchSettingsTab('domain')" id="btn-tab-domain" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Doména & HTTPS</button>
-                        <button onclick="switchSettingsTab('cache')" id="btn-tab-cache" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Cache & Rychlost</button>
-                        <button onclick="switchSettingsTab('security')" id="btn-tab-security" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Heslo & Bezpečnost</button>
-                        <button onclick="switchSettingsTab('updates')" id="btn-tab-updates" class="settings-tab-btn px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white transition-all">Aktualizace</button>
-                    </div>
+                    <!-- 2-sloupcový layout: Vertikální panel záložek vlevo + obsah vpravo -->
+                    <div class="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 items-start">
+                        <!-- Vertikální navigační panel -->
+                        <div class="bg-slate-900 border border-white/5 rounded-2xl p-2.5 shadow-xl space-y-1.5 md:sticky md:top-6">
+                            <button onclick="switchSettingsTab('general')" id="btn-tab-general" class="settings-tab-btn w-full px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-3 text-left bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                                <i class="fa fa-sliders w-4 text-center"></i>
+                                <span>Obecné</span>
+                            </button>
 
-                    <div class="space-y-8">
-                        <div id="content-tab-general" class="space-y-6">
+                            <button onclick="switchSettingsTab('domain')" id="btn-tab-domain" class="settings-tab-btn w-full px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-3 text-left text-slate-400 hover:text-white hover:bg-white/5">
+                                <i class="fa fa-lock w-4 text-center"></i>
+                                <span>Doména a HTTPS</span>
+                            </button>
+                            <button onclick="switchSettingsTab('cache')" id="btn-tab-cache" class="settings-tab-btn w-full px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-3 text-left text-slate-400 hover:text-white hover:bg-white/5">
+                                <i class="fa fa-flash w-4 text-center"></i>
+                                <span>Cache a Rychlost</span>
+                            </button>
+                            <button onclick="switchSettingsTab('security')" id="btn-tab-security" class="settings-tab-btn w-full px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-3 text-left text-slate-400 hover:text-white hover:bg-white/5">
+                                <i class="fa fa-key w-4 text-center"></i>
+                                <span>Heslo a Bezpečnost</span>
+                            </button>
+                            <button onclick="switchSettingsTab('updates')" id="btn-tab-updates" class="settings-tab-btn w-full px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-3 text-left text-slate-400 hover:text-white hover:bg-white/5">
+                                <i class="fa fa-cloud-download w-4 text-center"></i>
+                                <span>Aktualizace</span>
+                            </button>
+                        </div>
+
+                        <!-- Pravý blok s obsahem záložek -->
+                        <div class="space-y-8 min-w-0">
+                            <div id="content-tab-general" class="space-y-6">
                             <div class="bg-slate-900 border border-white/5 rounded-2xl p-6 shadow-xl space-y-5">
                                 <h2 class="text-lg font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
                                     <i class="fa fa-info-circle text-indigo-400"></i> Obecné informace
@@ -1071,47 +1095,10 @@ $_SESSION['current_page'] = $currentPage;
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div id="content-tab-contacts" class="hidden space-y-6">
-                            <div class="bg-slate-900 border border-white/5 rounded-2xl p-6 shadow-xl space-y-5">
-                                <h2 class="text-lg font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
-                                    <i class="fa fa-phone text-indigo-400"></i> Kontaktní údaje
-                                </h2>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Dispečink nonstop (telefon)</label>
-                                    <input type="text" id="site-phone-nonstop" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Pevná linka / Kancelář</label>
-                                    <input type="text" id="site-phone-landline" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Kontaktní E-mail</label>
-                                    <input type="email" id="site-email" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Příjemce zpráv z formulářů</label>
-                                    <input type="email" id="site-contact-form-recipient" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="content-tab-addresses" class="hidden space-y-6">
-                            <div class="bg-slate-900 border border-white/5 rounded-2xl p-6 shadow-xl space-y-5">
-                                <h2 class="text-lg font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
-                                    <i class="fa fa-map-marker text-indigo-400"></i> Adresy a provozovny
-                                </h2>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Sídlo firmy (adresa, lze HTML)</label>
-                                        <textarea id="site-address-headquarters" rows="5" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm font-mono transition-all"></textarea>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Výjezdové stanoviště (adresa, lze HTML)</label>
-                                        <textarea id="site-address-dispatch" rows="5" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm font-mono transition-all"></textarea>
-                                    </div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">E-mail pro příjem zpráv z formulářů</label>
+                                    <input type="email" id="site-contact-form-recipient" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all placeholder-slate-700" placeholder="info@statekstranovice.cz">
+                                    <p class="text-[11px] text-slate-500 mt-1">Na tuto adresu budou odesílány vyplněné formuláře z webu.</p>
                                 </div>
                             </div>
                         </div>
@@ -1119,7 +1106,7 @@ $_SESSION['current_page'] = $currentPage;
                         <div id="content-tab-domain" class="hidden space-y-6">
                             <div class="bg-slate-900 border border-white/5 rounded-2xl p-6 shadow-xl space-y-6">
                                 <h2 class="text-lg font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
-                                    <i class="fa fa-lock text-indigo-400"></i> HTTPS &amp; Přesměrování Domény
+                                    <i class="fa fa-lock text-indigo-400"></i> HTTPS a Přesměrování Domény
                                 </h2>
                                 
                                 <div class="flex items-start justify-between gap-4">
@@ -1199,7 +1186,7 @@ $_SESSION['current_page'] = $currentPage;
                                         <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Potvrzení nového hesla</label>
                                         <input type="password" id="pass-confirm" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm transition-all placeholder-slate-700" placeholder="Zopakujte nové heslo">
                                     </div>
-                                    <button onclick="submitChangePassword()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg text-xs uppercase tracking-wider transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2">
+                                    <button onclick="submitChangePassword()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg text-xs uppercase tracking-wider whitespace-nowrap transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2">
                                         <i class="fa fa-save"></i> Změnit heslo
                                     </button>
                                 </div>
@@ -1237,7 +1224,7 @@ $_SESSION['current_page'] = $currentPage;
                                         <p class="text-xs text-slate-500 mt-1.5">Oficiální repozitář se systémovými aktualizacemi Fida CMS.</p>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button onclick="saveCmsRepoSettings()" id="btn-save-cms-repo" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-bold text-xs uppercase shadow-lg shadow-indigo-600/20 transition-all">
+                                        <button onclick="saveCmsRepoSettings()" id="btn-save-cms-repo" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-bold text-xs uppercase whitespace-nowrap shadow-lg shadow-indigo-600/20 transition-all">
                                             Uložit repozitář jádra CMS
                                         </button>
                                     </div>
@@ -1261,7 +1248,7 @@ $_SESSION['current_page'] = $currentPage;
                                 
                                 <div>
                                     <label class="block text-xs font-bold text-slate-400 uppercase mb-2">URL Projektového Repozitáře (PROJECT_REPO_URL)</label>
-                                    <input type="text" id="project-repo-url-input" value="<?= htmlspecialchars(defined('PROJECT_REPO_URL') ? PROJECT_REPO_URL : (defined('REPO_URL') ? REPO_URL : '')) ?>" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm font-mono transition-all" placeholder="https://github.com/uzivatel/moje-stranky.git">
+                                    <input type="text" id="project-repo-url-input" value="<?= htmlspecialchars(defined('PROJECT_REPO_URL') ? PROJECT_REPO_URL : '') ?>" class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 text-sm font-mono transition-all" placeholder="https://github.com/uzivatel/moje-stranky.git">
                                     <p class="text-xs text-slate-500 mt-1.5">GitHub repozitář tohoto konkrétního webu, do kterého CMS ukládá změny obsahu a souborů (pro lokální projekty lze vypnout přepínačem výše).</p>
                                 </div>
 
@@ -1272,17 +1259,18 @@ $_SESSION['current_page'] = $currentPage;
                                 </div>
 
                                 <div class="pt-4 border-t border-white/5 flex justify-end">
-                                    <button onclick="saveProjectRepoSettings()" id="btn-save-project-repo" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold text-xs uppercase shadow-lg shadow-indigo-600/20 active:transform active:scale-[0.98] transition-all">
+                                    <button onclick="saveProjectRepoSettings()" id="btn-save-project-repo" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold text-xs uppercase whitespace-nowrap shadow-lg shadow-indigo-600/20 active:transform active:scale-[0.98] transition-all">
                                         Uložit projektový repozitář
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    </div>
 
-                    <div class="mt-8 flex justify-end gap-4 pb-12 border-t border-white/5 pt-8">
-                        <button onclick="switchView('editor')" class="px-6 py-3 text-slate-400 hover:text-white font-bold text-xs uppercase transition-colors">Zpět do editoru</button>
-                        <button onclick="saveGlobalSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold text-xs uppercase shadow-lg shadow-indigo-600/20 active:transform active:scale-[0.98] transition-all">Uložit nastavení</button>
+                    <div class="mt-8 flex items-center justify-end gap-4 pb-12 border-t border-white/5 pt-8">
+                        <button onclick="switchView('editor')" class="px-6 py-3 text-slate-400 hover:text-white font-bold text-xs uppercase whitespace-nowrap shrink-0 transition-colors">Zpět do editoru</button>
+                        <button onclick="saveGlobalSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-bold text-xs uppercase whitespace-nowrap shrink-0 shadow-lg shadow-indigo-600/20 active:transform active:scale-[0.98] transition-all">Uložit nastavení</button>
                     </div>
                 </div>
             </div>
@@ -2528,16 +2516,23 @@ $_SESSION['current_page'] = $currentPage;
                 return;
             }
 
+            function getThemeFallbackSvg(name) {
+                const title = (name || 'Fida Theme').replace(/[<>&"]/g, '');
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="#1e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="16">${title}</text></svg>`;
+                return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+            }
+
             let html = '';
             themeList.forEach(t => {
                 const isActive = t.active;
-                const screenshotSrc = t.screenshot || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="%231e293b"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-family="sans-serif" font-size="16">Fida Theme</text></svg>';
+                const fallbackSrc = getThemeFallbackSvg(t.name);
+                const screenshotSrc = t.screenshot || fallbackSrc;
 
                 html += `
                     <div class="bg-slate-900 border ${isActive ? 'border-indigo-500 shadow-indigo-500/10' : 'border-white/5'} rounded-2xl overflow-hidden flex flex-col justify-between transition-all hover:border-white/20 shadow-xl">
                         <div>
                             <div class="h-44 bg-slate-950 relative overflow-hidden flex items-center justify-center">
-                                <img src="${screenshotSrc}" alt="${t.name}" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'250\\' viewBox=\\'0 0 400 250\\'><rect width=\\'400\\' height=\\'250\\' fill=\\'%231e293b\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%2394a3b8\\' font-family=\\'sans-serif\\' font-size=\\'16\\'>${t.name}</text></svg>'">
+                                <img src="${screenshotSrc}" alt="${t.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                                 ${isActive ? '<div class="absolute top-3 right-3 bg-indigo-600 text-white text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg">Aktivní</div>' : ''}
                             </div>
                             <div class="p-5">
@@ -3003,9 +2998,8 @@ $_SESSION['current_page'] = $currentPage;
         window.openFmPreviewModal = openFmPreviewModal;
 
         window.switchSettingsTab = function switchSettingsTab(tabId) {
-            ['general', 'contacts', 'addresses', 'domain', 'cache', 'updates'].forEach(id => {
-                const el = document.getElementById('content-tab-' + id);
-                if (el) el.classList.add('hidden');
+            document.querySelectorAll('[id^="content-tab-"]').forEach(el => {
+                el.classList.add('hidden');
             });
             
             const targetTab = document.getElementById('content-tab-' + tabId);
@@ -3013,14 +3007,14 @@ $_SESSION['current_page'] = $currentPage;
             
             const tabButtons = document.querySelectorAll('.settings-tab-btn');
             tabButtons.forEach(btn => {
-                btn.classList.remove('border-indigo-500', 'text-white');
-                btn.classList.add('border-transparent', 'text-slate-400');
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
+                btn.classList.add('text-slate-400');
             });
             
             const activeBtn = document.getElementById('btn-tab-' + tabId);
             if (activeBtn) {
-                activeBtn.classList.remove('border-transparent', 'text-slate-400');
-                activeBtn.classList.add('border-indigo-500', 'text-white');
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
             }
         };
 

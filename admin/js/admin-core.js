@@ -240,9 +240,8 @@
     };
 
     window.switchSettingsTab = function switchSettingsTab(tabId) {
-        ['general', 'contacts', 'addresses', 'domain', 'cache', 'security', 'updates'].forEach(id => {
-            const el = document.getElementById('content-tab-' + id);
-            if (el) el.classList.add('hidden');
+        document.querySelectorAll('[id^="content-tab-"]').forEach(el => {
+            el.classList.add('hidden');
         });
 
         const targetTab = document.getElementById('content-tab-' + tabId);
@@ -250,14 +249,14 @@
 
         const tabButtons = document.querySelectorAll('.settings-tab-btn');
         tabButtons.forEach(btn => {
-            btn.classList.remove('border-indigo-500', 'text-white');
-            btn.classList.add('border-transparent', 'text-slate-400');
+            btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
+            btn.classList.add('text-slate-400');
         });
 
         const activeBtn = document.getElementById('btn-tab-' + tabId);
         if (activeBtn) {
-            activeBtn.classList.remove('border-transparent', 'text-slate-400');
-            activeBtn.classList.add('border-indigo-500', 'text-white');
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
         }
     };
 

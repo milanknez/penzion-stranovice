@@ -1202,9 +1202,12 @@ if (saveBtn) {
 
         let rawHtml = editor.getHtml();
         // Clean up any absolute localhost or /admin/ or ../ path prefixes from images/assets
+        // Ensure root-relative paths like /assets/, /images/, /uploads/ are consistently formatted
         rawHtml = rawHtml
-            .replace(/(https?:\/\/[^\/]+)?\/admin\/(images|assets|uploads)\//g, '$2/')
-            .replace(/(https?:\/\/[^\/]+)?\.\.\/(images|assets|uploads)\//g, '$2/');
+            .replace(/(https?:\/\/[^\/]+)?\/admin\/(images|assets|uploads)\//g, '/$2/')
+            .replace(/(https?:\/\/[^\/]+)?\.\.\/(images|assets|uploads)\//g, '/$2/')
+            .replace(/(src|href)=["'](?!\/|http|https|data:)(images|assets|uploads)\//gi, '$1="/$2/')
+            .replace(/url\(['"]?(?!\/|http|https|data:)(images|assets|uploads)\//gi, 'url("/$1/');
         const html = rawHtml;
         const css = editor.getCss();
 
@@ -1383,11 +1386,35 @@ window.renderUniversalTraits = function(component) {
         let currentBg = '';
         const bgStyle = (heroBgComp.getStyle && heroBgComp.getStyle()['background-image']) || '';
         const rawStyle = (heroBgComp.getAttributes && heroBgComp.getAttributes()['style']) || '';
+        
         if (bgStyle) {
             currentBg = bgStyle.replace(/url\(['"]?([^'"]+)['"]?\)/gi, '$1').trim();
         } else if (rawStyle && rawStyle.includes('background-image')) {
             const m = rawStyle.match(/background-image\s*:\s*url\(([^)]+)\)/i);
             if (m && m[1]) currentBg = m[1].replace(/['"]/g, '').trim();
+        }
+
+        // Fallback: check GrapesJS CSS rules by ID
+        if (!currentBg && heroBgComp.getId && editor.Css) {
+            const rule = editor.Css.getRule('#' + heroBgComp.getId());
+            if (rule && rule.getStyle && rule.getStyle()['background-image']) {
+                currentBg = rule.getStyle()['background-image'].replace(/url\(['"]?([^'"]+)['"]?\)/gi, '$1').trim();
+            }
+        }
+
+        // Fallback: check DOM computed style in canvas iframe
+        if (!currentBg) {
+            try {
+                const el = heroBgComp.getEl ? heroBgComp.getEl() : null;
+                const iframeWin = editor.Canvas ? editor.Canvas.getWindow() : null;
+                if (el && iframeWin) {
+                    const compStyle = iframeWin.getComputedStyle(el);
+                    const bg = compStyle ? compStyle.backgroundImage : '';
+                    if (bg && bg !== 'none') {
+                        currentBg = bg.replace(/url\(['"]?([^'"]+)['"]?\)/gi, '$1').trim();
+                    }
+                }
+            } catch (e) {}
         }
 
         fieldsHtml += `
@@ -1569,13 +1596,33 @@ window.renderUniversalTraits = function(component) {
     const heroBgInput = document.getElementById('trait-hero-bg-src');
     if (heroBgInput && heroBgComp) {
         const updateHeroBg = (url) => {
+            url = url.trim();
+            // Normalize path so it begins with / if it points to assets/ or images/
+            if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:')) {
+                url = '/' + url;
+            }
             heroBgInput.value = url;
+            
+            // 1. Update GrapesJS Style
             if (heroBgComp.addStyle) {
                 heroBgComp.addStyle({ 'background-image': `url("${url}")` });
             }
-            if (heroBgComp.addAttributes) {
-                heroBgComp.addAttributes({ style: `background-image: url('${url}');` });
+            // 2. Update element inline style attribute for persistence
+            if (heroBgComp.getAttributes && heroBgComp.addAttributes) {
+                const attrs = heroBgComp.getAttributes() || {};
+                let styleStr = attrs.style || '';
+                styleStr = styleStr.replace(/background-image:[^;]+;?/gi, '').trim();
+                styleStr = (styleStr ? styleStr + ' ' : '') + `background-image: url('${url}');`;
+                heroBgComp.addAttributes({ style: styleStr });
             }
+            // 3. Directly update DOM element in canvas iframe for immediate visual feedback
+            try {
+                const el = heroBgComp.getEl ? heroBgComp.getEl() : null;
+                if (el) {
+                    el.style.backgroundImage = `url('${url}')`;
+                }
+            } catch (e) {}
+
             if (typeof showSaveMessage === 'function') showSaveMessage('Obrázek v pozadí HERO změněn', false);
         };
 

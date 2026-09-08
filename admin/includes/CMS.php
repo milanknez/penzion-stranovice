@@ -243,14 +243,26 @@ class CMS {
             return "Git commit přeskočen (synchronizace projektu je v nastavení vypnuta).";
         }
 
-        $targetRepoUrl = defined('PROJECT_REPO_URL') && !empty(PROJECT_REPO_URL) ? PROJECT_REPO_URL : (defined('REPO_URL') ? REPO_URL : '');
-        if (empty($targetRepoUrl) || !defined('GITHUB_TOKEN') || empty(GITHUB_TOKEN)) {
-            return "Git commit přesnut/přeskočen: Není nastaven GITHUB_TOKEN pro tento projekt.";
+        // STRICT REQUIREMENT: Only push if PROJECT_REPO_URL is explicitly configured for this website!
+        // Never fall back to REPO_URL or CMS_REPO_URL.
+        $targetRepoUrl = defined('PROJECT_REPO_URL') ? trim(PROJECT_REPO_URL) : '';
+        if (empty($targetRepoUrl)) {
+            return "Git commit přeskočen: Není vyplněno PROJECT_REPO_URL pro tento konkrétní web.";
+        }
+
+        // Security safeguard: Block any accidental push to the core Fida CMS repository!
+        $cleanTarget = strtolower(rtrim(str_replace('.git', '', $targetRepoUrl), '/'));
+        if (strpos($cleanTarget, 'milanknez/fida-cms') !== false) {
+            return "Git commit ZABLOKOVÁN: PROJECT_REPO_URL nesmí odkazovat na jádro Fida CMS (ochrana před přepsáním jádra)!";
+        }
+
+        if (!defined('GITHUB_TOKEN') || empty(trim(GITHUB_TOKEN))) {
+            return "Git commit přeskočen: Není nastaven GITHUB_TOKEN pro tento projekt.";
         }
 
         $repoClean = str_replace('.git', '', $targetRepoUrl);
         $repoParts = explode('github.com/', $repoClean);
-        if (count($repoParts) < 2) return "ERROR: Neplatné REPO_URL.";
+        if (count($repoParts) < 2) return "ERROR: Neplatné PROJECT_REPO_URL.";
         
         $repoPath = $repoParts[1];
         $branch = 'main';

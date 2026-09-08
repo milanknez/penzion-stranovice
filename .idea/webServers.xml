@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="ccf5c661-aaeb-4d54-92ca-b515177891e7" name="Penzion PROD">
+        <fileTransfer rootFolder="/var/www/statekstranovice.cz" accessType="SFTP" host="192.168.1.103" port="22" sshConfigId="ce7849d2-860a-48fd-989a-d9427c0aeb20" sshConfig="milan@192.168.1.103:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

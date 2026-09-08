@@ -244,7 +244,7 @@ CMS::getHeader();
                     </div>
                 </div>
                 <div class="contact-form-wrapper reveal-up">
-                    <form class="contact-form" action="send.php" method="POST">
+                    <form class="contact-form" action="api/send.php" method="POST">
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Jméno a příjmení</label>
