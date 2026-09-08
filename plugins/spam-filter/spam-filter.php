@@ -5,7 +5,7 @@
  * Description: Pokročilá ochrana formulářů proti spamu a robotům. Automaticky se integruje do všech kontaktních a rezervačních formulářů po aktivaci (interaktivní ověření, honeypot, časový filtr, Turnstile & reCAPTCHA).
  * Author: Statek Straňovice
  * Settings Modal: openSpamFilterModal()
- * Settings Button: Nastavení filtru
+ * Settings Button: Spam Filter
  */
 
 if (!defined('CMS_ROOT')) {

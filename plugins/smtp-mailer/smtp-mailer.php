@@ -5,7 +5,7 @@
  * Version: 1.1.0
  * Author: Fida Software
  * Settings Modal: openSMTPModal()
- * Settings Button: Nastavení a historie
+ * Settings Button: Nastavení SMTP
  */
 
 if (!defined('ROOT_DIR')) {
