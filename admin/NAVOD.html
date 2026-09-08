@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Návod k obsluze administrace webu | Fida CMS</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%234f46e5%22/><path d=%22M55 35a2.121 2.121 0 0 1 3 3L37 62l-7 2 2-7 21-22z%22 fill=%22none%22 stroke=%22white%22 stroke-width=%225%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        code, .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .step-badge {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+        }
+        .screen-frame {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .screen-frame:hover {
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .glow-tip {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.12);
+        }
+        .glow-warn {
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.12);
+        }
+        html { scroll-behavior: smooth; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .screen-frame { border: 1px solid #ccc; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white pb-24">
+
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-white/10 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-600/30">
+                    <i class="fa fa-book text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+                        Fida CMS Uživatelský Návod
+                        <span class="text-[10px] uppercase font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">Pro každého</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Jednoduchý průvodce úpravou stránek, textů a fotek</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 no-print">
+                <a href="/admin/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2 active:scale-95">
+                    <i class="fa fa-arrow-left"></i> Přejít do administrace
+                </a>
+                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold px-3 py-2.5 rounded-xl border border-white/10 transition-all" title="Vytisknout nebo uložit jako PDF">
+                    <i class="fa fa-print text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero banner -->
+    <div class="bg-gradient-to-b from-indigo-950/40 via-slate-950 to-slate-950 border-b border-white/5 py-14 px-6">
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <i class="fa fa-check-circle"></i> Nemusíte znát kódování ani programování
+            </span>
+            <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                Jak snadno spravovat a upravovat váš web
+            </h2>
+            <p class="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                Tento manuál vám krok za krokem ukáže, jak se přihlásit, jak přepsat text stejně jednoduše jako ve Wordu, jak vyměnit fotografii za novou a jak úpravy bezpečně uložit.
+            </p>
+
+            <!-- Quick Navigation Pills -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5 pt-4 no-print text-xs">
+                <a href="#krok-1" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">1. Přihlášení</a>
+                <a href="#krok-2" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">2. Výběr stránky</a>
+                <a href="#krok-3" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">3. Úprava textů</a>
+                <a href="#krok-4" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">4. Výměna fotek</a>
+                <a href="#krok-5" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">5. Vkládání bloků</a>
+                <a href="#krok-6" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">6. Záchranná brzda (Ctrl+Z)</a>
+                <a href="#krok-7" class="px-3.5 py-2 bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/50 border border-white/10 rounded-xl font-bold text-slate-300 transition-all">7. Uložení na web</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-6 mt-12 space-y-20">
+
+        <!-- GOLDEN RULE NOTICE -->
+        <div class="bg-gradient-to-r from-indigo-900/30 to-purple-900/20 border border-indigo-500/30 rounded-2xl p-6 glow-tip flex flex-col md:flex-row items-start md:items-center gap-5">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-2xl shrink-0">
+                <i class="fa fa-shield"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-base font-extrabold text-white">Zlaté pravidlo: Nemůžete nic pokazit!</h3>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Dokud nekliknete vpravo nahoře na velké modré tlačítko <strong>„ULOŽIT ZMĚNY“</strong>, na živém webu se nic nezmění. Pokud se vám cokoliv nepovede, stačí stisknout klávesovou zkratku <strong>Ctrl + Z</strong> (nebo kliknout na šipku zpět v liště), případně stránku obnovit v prohlížeči (klávesa <code class="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-300">F5</code>).
+                </p>
+            </div>
+        </div>
+
+        <!-- SECTION 1: PŘIHLÁŠENÍ -->
+        <section id="krok-1" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">1</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Přihlášení do administrace</h2>
+                    <p class="text-sm text-slate-400">Jak se bezpečně dostat k úpravám vašeho webu</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <ol class="list-decimal list-inside space-y-2.5 text-sm text-slate-300 leading-relaxed">
+                    <li>V internetovém prohlížeči (Chrome, Firefox, Safari apod.) otevřete adresu vašeho webu s koncovkou <strong class="text-white font-mono bg-slate-950 px-2 py-0.5 rounded">/admin/</strong> (např. <code class="text-indigo-300">vasweb.cz/admin/</code>).</li>
+                    <li>Zobrazí se tmavá přihlašovací obrazovka Fida CMS.</li>
+                    <li>Do políčka <strong>Heslo</strong> vepište vaše administrátorské heslo.</li>
+                    <li>Klikněte na modré tlačítko <strong>Přihlásit se</strong> (nebo stiskněte klávesu <kbd class="bg-slate-800 px-2 py-0.5 rounded text-white font-mono text-xs">Enter</kbd>).</li>
+                </ol>
+
+                <div class="screen-frame mt-6">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Reálný pohled: Přihlašovací obrazovka (/admin/login.php)</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 1</span>
+                    </div>
+                    <img src="assets/img/navod/01_login.png" alt="Přihlašovací obrazovka Fida CMS" class="w-full h-auto block" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SPRÁVA STRÁNEK A VÝBĚR -->
+        <section id="krok-2" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">2</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Přehled stránek a výběr stránky k úpravě</h2>
+                    <p class="text-sm text-slate-400">Kde najdete všechny podstránky vašeho webu</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Po přihlášení se otevře <strong>Správa stránek</strong>. Zde vidíte seznam všech stránek (například <em>Hlavní strana, Pokoje, Apartmány, Výlety, O nás, Galerie, Kontakt</em>).
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                        <div class="text-indigo-400 font-bold text-xs flex items-center gap-2">
+                            <i class="fa fa-edit"></i> Tlačítko „Upravit“
+                        </div>
+                        <p class="text-xs text-slate-400">Otevře danou stránku ve vizuálním editoru, kde můžete klikat na texty a fotky.</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                        <div class="text-emerald-400 font-bold text-xs flex items-center gap-2">
+                            <i class="fa fa-external-link"></i> Ikona oka / odkazu
+                        </div>
+                        <p class="text-xs text-slate-400">Otevře novou záložku a ukáže vám, jak stránka vypadá přímo pro návštěvníky webu.</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                        <div class="text-indigo-400 font-bold text-xs flex items-center gap-2">
+                            <i class="fa fa-plus"></i> „+ Nová stránka“
+                        </div>
+                        <p class="text-xs text-slate-400">Vytvoří novou čistou podstránku připravenou k naplnění obsahem.</p>
+                    </div>
+                </div>
+
+                <div class="screen-frame mt-6">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Reálný pohled: Přehled stránek webu</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 2</span>
+                    </div>
+                    <img src="assets/img/navod/02_pages_list.png" alt="Správa stránek ve Fida CMS" class="w-full h-auto block" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VIZUÁLNÍ EDITOR A ÚPRAVA TEXTŮ -->
+        <section id="krok-3" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">3</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Vizuální editor: Jak jednoduše přepsat text</h2>
+                    <p class="text-sm text-slate-400">Úprava nadpisů, odstavců, cen a kontaktů přímo na stránce</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Jakmile kliknete u libovolné stránky na <strong>„Upravit“</strong>, načte se interaktivní editor:
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-start gap-3 bg-slate-950/80 p-4 rounded-xl border border-white/5">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">A</span>
+                        <div class="text-xs space-y-1">
+                            <strong class="text-white text-sm">Dvakrát klikněte na libovolný text na obrazovce</strong>
+                            <p class="text-slate-400">Ať už jde o hlavní nadpis, popis pokoje, otevírací dobu nebo cenu – dvakrát na něj klikněte myší. Okolo textu se objeví rámeček a blikající kurzor.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 bg-slate-950/80 p-4 rounded-xl border border-white/5">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">B</span>
+                        <div class="text-xs space-y-1">
+                            <strong class="text-white text-sm">Přepište text jako v textovém editoru (Word)</strong>
+                            <p class="text-slate-400">Můžete mazat klávesou <kbd class="bg-slate-800 px-1.5 py-0.5 rounded text-white font-mono">Backspace</kbd>, psát nová slova nebo vložit zkopírovaný text klávesami <kbd class="bg-slate-800 px-1.5 py-0.5 rounded text-white font-mono">Ctrl + V</kbd>.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 bg-slate-950/80 p-4 rounded-xl border border-white/5">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">C</span>
+                        <div class="text-xs space-y-1">
+                            <strong class="text-white text-sm">Klepněte myší kamkoliv vedle</strong>
+                            <p class="text-slate-400">Jakmile kliknete mimo upravovaný text, změna se potvrdí a zůstane přepsaná.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="screen-frame mt-6">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Reálný pohled: Vizuální editor s živým náhledem stránky</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 3</span>
+                    </div>
+                    <img src="assets/img/navod/04_editor_index.png" alt="Vizuální editor stránky Fida CMS" class="w-full h-auto block" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: VÝMĚNA A NAHRÁVÁNÍ FOTOGRAFIÍ -->
+        <section id="krok-4" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">4</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Jak vyměnit fotografii nebo obrázek</h2>
+                    <p class="text-sm text-slate-400">Nahrání nové fotky z vašeho počítače a její okamžité vložení</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Výměna fotografie je velmi jednoduchá a rychlá:
+                </p>
+
+                <ol class="list-decimal list-inside space-y-3 text-sm text-slate-300 leading-relaxed">
+                    <li>V editoru <strong>dvakrát rychle klikněte na fotku</strong>, kterou chcete vyměnit (nebo na ni klikněte a v pravém panelu zvolte ozubené kolečko).</li>
+                    <li>Otevře se okno <strong>„SELECT IMAGE / SPRÁVA OBRÁZKŮ“</strong>.</li>
+                    <li>Vlevo uvidíte velkou přerušovanou plochu <em>„Drop files here or click to upload“</em>.</li>
+                    <li><strong>Jednoduše chytněte novou fotku myší ze své složky v počítači a přetáhněte ji sem</strong> (Drag & Drop), nebo na plochu klikněte a vyberte soubor.</li>
+                    <li>Obrázek se ihned nahraje a zobrazí v galerii. <strong>Klikněte na něj</strong> a fotka na stránce se okamžitě vymění za novou!</li>
+                </ol>
+
+                <div class="screen-frame mt-6">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Reálný pohled: Okno výběru a nahrávání obrázků (Asset Manager)</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 4</span>
+                    </div>
+                    <img src="assets/img/navod/10_asset_manager_modal.png" alt="Okno nahrání obrázku Fida CMS" class="w-full h-auto block" loading="lazy">
+                </div>
+
+                <!-- Also File Manager Mention -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-white/5 mt-4 space-y-3">
+                    <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                        <i class="fa fa-folder-open"></i> Samostatná „Správa souborů“ v levém menu
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Pokud chcete nahrát větší množství fotek dopředu (např. celou novou fotogalerii), můžete v levém hlavním menu kliknout na položku <strong>„Soubory“</strong>. Tam můžete pohodlně nahrávat desítky obrázků naráz, mazat staré fotky nebo filtrovat jen dokumenty (PDF ceníky apod.).
+                    </p>
+                    <div class="screen-frame mt-3">
+                        <img src="assets/img/navod/05_files_manager.png" alt="Správce souborů v administraci" class="w-full h-auto block" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: KNIHOVNA BLOKŮ A STYLY -->
+        <section id="krok-5" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">5</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Knihovna bloků: Přidání nového odstavce nebo sekce</h2>
+                    <p class="text-sm text-slate-400">Přetahování připravených designových prvků na stránku myší</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Na pravé straně obrazovky editoru máte sloupec se záložkami. První ikona (čtverečky) představuje <strong>Knihovnu bloků</strong>.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-2">
+                        <h4 class="text-white font-bold text-sm flex items-center gap-2">
+                            <i class="fa fa-th-large text-indigo-400"></i> Kompletní sekce
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Předpřipravené velké bloky: <em>Hero uvítací sekce, Havarijní banner, Karty služeb, Ceníkové tabulky, Reference hostů, Často kladené dotazy (FAQ)</em>.
+                        </p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-2">
+                        <h4 class="text-white font-bold text-sm flex items-center gap-2">
+                            <i class="fa fa-font text-indigo-400"></i> Základní prvky
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Jednotlivé stavební kameny: <em>Velký nadpis H1, Textový odstavec, Samostatný obrázek, Tlačítko (CTA), 2 sloupce, 3 sloupce, Oddělovací čára</em>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-950/30 border border-indigo-500/20 p-4 rounded-xl text-xs text-slate-300 flex items-start gap-3">
+                    <i class="fa fa-mouse-pointer text-indigo-400 text-base mt-0.5"></i>
+                    <div>
+                        <strong class="text-white">Jak blok vložit na stránku?</strong>
+                        <p class="mt-0.5 text-slate-300">Najděte požadovaný blok v pravém panelu, stiskněte levé tlačítko myši a <strong>přetáhněte blok doprostřed obrazovky</strong> na místo, kde ho chcete mít. Až se objeví zelená vodicí čára, myš pusťte.</p>
+                    </div>
+                </div>
+
+                <div class="screen-frame mt-6">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Reálný pohled: Pravý panel s knihovnou bloků</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 5</span>
+                    </div>
+                    <img src="assets/img/navod/03_editor_canvas.png" alt="Pravý panel knihovny bloků" class="w-full h-auto block" loading="lazy">
+                </div>
+
+                <!-- Styles Tab Preview -->
+                <div class="mt-8 space-y-3">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa fa-paint-brush text-indigo-400"></i> Druhá záložka: Změna velikosti písma, barev a odsazení (Styly)
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Pokud na cokoliv kliknete a přepnete vpravo na záložku štětce (<strong>Styly a vzhled</strong>), můžete měnit barvu textu, pozadí, velikost písma či vnější/vnitřní okraje.
+                    </p>
+                    <div class="screen-frame">
+                        <img src="assets/img/navod/06_editor_styles.png" alt="Panel úpravy stylů" class="w-full h-auto block" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: ZÁCHRANNÁ BRZDA (CO DĚLAT PŘI CHYBĚ) -->
+        <section id="krok-6" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">6</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Co dělat, když se něco nepovede? (Záchranná brzda)</h2>
+                    <p class="text-sm text-slate-400">Kroky zpět a rychlé vrácení do původního stavu</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-lg">
+                            <i class="fa fa-undo"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm">1. Tlačítko Zpět</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Přímo v horní tmavé liště editoru je zahnutá šipka doleva (<strong>Undo</strong>). Klikněte na ni tolikrát, kolik kroků zpět se potřebujete vrátit.
+                        </p>
+                        <div class="pt-2 border-t border-white/5">
+                            <span class="text-[11px] text-slate-500 font-mono">Zkratka: Ctrl + Z</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center text-lg">
+                            <i class="fa fa-repeat"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm">2. Tlačítko Znovu</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Pokud jste se vrátili moc zpět a chcete krok vrátit dopředu, použijte šipku doprava (<strong>Redo</strong>).
+                        </p>
+                        <div class="pt-2 border-t border-white/5">
+                            <span class="text-[11px] text-slate-500 font-mono">Zkratka: Ctrl + Y</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center text-lg">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm">3. Obnovení stránky (F5)</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Pokud jste provedli úpravy, které nechcete a zamotali jste se, <strong>neklikejte na Uložit</strong>, ale jednoduše stiskněte klávesu <strong>F5</strong> (obnovit stránku). Web se znovu načte v původním stavu před úpravami.
+                        </p>
+                        <div class="pt-2 border-t border-white/5">
+                            <span class="text-[11px] text-amber-400 font-bold">100% bezpečné</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: ULOŽENÍ A KONTROLA NA WEBU -->
+        <section id="krok-7" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">7</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Uložení změn a kontrola na ostrém webu</h2>
+                    <p class="text-sm text-slate-400">Poslední krok: jak poslat změny k vašim zákazníkům</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-5">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    Jakmile jste se všemi úpravami textů a obrázků spokojeni, je nutné změny zapsat na server:
+                </p>
+
+                <div class="bg-gradient-to-r from-indigo-600/20 to-indigo-800/10 border border-indigo-500/40 p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div class="space-y-1 text-center sm:text-left">
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Klíčový krok</span>
+                        <h3 class="text-xl font-black text-white">Klikněte na tlačítko „ULOŽIT ZMĚNY“</h3>
+                        <p class="text-xs text-slate-300 max-w-lg">
+                            Nachází se v pravém horním rohu obrazovky. Po kliknutí se na tlačítku roztočí kolečko „Ukládám...“ a v pravém dolním rohu vyskočí zelené potvrzení <strong>„Úspěšně uloženo!“</strong>.
+                        </p>
+                    </div>
+                    <div class="bg-indigo-600 text-white font-extrabold px-8 py-3.5 rounded-xl shadow-xl shadow-indigo-600/30 whitespace-nowrap text-sm shrink-0">
+                        ULOŽIT ZMĚNY
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-white/5 space-y-3">
+                    <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa fa-external-link text-emerald-400"></i> Jak zkontrolovat, jak stránka vypadá?
+                    </h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Přímo vedle názvu stránky v horní liště klikněte na malou ikonu čtverečku se šipkou <i class="fa fa-external-link text-emerald-400"></i> (nebo vlevo nahoře na tlačítko <strong>„Seznam stránek“</strong> a zelenou ikonku oka).
+                        Otevře se ostrá verze vašeho webu, kde si můžete ihned prohlédnout výsledek!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: NASTAVENÍ STRÁNKY A SEO (VOLITELNÉ) -->
+        <section id="krok-8" class="space-y-6 scroll-mt-24">
+            <div class="flex items-center gap-4">
+                <div class="step-badge w-10 h-10 rounded-xl text-white font-black flex items-center justify-center text-lg shrink-0">8</div>
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Nastavení stránky: Titulek pro Google a Seznam (SEO)</h2>
+                    <p class="text-sm text-slate-400">Jak nastavit název a popis stránky, který lidé vidí ve vyhledávači</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-white/5 rounded-2xl p-6 space-y-4">
+                <p class="text-sm text-slate-300 leading-relaxed">
+                    V horní liště editoru klikněte na <strong>ikonku ozubeného kolečka <i class="fa fa-cog text-indigo-400"></i></strong>. Otevře se okno <strong>Nastavení stránky</strong>:
+                </p>
+
+                <ul class="space-y-2.5 text-xs text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <i class="fa fa-check text-indigo-400 mt-0.5"></i>
+                        <span><strong>SEO Titulek:</strong> Hlavní název stránky, který se zobrazuje v záložce prohlížeče a jako velký modrý odkaz na Google a Seznamu (např. <em>Tipy na výlety | Statek Straňovice</em>).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fa fa-check text-indigo-400 mt-0.5"></i>
+                        <span><strong>SEO Popis (Description):</strong> 1 až 2 věty shrnující obsah stránky, které se zobrazují pod odkazem ve vyhledávači.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fa fa-check text-indigo-400 mt-0.5"></i>
+                        <span><strong>URL Slug:</strong> Internetová adresa stránky za lomítkem (např. <code class="text-indigo-300">tipy-na-vylety</code>).</span>
+                    </li>
+                </ul>
+
+                <div class="screen-frame mt-4">
+                    <div class="bg-slate-950 px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Reálný pohled: Okno nastavení stránky a SEO</span>
+                        <span class="text-[11px] font-mono text-slate-500">Krok 8</span>
+                    </div>
+                    <img src="assets/img/navod/09_page_settings_modal.png" alt="Nastavení SEO stránky" class="w-full h-auto block" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- CHEATSHEET SUMMARY -->
+        <div class="bg-slate-900 border border-white/10 rounded-3xl p-8 space-y-6">
+            <h3 class="text-xl font-black text-white flex items-center gap-3">
+                <i class="fa fa-bookmark text-indigo-400"></i> Rychlý tahák nejčastějších úkonů (Do kapsy)
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <div class="font-bold text-white text-sm">Chci přepsat text nebo cenu</div>
+                    <p class="text-slate-400">Dvakrát klikněte na text na obrazovce, přepište ho a klikněte mimo. Na závěr klikněte na <strong>ULOŽIT ZMĚNY</strong>.</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <div class="font-bold text-white text-sm">Chci vyměnit fotku</div>
+                    <p class="text-slate-400">Dvakrát klikněte na fotku na stránce, přetáhněte novou fotku myší z počítače do okna a klikněte na ni.</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <div class="font-bold text-white text-sm">Udělal jsem chybu</div>
+                    <p class="text-slate-400">Stiskněte <kbd class="bg-slate-800 px-1 py-0.5 rounded text-white font-mono">Ctrl + Z</kbd> nebo klikněte na šipku zpět v horní liště. Případně stiskněte <kbd class="bg-slate-800 px-1 py-0.5 rounded text-white font-mono">F5</kbd> a nic neukládejte.</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <div class="font-bold text-white text-sm">Chci zkontrolovat hotový web</div>
+                    <p class="text-slate-400">V horní liště klikněte na ikonku se šipkou <i class="fa fa-external-link text-emerald-400"></i>, která otevře váš web tak, jak ho vidí návštěvníci.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 border-t border-white/10 py-10 px-6 text-center text-xs text-slate-500">
+        <p>Fida CMS – Příručka pro uživatele webových stránek</p>
+        <p class="mt-1">Vytvořeno pro jednoduchou a bezstarostnou správu obsahu</p>
+    </footer>
+
+</body>
+</html>
