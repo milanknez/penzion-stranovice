@@ -185,8 +185,8 @@ if (!class_exists('SpamFilterPlugin')) {
             $mathAns = $num1 + $num2;
             $mathHash = hash_hmac('sha256', "math_{$mathAns}_{$nonce}", $salt);
 
-            // Signature of timestamp and client IP
-            $sig = hash_hmac('sha256', "sf_{$time}_{$ip}_{$nonce}", $salt);
+            // Cryptographic signature of timestamp and nonce
+            $sig = hash_hmac('sha256', "sf_{$time}_{$nonce}", $salt);
 
             return [
                 'time' => $time,
@@ -488,9 +488,10 @@ if (!class_exists('SpamFilterPlugin')) {
             $renderTime = (int)($post['sf_render_time'] ?? 0);
             $nonce = $post['sf_nonce'] ?? '';
             $sig = $post['sf_sig'] ?? '';
-            $expectedSig = hash_hmac('sha256', "sf_{$renderTime}_{$ip}_{$nonce}", $salt);
+            $expectedSig1 = hash_hmac('sha256', "sf_{$renderTime}_{$nonce}", $salt);
+            $expectedSig2 = hash_hmac('sha256', "sf_{$renderTime}_{$ip}_{$nonce}", $salt);
 
-            if (!hash_equals($expectedSig, $sig)) {
+            if (!hash_equals($expectedSig1, $sig) && !hash_equals($expectedSig2, $sig)) {
                 self::logSpam('Neplatný kryptografický podpis formuláře (možný útok přehráním)', $post);
                 return ['success' => false, 'message' => 'Bezpečnostní podpis formuláře je neplatný. Obnovte prosím stránku.'];
             }
