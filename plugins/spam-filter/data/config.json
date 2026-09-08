@@ -1,0 +1,30 @@
+{
+    "is_enabled": true,
+    "protection_mode": "internal",
+    "internal_type": "checkbox",
+    "honeypot_enabled": true,
+    "time_check_enabled": true,
+    "min_submit_time": 2,
+    "max_submit_time": 7200,
+    "turnstile_site_key": "",
+    "turnstile_secret_key": "",
+    "recaptcha_site_key": "",
+    "recaptcha_secret_key": "",
+    "block_disposable_emails": true,
+    "blocked_words": [
+        "crypto",
+        "bitcoin",
+        "forex",
+        "casino",
+        "viagra",
+        "cialis",
+        "seo ranking",
+        "backlinks",
+        "guest post",
+        "loan offer",
+        "investment opportunity"
+    ],
+    "custom_question": "Kolik je pět plus dvě? (napište číslicí)",
+    "custom_answer": "7",
+    "secret_salt": "stranovice_spam_secure_salt_7f8a9b1c"
+}
