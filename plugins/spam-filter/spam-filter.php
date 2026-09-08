@@ -151,6 +151,11 @@ if (!class_exists('SpamFilterPlugin')) {
                         return $matches[0];
                     }
 
+                    // Ensure form targets send.php via POST
+                    if (stripos($formOpen, 'action=') === false) {
+                        $formOpen = preg_replace('/>$/', ' action="send.php" method="POST">', $formOpen);
+                    }
+
                     // Insert captcha right before submit button
                     if (preg_match('/(<button[^>]*type=["\']submit["\'][^>]*>|<input[^>]*type=["\']submit["\'][^>]*>)/i', $formInner, $btnMatch, PREG_OFFSET_CAPTURE)) {
                         $btnOffset = $btnMatch[0][1];

@@ -1138,21 +1138,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = document.querySelector('.contact-form');
         if (!form) return;
 
+        const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+        if (!submitBtn) return;
+
         const arrivalInput = form.querySelector('input[type="date"]:nth-of-type(1)') || form.querySelectorAll('input[type="date"]')[0];
         const departureInput = form.querySelector('input[type="date"]:nth-of-type(2)') || form.querySelectorAll('input[type="date"]')[1];
-        const submitBtn = form.querySelector('button[type="submit"]');
         const roomInput = form.querySelector('input[name="room"]');
 
-        if (!arrivalInput || !departureInput || !submitBtn) return;
+        let fpArrival = null;
+        let fpDeparture = null;
+        let checkOccupancy = () => {};
 
-        const warningDiv = document.createElement('div');
-        warningDiv.className = 'booking-warning';
-        warningDiv.style.display = 'none';
+        // Only setup date pickers and occupancy checks if date inputs are present (e.g. apartment pages)
+        if (arrivalInput && departureInput) {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'booking-warning';
+            warningDiv.style.display = 'none';
 
-        const dateRow = arrivalInput.closest('.form-row');
-        if (dateRow) {
-            dateRow.after(warningDiv);
-        }
+            const dateRow = arrivalInput.closest('.form-row');
+            if (dateRow) {
+                dateRow.after(warningDiv);
+            }
 
         const roomMapping = {
             "Květinový apartmán": "kvetinovy",
@@ -1300,6 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             departureInput.addEventListener('change', checkOccupancy);
         }
+    }
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();

@@ -193,7 +193,7 @@ CMS::getHeader();
                     </div>
                 </div>
                 <div class="contact-form-wrapper reveal-up">
-                    <form class="contact-form">
+                    <form class="contact-form" action="send.php" method="POST">
                         <input type="hidden" name="room" value="Koňský apartmán">
                         <div class="form-row">
                             <div class="form-group"><label>Příjezd</label><input type="date" name="prijezd" required></div>
