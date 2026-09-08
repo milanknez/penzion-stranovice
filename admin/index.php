@@ -30,7 +30,7 @@ foreach ($files as $file) {
     $relPath = (strpos($file, 'pages/') !== false) ? 'pages/' . basename($file) : basename($file);
     $basename = basename($file);
 
-    if (!in_array($basename, ['login.php', 'save.php', 'config.php', 'sw.js', 'router.php', 'version.php'])) {
+    if (!in_array($basename, ['login.php', 'save.php', 'config.php', 'sw.js', 'router.php', 'version.php', 'send.php'])) {
         $editableFiles[] = $relPath;
         
         $title = $pagesConfig[$relPath]['title'] ?? ($pagesConfig[$basename]['title'] ?? '');
