@@ -219,7 +219,7 @@ class ContactFormHandler {
         $sent = CMS::sendMail($this->recipient, $subject, $html, implode("\r\n", $headers));
 
         if ($sent) {
-            $this->respond(true, 'Děkujeme! Vaše poptávka byla v pořádku odeslána. Brzy se vám ozveme.');
+            $this->respond(true, 'Děkujeme! Váš e-mail byl úspěšně odeslán. Brzy se vám ozveme.');
         } else {
             $this->respond(false, 'Zprávu se nepodařilo odeslat. Zkontrolujte prosím konfiguraci e-mailového serveru nebo nás kontaktujte telefonicky.', 500);
         }

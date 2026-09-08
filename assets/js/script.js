@@ -77,8 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const btn = form.querySelector('button');
             const originalText = btn.innerText;
-            btn.innerText = 'Odesílám...';
+            btn.innerText = 'Odesílám e-mail...';
             btn.disabled = true;
+
+            const existingAlert = form.querySelector('.form-message-alert');
+            if (existingAlert) existingAlert.remove();
 
             const formData = new FormData(form);
 
@@ -89,16 +92,42 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    btn.innerText = 'Děkujeme! Ozveme se vám.';
-                    btn.style.backgroundColor = '#4A5D23';
+                    btn.innerText = '✓ E-mail byl úspěšně odeslán!';
+                    btn.style.backgroundColor = '#10b981';
+                    
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'form-message-alert';
+                    successDiv.style.cssText = 'background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; border-radius: 12px; padding: 18px 20px; margin-bottom: 1.5rem; text-align: center; color: #ffffff; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);';
+                    successDiv.innerHTML = `
+                        <div style="font-size: 1.15rem; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>✓</span> <span>E-mail byl úspěšně odeslán!</span>
+                        </div>
+                        <p style="margin: 0; font-size: 0.9rem; color: #ecfdf5; line-height: 1.4;">${data.message || 'Děkujeme za vaši zprávu. E-mail byl v pořádku doručen a brzy se vám ozveme zpět.'}</p>
+                    `;
+                    form.prepend(successDiv);
+                    successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     form.reset();
                 } else {
-                    alert(data.message || 'Chyba při odesílání formuláře.');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'form-message-alert';
+                    errorDiv.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444; border-radius: 12px; padding: 14px 18px; margin-bottom: 1.5rem; text-align: center; color: #ffffff;';
+                    errorDiv.innerHTML = `
+                        <div style="font-size: 1rem; font-weight: 700; color: #f87171; margin-bottom: 4px;">⚠️ Chyba při odesílání e-mailu</div>
+                        <p style="margin: 0; font-size: 0.85rem; color: #fecaca;">${data.message || 'Zprávu se nepodařilo odeslat.'}</p>
+                    `;
+                    form.prepend(errorDiv);
                     btn.innerText = originalText;
                 }
             })
             .catch(err => {
-                alert('Chyba při komunikaci se serverem. Zkontrolujte prosím připojení.');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'form-message-alert';
+                errorDiv.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444; border-radius: 12px; padding: 14px 18px; margin-bottom: 1.5rem; text-align: center; color: #ffffff;';
+                errorDiv.innerHTML = `
+                    <div style="font-size: 1rem; font-weight: 700; color: #f87171; margin-bottom: 4px;">⚠️ Chyba spojení</div>
+                    <p style="margin: 0; font-size: 0.85rem; color: #fecaca;">Chyba při komunikaci se serverem. Zkontrolujte prosím připojení.</p>
+                `;
+                form.prepend(errorDiv);
                 btn.innerText = originalText;
             })
             .finally(() => {
@@ -106,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.innerText = originalText;
                     btn.disabled = false;
                     btn.style.backgroundColor = '';
-                }, 4000);
+                }, 5000);
             });
         });
     }
